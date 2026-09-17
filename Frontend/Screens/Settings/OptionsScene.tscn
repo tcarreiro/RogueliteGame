@@ -1,0 +1,121 @@
+[gd_scene format=3 uid="uid://boc4p5rn352kh"]
+
+[ext_resource type="Script" uid="uid://d2hbutqm3f0rn" path="res://Frontend/Screens/Settings/OptionsMenuScript.gd" id="1_c8kyn"]
+
+[node name="OptionsScene" type="Control" unique_id=328644535]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+script = ExtResource("1_c8kyn")
+
+[node name="NavTab" type="BoxContainer" parent="." unique_id=1487433178]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 31.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="GeneralTabBtn" type="Button" parent="NavTab" unique_id=1206322468]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+text = "GENERAL"
+
+[node name="GraphicsTabBtn" type="Button" parent="NavTab" unique_id=1268782022]
+auto_translate_mode = 1
+layout_mode = 2
+size_flags_horizontal = 3
+text = "GRAPHICS
+"
+
+[node name="ControlsTabBtn" type="Button" parent="NavTab" unique_id=1447394590]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CONTROLS
+"
+
+[node name="ConfirmContainer" type="BoxContainer" parent="." unique_id=678789950]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -620.0
+offset_top = -70.0
+grow_horizontal = 0
+grow_vertical = 0
+alignment = 1
+
+[node name="RestoreBtn" type="Button" parent="ConfirmContainer" unique_id=2011378699]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "RESTORE"
+
+[node name="ConfirmBtn" type="Button" parent="ConfirmContainer" unique_id=1806556660]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CONFIRM"
+
+[node name="CancelBtn" type="Button" parent="ConfirmContainer" unique_id=650544351]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CANCEL"
+
+[node name="ApplyBtn" type="Button" parent="ConfirmContainer" unique_id=626811535]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "APPLY"
+
+[node name="OptionsScrollContainer" type="ScrollContainer" parent="." unique_id=524801862]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -424.99997
+offset_top = -225.0
+offset_right = 425.0
+offset_bottom = 225.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+
+[node name="Control" type="Control" parent="OptionsScrollContainer" unique_id=1042781208]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="OptionsScrollContainer/Control" unique_id=105770305]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 12.0
+offset_right = 1162.0
+offset_bottom = 998.0
+
+[node name="Label" type="Label" parent="OptionsScrollContainer/Control/VBoxContainer" unique_id=2056937976]
+layout_mode = 2
+text = "sdasd oihnoiasndasoidhj
+asodhiauhsdiuhaisuhdiuahsd
+
+
+asodihjaoishjdoasd
+asdoaisudhiuahsdiuasd
+
+
+saudhaisudhiuahsd
+aosiudhasdoihajsd
+asoiduhja
+sdoahsjdiouahsiduhaosihfas
+dfioaushfiuahsfiuhasoihdas
+
+
+asfiuhaisufhaisf
+sfiouhaisf
+asofuihaiuhsf"
+
+[connection signal="pressed" from="ConfirmContainer/ConfirmBtn" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="ConfirmContainer/CancelBtn" to="." method="_on_back_pressed"]

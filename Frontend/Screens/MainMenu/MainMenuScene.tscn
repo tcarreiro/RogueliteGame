@@ -1,0 +1,198 @@
+[gd_scene format=3 uid="uid://jnltcvrkb78v"]
+
+[ext_resource type="Script" uid="uid://rwbgjbwbjiji" path="res://Frontend/Screens/MainMenu/MainMenuScript.gd" id="1_r46lk"]
+[ext_resource type="Texture2D" uid="uid://dplaapf2ctu3k" path="res://Frontend/Screens/Assets/Textures/T_VFX_Flare_616.jpg" id="2_r46lk"]
+[ext_resource type="PackedScene" uid="uid://xqwcxlrst8pp" path="res://Frontend/Screens/Components/SaveSlot/SaveSlot.tscn" id="3_7kp5w"]
+[ext_resource type="PackedScene" uid="uid://7ypjpmbtbby1" path="res://Frontend/Screens/Components/ConfirmationPopUp/ConfirmationPopUp.tscn" id="4_l8h6l"]
+[ext_resource type="PackedScene" uid="uid://can3vmjbpr8yb" path="res://Frontend/Screens/Components/AnimatedButton/AnimatedButton.tscn" id="4_vnhxy"]
+
+[node name="MainMenuScene" type="Control" unique_id=189210671]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_r46lk")
+
+[node name="Ui" type="CanvasLayer" parent="." unique_id=1237422657]
+
+[node name="MainMenu" type="Control" parent="Ui" unique_id=139151538]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="Ui/MainMenu" unique_id=652712685]
+texture_filter = 2
+texture_repeat = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_r46lk")
+
+[node name="MarginContainer" type="MarginContainer" parent="Ui/MainMenu" unique_id=1075439566]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="MainMenuContainer" type="VBoxContainer" parent="Ui/MainMenu/MarginContainer" unique_id=1171037304]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="Ui/MainMenu/MarginContainer/MainMenuContainer" unique_id=1513798458]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Ui/MainMenu/MarginContainer/MainMenuContainer" unique_id=736342939]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer" unique_id=1876730001]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer" unique_id=1562919292]
+texture_filter = 2
+texture_repeat = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="PlayBtn" parent="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer/VBoxContainer" unique_id=1271910334 instance=ExtResource("4_vnhxy")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+normal_color = Color(1, 1, 1, 0.003921569)
+hover_color = Color(1, 1, 1, 0.019607844)
+font_size = 24
+label_hover_color = Color(1, 1, 1, 1)
+label_pressed_color = Color(1, 1, 1, 1)
+
+[node name="UiAnimationComponent" parent="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer/VBoxContainer/PlayBtn" index="1" unique_id=443107535]
+type = 1
+anim_duration = 0.0
+anim_delay = 0.0
+anim_scale = Vector2(0, 0)
+
+[node name="OptionsBtn" parent="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer/VBoxContainer" unique_id=932186171 instance=ExtResource("4_vnhxy")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+normal_color = Color(1, 1, 1, 0.003921569)
+hover_color = Color(1, 1, 1, 0.019607844)
+font_size = 24
+label_hover_color = Color(1, 1, 1, 1)
+label_pressed_color = Color(1, 1, 1, 1)
+metadata/LocalizationTag = "MAIN_MENU.NEW_GAME"
+
+[node name="UiAnimationComponent" parent="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer/VBoxContainer/OptionsBtn" index="1" unique_id=443107535 node_paths=PackedStringArray("wait_for")]
+type = 1
+anim_duration = 0.0
+anim_delay = 0.0
+anim_scale = Vector2(0, 0)
+wait_for = NodePath("../../PlayBtn/UiAnimationComponent")
+
+[node name="ExitBtn" parent="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer/VBoxContainer" unique_id=639270713 instance=ExtResource("4_vnhxy")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+normal_color = Color(1, 1, 1, 0.003921569)
+hover_color = Color(1, 1, 1, 0.019607844)
+font_size = 24
+metadata/LocalizationTag = "MAIN_MENU.NEW_GAME"
+
+[node name="UiAnimationComponent" parent="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer/VBoxContainer/ExitBtn" index="1" unique_id=443107535 node_paths=PackedStringArray("wait_for")]
+type = 1
+anim_duration = 0.0
+anim_delay = 0.0
+anim_scale = Vector2(0, 0)
+wait_for = NodePath("../../OptionsBtn/UiAnimationComponent")
+
+[node name="Spacer2" type="Control" parent="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer" unique_id=410621596]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.2
+
+[node name="Spacer2" type="Control" parent="Ui/MainMenu/MarginContainer/MainMenuContainer" unique_id=2073100761]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.59
+
+[node name="SaveSlotsContainer" type="VBoxContainer" parent="Ui/MainMenu/MarginContainer" unique_id=881277049]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="Ui/MainMenu/MarginContainer/SaveSlotsContainer" unique_id=82728321]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="Slots" type="HBoxContainer" parent="Ui/MainMenu/MarginContainer/SaveSlotsContainer" unique_id=1408202870]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Slot0" parent="Ui/MainMenu/MarginContainer/SaveSlotsContainer/Slots" unique_id=1633676931 instance=ExtResource("3_7kp5w")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Slot1" parent="Ui/MainMenu/MarginContainer/SaveSlotsContainer/Slots" unique_id=1666117390 instance=ExtResource("3_7kp5w")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Slot2" parent="Ui/MainMenu/MarginContainer/SaveSlotsContainer/Slots" unique_id=8959564 instance=ExtResource("3_7kp5w")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Slot3" parent="Ui/MainMenu/MarginContainer/SaveSlotsContainer/Slots" unique_id=733003731 instance=ExtResource("3_7kp5w")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Ui/MainMenu/MarginContainer/SaveSlotsContainer" unique_id=1595716509]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.1
+alignment = 1
+
+[node name="BackBtn" type="Button" parent="Ui/MainMenu/MarginContainer/SaveSlotsContainer/VBoxContainer" unique_id=1142376015]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "BACK"
+
+[node name="Spacer2" type="Control" parent="Ui/MainMenu/MarginContainer/SaveSlotsContainer" unique_id=1381720846]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="Modal" type="CanvasLayer" parent="." unique_id=729063554]
+
+[node name="ConfirmationPopUp" parent="Modal" unique_id=808133604 instance=ExtResource("4_l8h6l")]
+unique_name_in_owner = true
+visible = false
+
+[editable path="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer/VBoxContainer/PlayBtn"]
+[editable path="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer/VBoxContainer/OptionsBtn"]
+[editable path="Ui/MainMenu/MarginContainer/MainMenuContainer/HBoxContainer/VBoxContainer/ExitBtn"]
