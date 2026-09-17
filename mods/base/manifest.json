@@ -1,0 +1,9 @@
+{
+	"id": "base_mod",
+	"display_name": "Base Mod",
+	"version": "0.0.1",
+	"author": "Thiago",
+	"description": "Game's base content",
+	"load_order": 0,
+	"dependencies": []
+}
