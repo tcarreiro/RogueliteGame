@@ -1,0 +1,109 @@
+[gd_scene format=3 uid="uid://7ypjpmbtbby1"]
+
+[ext_resource type="Script" uid="uid://j86kmxpwxb7l" path="res://Frontend/Screens/Components/ConfirmationPopUp/ConfirmationPopUp.gd" id="1_0dgrv"]
+[ext_resource type="StyleBox" uid="uid://bdlxa7mkrnmb" path="res://Frontend/Screens/Assets/default_panel.tres" id="2_ce62p"]
+[ext_resource type="PackedScene" uid="uid://can3vmjbpr8yb" path="res://Frontend/Screens/Components/AnimatedButton/AnimatedButton.tscn" id="2_hi4m2"]
+
+[node name="ConfirmationPopUp" type="Control" unique_id=808133604]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_force_pass_scroll_events = false
+script = ExtResource("1_0dgrv")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1323440149]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BoxContainer" type="BoxContainer" parent="CenterContainer" unique_id=1096565728]
+custom_minimum_size = Vector2(650, 150)
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="CenterContainer/BoxContainer" unique_id=901346360]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = ExtResource("2_ce62p")
+
+[node name="Background" type="NinePatchRect" parent="CenterContainer/BoxContainer/Panel" unique_id=2103822741]
+layout_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/BoxContainer/Panel" unique_id=32467514]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/BoxContainer/Panel/MarginContainer" unique_id=1466403188]
+layout_mode = 2
+alignment = 1
+
+[node name="Header" type="HBoxContainer" parent="CenterContainer/BoxContainer/Panel/MarginContainer/VBoxContainer" unique_id=1496723156]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Title" type="RichTextLabel" parent="CenterContainer/BoxContainer/Panel/MarginContainer/VBoxContainer/Header" unique_id=873514451]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 24
+text = "CONFIRM"
+fit_content = true
+shortcut_keys_enabled = false
+horizontal_alignment = 1
+
+[node name="Content" type="MarginContainer" parent="CenterContainer/BoxContainer/Panel/MarginContainer/VBoxContainer" unique_id=473668436]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_right = 40
+
+[node name="Msg" type="RichTextLabel" parent="CenterContainer/BoxContainer/Panel/MarginContainer/VBoxContainer/Content" unique_id=998087809]
+unique_name_in_owner = true
+layout_mode = 2
+bbcode_enabled = true
+text = "Confirma que quer deletar?"
+fit_content = true
+vertical_alignment = 1
+
+[node name="Actions" type="HBoxContainer" parent="CenterContainer/BoxContainer/Panel/MarginContainer/VBoxContainer" unique_id=1680399022]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.2
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="CancelBtn" parent="CenterContainer/BoxContainer/Panel/MarginContainer/VBoxContainer/Actions" unique_id=1994178213 instance=ExtResource("2_hi4m2")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+text = ""
+normal_color = Color(0.5568628, 0, 0.03137255, 1)
+hover_color = Color(0.99973685, 0.19079566, 0.18020028, 1)
+pressed_color = Color(0.07586036, 3.6624493e-07, 0.00077452307, 1)
+label_hover_color = Color(1, 1, 1, 1)
+label_pressed_color = Color(1, 1, 1, 1)
+
+[node name="OkBtn" parent="CenterContainer/BoxContainer/Panel/MarginContainer/VBoxContainer/Actions" unique_id=1271910334 instance=ExtResource("2_hi4m2")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+text = ""
+normal_color = Color(0.016204104, 0.019996086, 0.10134732, 1)
+hover_color = Color(0.040518053, 0.049835846, 0.17801413, 1)
+pressed_color = Color(0.0018879485, 0.0023595917, 0.016069664, 1)
+label_hover_color = Color(1, 1, 1, 1)
+label_pressed_color = Color(1, 1, 1, 1)

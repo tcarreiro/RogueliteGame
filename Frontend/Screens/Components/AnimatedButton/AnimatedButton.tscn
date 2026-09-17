@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://can3vmjbpr8yb"]
+
+[ext_resource type="Script" uid="uid://bbutewv8gfmbv" path="res://Frontend/Screens/UiAnimationComponent.gd" id="2_shxpy"]
+[ext_resource type="Script" uid="uid://dmi3s5q1ds7vx" path="res://Frontend/Screens/Components/AnimatedButton/AnimatedButton.gd" id="2_ynwiq"]
+
+[node name="AnimatedButton" type="Button" unique_id=1271910334]
+auto_translate_mode = 1
+offset_right = 8.0
+offset_bottom = 31.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.8745098, 0.8745098, 0.8745098, 0)
+theme_override_colors/font_focus_color = Color(0.9490196, 0.9490196, 0.9490196, 0)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 0)
+theme_override_colors/font_hover_color = Color(0.9490196, 0.9490196, 0.9490196, 0)
+theme_override_colors/font_hover_pressed_color = Color(1, 1, 1, 0)
+theme_override_colors/font_disabled_color = Color(0.8745098, 0.8745098, 0.8745098, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0)
+text = "
+"
+script = ExtResource("2_ynwiq")
+normal_color = Color(1, 1, 1, 0)
+hover_color = Color(1, 1, 1, 0)
+pressed_color = Color(1, 1, 1, 0)
+label_normal_color = Color(1, 1, 1, 1)
+label_hover_color = Color(0.5019608, 0, 0, 1)
+label_pressed_color = Color(0.5019608, 0, 0, 1)
+metadata/LocalizationTag = ""
+
+[node name="ContentContainer" type="MarginContainer" parent="." unique_id=380026158]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="Label" type="Label" parent="ContentContainer" unique_id=1483114125]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Button"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UiAnimationComponent" type="Node" parent="." unique_id=443107535]
+script = ExtResource("2_shxpy")

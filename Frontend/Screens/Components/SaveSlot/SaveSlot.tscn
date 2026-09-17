@@ -1,0 +1,214 @@
+[gd_scene format=3 uid="uid://xqwcxlrst8pp"]
+
+[ext_resource type="Script" uid="uid://by42iov5rxqde" path="res://Frontend/Screens/Components/SaveSlot/SaveSlot.gd" id="1_4n7vb"]
+[ext_resource type="Texture2D" uid="uid://drwav20c6o6a7" path="res://Frontend/Screens/Assets/Textures/primary_btn.png" id="2_84jm5"]
+[ext_resource type="Texture2D" uid="uid://cevg07fxakj3v" path="res://Frontend/Screens/Assets/Textures/trash.png" id="2_cad75"]
+
+[sub_resource type="Shader" id="Shader_84jm5"]
+resource_local_to_scene = true
+code = "shader_type canvas_item;
+render_mode unshaded;
+
+uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
+uniform bool play = false;
+uniform vec4 water_color : source_color;
+uniform sampler2D wave_noise : repeat_enable;
+uniform float water_transparency: hint_range(0.0, 1.0) = 0.2;
+uniform float water_strength: hint_range(0.0, 0.05) = 0.025;
+uniform float water_speed: hint_range(0.0, 0.05) = 0.025;
+
+void fragment() {
+	//float sin_val = sin(PI*TIME);
+	float sin_val = TIME;
+	vec2 water_wave = (texture(wave_noise, UV + water_speed * sin_val).xy - 0.5) * water_strength;
+	if (!play) {
+		water_wave = (texture(wave_noise, UV + water_speed).xy - 0.5) * water_strength;
+	}
+
+	vec4 bg = texture(TEXTURE, UV + water_wave);
+    // mistura água x fundo de acordo com transparência
+    vec4 water_mix = mix(water_color, bg, water_transparency);
+
+    // aplica à textura da água
+    COLOR = texture(TEXTURE, UV + water_wave);
+	COLOR *= texture(TEXTURE, UV + water_wave) * water_mix;
+	
+	
+}
+"
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_qwgq2"]
+noise_type = 3
+frequency = 0.0216
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sx4qv"]
+noise = SubResource("FastNoiseLite_qwgq2")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sx4qv"]
+resource_local_to_scene = true
+shader = SubResource("Shader_84jm5")
+shader_parameter/play = false
+shader_parameter/water_color = Color(0, 0, 0, 1)
+shader_parameter/wave_noise = SubResource("NoiseTexture2D_sx4qv")
+shader_parameter/water_transparency = 1.0
+shader_parameter/water_strength = 0.05000000074506
+shader_parameter/water_speed = 0.05000000074506
+
+[node name="Slot" type="VBoxContainer" unique_id=1633676931]
+anchors_preset = -1
+anchor_right = 0.256
+anchor_bottom = 1.0
+offset_right = -0.52001953
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+script = ExtResource("1_4n7vb")
+metadata/_edit_use_anchors_ = true
+
+[node name="SlotBtn" type="Button" parent="." unique_id=2146058298]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(480, 0)
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+
+[node name="Background" type="TextureRect" parent="SlotBtn" unique_id=742540361]
+unique_name_in_owner = true
+self_modulate = Color(0.24705882, 0, 0, 0.60784316)
+material = SubResource("ShaderMaterial_sx4qv")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_84jm5")
+expand_mode = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="SlotBtn" unique_id=207681822]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="SaveData" type="VBoxContainer" parent="SlotBtn/MarginContainer" unique_id=1025289751]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 35
+
+[node name="RunsContainer" type="VBoxContainer" parent="SlotBtn/MarginContainer/SaveData" unique_id=609424454]
+layout_mode = 2
+
+[node name="RunsLabel" type="Label" parent="SlotBtn/MarginContainer/SaveData/RunsContainer" unique_id=216780590]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5529412, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+text = "RUNS:"
+
+[node name="Runs" type="Label" parent="SlotBtn/MarginContainer/SaveData/RunsContainer" unique_id=1240208915]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "20"
+
+[node name="DeckContainer" type="VBoxContainer" parent="SlotBtn/MarginContainer/SaveData" unique_id=1940266471]
+layout_mode = 2
+
+[node name="DeckLabel" type="Label" parent="SlotBtn/MarginContainer/SaveData/DeckContainer" unique_id=1522957023]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5529412, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+text = "NUMBER_CARDS:"
+
+[node name="Deck" type="Label" parent="SlotBtn/MarginContainer/SaveData/DeckContainer" unique_id=759343441]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "20"
+
+[node name="GauntletContainer" type="VBoxContainer" parent="SlotBtn/MarginContainer/SaveData" unique_id=2118914014]
+layout_mode = 2
+
+[node name="GauntletLabel" type="Label" parent="SlotBtn/MarginContainer/SaveData/GauntletContainer" unique_id=542181041]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5529412, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+text = "GAUNTLET:"
+
+[node name="Gauntlet" type="Label" parent="SlotBtn/MarginContainer/SaveData/GauntletContainer" unique_id=480446502]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Gauntlet"
+
+[node name="LastPlay" type="VBoxContainer" parent="SlotBtn/MarginContainer/SaveData" unique_id=1719635976]
+layout_mode = 2
+
+[node name="LastPlayLabel" type="Label" parent="SlotBtn/MarginContainer/SaveData/LastPlay" unique_id=621330364]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5529412, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+text = "LAST_PLAYED:"
+
+[node name="LastPlay" type="Label" parent="SlotBtn/MarginContainer/SaveData/LastPlay" unique_id=1345341413]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "02/02/2026 12:28"
+
+[node name="NewSave" type="VBoxContainer" parent="SlotBtn/MarginContainer" unique_id=1625214559]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 35
+alignment = 1
+
+[node name="NewSaveMsg" type="Label" parent="SlotBtn/MarginContainer/NewSave" unique_id=1380543130]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5529412, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+text = "EMPTY_SLOT"
+horizontal_alignment = 1
+
+[node name="DeleteContainer" type="HBoxContainer" parent="." unique_id=1154616371]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.09
+alignment = 1
+
+[node name="Control" type="Control" parent="DeleteContainer" unique_id=1660319987]
+layout_mode = 2
+size_flags_horizontal = 6
+
+[node name="DeleteBtn" type="TextureButton" parent="DeleteContainer/Control" unique_id=184210400]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -52.0
+offset_top = -54.5
+offset_right = 460.0
+offset_bottom = 457.5
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(0.2, 0.2)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture_normal = ExtResource("2_cad75")
+stretch_mode = 0
