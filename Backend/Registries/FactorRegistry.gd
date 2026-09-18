@@ -11,8 +11,7 @@ var _mod_manager: ModManager
 # Call it to reload Factors
 func load_from_mods(active_mods: Array[StringName]) -> void:
 	_mod_manager = GameManager.mod_manager
-	_content_bridge = ContentBridge.new()
-	
+	_content_bridge = GameManager.content_bridge
 	for mod_id in active_mods:
 		_load_from_mod(mod_id)
 
@@ -30,7 +29,7 @@ func _load_from_mod(mod_id: StringName) -> void:
 	if entries.is_empty():
 		return
 	
-	var state := _get_or_create_mod_state(mod_id)
+	var state := _content_bridge.get_or_create_mod_state(mod_id)
 	
 	for entry in entries:
 		var definition := _load_definition_from_entry(entry, metadata.folder_path, mod_id, state)
@@ -63,17 +62,6 @@ func create_factor(id: StringName) -> Factor:
 	if not definition:
 		return null
 	return Factor.new(definition)
-
-
-## Retorna o LuaState já existente do mod (compartilhado por todos os
-## "moddable contents" dele — Factor, Event, RunEffect etc.), criando-o na
-## primeira vez que qualquer Registry pedir por ele.
-func _get_or_create_mod_state(mod_id: StringName) -> LuaState:
-	var state_name := LuaBridgeRegistry.get_state_name_by_mod_id(mod_id)
-	var existing := LuaBridgeRegistry.get_lua_state(state_name)
-	if existing != null:
-		return existing
-	return _content_bridge.setup(state_name)
 
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> FactorDefinition:

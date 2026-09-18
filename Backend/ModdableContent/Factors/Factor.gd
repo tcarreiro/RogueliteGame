@@ -36,7 +36,7 @@ func set_level(level: int) -> void:
 	level_changed.emit(self, current_level - initial_level)
 	_check_thresholds(initial_level, current_level)
 	if current_level >= max_level:
-		overflow.emit(self)
+		overflow.emit.call_deferred(self)
 
 
 func _check_thresholds(from_level: int, to_level:int) -> void:
@@ -48,6 +48,6 @@ func _check_thresholds(from_level: int, to_level:int) -> void:
 		if not threshold.repeatable and _triggered_thresholds.has(threshold.level):
 			continue
 		_triggered_thresholds.append(threshold.level)
-		threshold_reached.emit(self, threshold)
+		threshold_reached.emit.call_deferred(self, threshold)
 		if threshold.on_reached.is_valid():
-			threshold.on_reached.call(self) # TODO vars?
+			threshold.on_reached.call_deferred(self)

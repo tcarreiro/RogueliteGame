@@ -5,10 +5,12 @@ const ALLOW_SAVE_ON_RUN = false
 
 var mod_manager: ModManager
 var run_manager: RunManager
+var content_bridge: ContentBridge
 
 var game_state: GameState
 
 func _ready() -> void:
+	content_bridge = ContentBridge.new()
 	_setup_mods()
 	_setup_run_manager()
 	new_game() # TODO: Will eventually be moved to listen to a button on main menu screen
