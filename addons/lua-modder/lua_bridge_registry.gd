@@ -41,3 +41,7 @@ func get_lua_state(state_name: StringName) -> LuaState:
 
 func get_all_state_names() -> Array[StringName]:
 	return _states.keys()
+
+
+func get_state_name_by_mod_id(mod_id: StringName) -> StringName:
+	return StringName("mod_%s" % mod_id)

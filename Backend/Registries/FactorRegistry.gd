@@ -69,16 +69,11 @@ func create_factor(id: StringName) -> Factor:
 ## "moddable contents" dele — Factor, Event, RunEffect etc.), criando-o na
 ## primeira vez que qualquer Registry pedir por ele.
 func _get_or_create_mod_state(mod_id: StringName) -> LuaState:
-	var state_name := StringName("mod_%s" % mod_id)
+	var state_name := LuaBridgeRegistry.get_state_name_by_mod_id(mod_id)
 	var existing := LuaBridgeRegistry.get_lua_state(state_name)
 	if existing != null:
 		return existing
-
-	var state := LuaState.new()
-	state.open_libraries()
-	LuaBridgeRegistry.register_state(state_name, state)
-	_content_bridge.setup(state_name, state)
-	return state
+	return _content_bridge.setup(state_name)
 
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> FactorDefinition:
@@ -96,40 +91,39 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		push_warning("[FactorRegistry] Script not fount for factor '%s' at '%s'"%[factor_id, script_path])
 		return null
 	
+	var result = state.do_file(script_path)
+	if result is LuaError:
+		push_error("[FactorRegistry] Erro ao carregar '%s': %s" % [script_path, result])
+		return null
+		
 	var definition := FactorDefinition.new()
 	definition.id = factor_id
 	definition.display_name = str(entry.get("display_name", String(factor_id)))
 	definition.max_level = int(entry.get("max_level", 100))
 	definition.default_level = int(entry.get("default_level", 0))
 	
-	var state_name := StringName("mod_%s" % mod_id)
-	LuaBridgeRegistry.lua_register(state_name, "Content", "createThreshold", func(level, repeatable, callback):
-		var threshold := FactorThreshold.new()
-		threshold.level = int(level)
-		threshold.repeatable = bool(repeatable)
-		threshold.on_reached = LuaHelper.make_callable(callback)
-		definition.thresholds.append(threshold)
-	)
-	
-	var result = state.do_file(script_path)
-	if result is LuaError:
-		push_error("[FactorRegistry] Erro ao carregar '%s': %s" % [script_path, result])
-		return null
+	_register_factor_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
 
+	return definition
+
+
+func _register_factor_exclusive_contract(definition: FactorDefinition, state: LuaState, state_name:StringName) -> void:
+	_content_bridge.register_factor_exclusive_states(definition, state_name)
+	
+	# Two registered functions:
+	# createThresholds and onOverflow
 	var create_thresholds_fn = state.globals["createThresholds"]
 	if create_thresholds_fn is LuaFunction:
-		LuaHelper.call_by_name(state, "createThresholds", [null, String(factor_id)])
+		# Immediatly calls createThreshold, so each threshold's callable is registered at definition
+		LuaHelper.call_by_name(state, "createThresholds", [null, String(definition.id)])
 
 	var overflow_fn = state.globals["onOverflow"]
 	if overflow_fn is LuaFunction:
 		definition.on_overflow = LuaHelper.make_callable(overflow_fn)
 
-	return definition
-
-
 #region Mock
 func _mock_definitions_for(mod_id: StringName) -> Array[FactorDefinition]:
-	if mod_id != &"base_mod":
+	if mod_id != &"core":
 		return []
 	
 	var resonance := FactorDefinition.new()
