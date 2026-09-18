@@ -48,7 +48,7 @@ func get_all_equipment_ids() -> Array[StringName]:
 
 func get_all_effects() -> Array[RunEffect]:
 	var all_effects: Array[RunEffect] = []
-	for equipment: Equipment in _equipments.values():
+	for equipment: Equipment in _equipments.values().map(func(eq):return eq.equipment):
 		for effect in equipment.get_all_effects_from_equipment():
 			if all_effects.has(effect) and effect.unique:
 				continue
@@ -72,7 +72,7 @@ func _is_slot_occupied(slot_id: int) -> bool:
 
 
 func equip(slot_id: int, equipment: Equipment, force_swap:bool = true) -> void:
-	if _get_number_of_equipment_type_equipped(equipment.type) - _get_number_of_slots_by_equipment_type(equipment.type) <= 0:
+	if _get_number_of_slots_by_equipment_type(equipment.type) - _get_number_of_equipment_type_equipped(equipment.type) <= 0:
 		push_warning(
 			"[%s] could't equip equipment, because there is no slot available."%[Equipment.EQUIPMENT_TYPE.keys()[equipment.type]])
 		return
@@ -83,7 +83,7 @@ func equip(slot_id: int, equipment: Equipment, force_swap:bool = true) -> void:
 		unequip(slot_id)
 	on_equip.emit(equipment, slot_id)
 	_equipments[equipment.id] = EquippedObject.new(slot_id, equipment)
-
+	print("Equipment %s equipped at %d"%[equipment.id, slot_id])
 
 func unequip(slot_id: int) -> void:
 	if not _is_slot_occupied(slot_id):

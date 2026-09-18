@@ -32,6 +32,7 @@ func _register_common_state() -> void:
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorLevel", lua_get_factor_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorMaxLevel", lua_get_factor_max_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doChangeFactorLevel", lua_do_change_factor_level)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doChangeFactorMaxLevel", lua_do_change_factor_max_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doTriggerEvent", lua_do_trigger_event)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "addAction", lua_add_action)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "stopAction", lua_stop_action)
@@ -86,6 +87,22 @@ func _create_run_effect_by_lua(_level, _repeatable, _callback, _owner: RunEffect
 #endregion
 
 
+#region Equipment
+func register_equipment_exclusive_states(_definition: EquipmentDefinition, __state_name: StringName) -> void:
+	#LuaBridgeRegistry.lua_register(state_name, CONTENT_NAMESPACE, "createThreshold", _create_equipment_threshold_by_lua.bind(definition))
+	pass
+
+
+func _create_equipment_threshold_by_lua(_level, _repeatable, _callback, _owner: EquipmentDefinition):
+	#var threshold := FactorThreshold.new()
+	#threshold.level = int(level)
+	#threshold.repeatable = bool(repeatable)
+	#threshold.on_reached = LuaHelper.make_callable(callback)
+	#owner.thresholds.append(threshold)
+	pass
+
+#endregion
+
 #region Getters and Setters
 func get_lua_state() -> LuaState:
 	return _lua_state
@@ -121,6 +138,13 @@ func lua_do_change_factor_level(factor_id: StringName, new_level:int):
 	if factor != null:
 		factor.increase_level(new_level)
 	print("%s changed to %s from lua script"%[factor_id, str(factor.current_level)])
+
+
+func lua_do_change_factor_max_level(factor_id: StringName, new_level:int):
+	var factor: Factor = GameManager.get_factor(StringName(factor_id))
+	if factor != null:
+		factor.set_max_level(new_level)
+	print("%s max level changed to %s from lua script"%[factor_id, str(factor.current_level)])
 
 
 func lua_do_trigger_event(event_id: StringName, value: int = 1):

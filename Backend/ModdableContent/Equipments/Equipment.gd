@@ -22,9 +22,20 @@ var effects: Dictionary[StringName, RunEffect] = {}
 var type: EQUIPMENT_TYPE
 
 
-func _init() -> void:
+func _init(definition: EquipmentDefinition) -> void:
 	for i in range(socket_slots):
 		addons[i] = null
+	id = definition.id
+	#uuid = definition.uuid # TODO: UUID
+	display_name = definition.display_name
+	description = definition.description
+	tier = definition.tier
+	nature_id = definition.nature_id
+	cost = definition.cost
+	socket_slots = definition.socket_slots
+	type = definition.type
+	#addons = definition.addons # Fill from definition
+	#effects = definition.effects # Fill from definition
 
 
 #region Addons
@@ -115,6 +126,13 @@ func add_effect(effect_id: StringName) -> void:
 		return
 	on_effect_added.emit(self, effect)
 	effects[effect_id] = effect
+	GameManager.run_manager.run_started.connect(_on_run_started.bind(effect))
+
+
+func _on_run_started(_config: RunConfig, effect: RunEffect) -> void:
+	if effect.on_run_start.is_valid():
+		effect.on_run_start.call(null, effect.id)  # TODO: player
+	print("%s effect" % [effect.id])
 
 
 func remove_effect(effect_id: StringName) -> void:

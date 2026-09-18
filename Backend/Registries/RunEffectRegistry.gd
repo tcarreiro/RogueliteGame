@@ -123,8 +123,8 @@ func _create_definition_from_raw(entry) -> RunEffectDefinition:
 func _register_run_effect_exclusive_contract(definition: RunEffectDefinition, state: LuaState, state_name:StringName) -> void:
 	_content_bridge.register_run_effect_exclusive_states(definition, state_name)
 	
-	# Three registered functions:
-	# onEquip, onUnequip and onEffectTrigger
+	# Four registered functions:
+	# onEquip, onUnequip, onEffectTrigger and onRunStart
 	var on_equip_fn = state.globals["onEquip"]
 	if on_equip_fn is LuaFunction:
 		definition.on_equip = LuaHelper.make_callable(on_equip_fn)
@@ -136,6 +136,10 @@ func _register_run_effect_exclusive_contract(definition: RunEffectDefinition, st
 	var on_effect_trigger_fn = state.globals["onEffectTrigger"]
 	if on_effect_trigger_fn is LuaFunction:
 		definition.on_effect_triggered = LuaHelper.make_callable(on_effect_trigger_fn)
+	
+	var on_run_start_fn = state.globals["onRunStart"]
+	if on_run_start_fn is LuaFunction:
+		definition.on_run_start = LuaHelper.make_callable(on_run_start_fn)
 
 
 #region Mock

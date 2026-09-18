@@ -32,6 +32,7 @@ var category: RunEffectCategory
 var on_equip: Callable
 var on_unequip: Callable
 var on_effect_triggered: Callable
+var on_run_start: Callable
 
 func _init(definition: RunEffectDefinition) -> void:
 	id = definition.id
@@ -43,3 +44,4 @@ func _init(definition: RunEffectDefinition) -> void:
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip
 	on_effect_triggered = definition.on_effect_triggered
+	on_run_start = definition.on_run_start

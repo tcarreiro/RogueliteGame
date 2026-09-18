@@ -20,6 +20,7 @@ GameManager="*uid://b70w5l6gytx1m"
 SaveManager="*uid://bm3pq26t61fye"
 FactorRegistry="*uid://44emqs5n2hpy"
 EventRegistry="*uid://dmvxbgsci0dd7"
+EquipmentRegistry="*uid://kissld841vf7"
 RunEffectRegistry="*uid://fsakxy43arw3"
 SceneMap="*uid://bfxewhtnqx4by"
 GdssRuntime="*res://addons/gdss/runtime.gd"
@@ -37,6 +38,12 @@ project/assembly_name="RogueliteGame"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gdss/plugin.cfg", "res://addons/lua-gdextension/plugin.cfg", "res://addons/lua-modder/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://Backend/ModdableContent/": "blue"
+}
 
 [gdss]
 

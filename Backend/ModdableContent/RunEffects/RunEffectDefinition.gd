@@ -10,3 +10,4 @@ class_name RunEffectDefinition extends Resource
 @export var on_equip: Callable
 @export var on_unequip: Callable
 @export var on_effect_triggered: Callable
+@export var on_run_start: Callable

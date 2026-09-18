@@ -17,13 +17,21 @@ func _ready() -> void:
 	_register_factors()
 	
 	equipment_manager = EquipmentManager.new()
-	# Equipments data live inside Registry, not manager
+	# TODO: Organize
 	_connect_signals()
+	_set_run_equipment()
+
+
+func _set_run_equipment() -> void:
+	equipment_manager.add_slot(Equipment.EQUIPMENT_TYPE.GAUNTLET) # TBD: only equipment allowed for now
+	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze")
+	gauntlet.add_effect("effect_addon_echo")
+	equipment_manager.equip(0, gauntlet)
 
 
 func _connect_signals() -> void:
 	# TODO: signals
-	equipment_manager.on_equip.connect(func(_equipment: Equipment, _slot_id: int): pass)
+	equipment_manager.on_equip.connect(func(_equipment: Equipment, _slot_id: int): print("Equipment equipped"))
 	equipment_manager.on_unequip.connect(func(_equipment: Equipment, _slot_id: int): pass) # TBD: ??
 
 

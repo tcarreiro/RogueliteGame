@@ -22,6 +22,12 @@ func _init(definition: FactorDefinition) -> void:
 	on_overflow = definition.on_overflow
 
 
+func set_max_level(new_max_level: int) -> void:
+	max_level = max(new_max_level, 0)
+	if current_level < max_level:
+		current_level = max_level
+
+
 func increase_level(amount: int) -> void:
 	set_level(current_level + amount)
 
