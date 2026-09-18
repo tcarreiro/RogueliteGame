@@ -25,7 +25,7 @@ func _load_from_mod(mod_id: StringName) -> void:
 	if not FileAccess.file_exists(events_json_path):
 		return
 	
-	var entries := JsonHelper.read_json_array(events_json_path)
+	var entries := Utils.read_json_array(events_json_path)
 	if entries.is_empty():
 		return
 	
@@ -92,7 +92,8 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 	var definition := EventDefinition.new()
 	definition.id = event_id
 	definition.name = str(entry.get("name", String(event_id)))
-	definition.event_trigger = definition.parse_event_trigger(str(entry.get("event_trigger", "TIMED")), event_id)
+	definition.event_trigger = Utils.parse_string_into_enum(
+		Event.EventTrigger, str(entry.get("event_trigger", "TIMED")), "") as Event.EventTrigger
 	definition.interval = float(entry.get("interval", 30.0))
 	definition.throttle = float(entry.get("throttle", 5.0))
 	definition.watched_event_id = StringName(entry.get("watched_event_id", ""))

@@ -25,7 +25,7 @@ func _load_from_mod(mod_id: StringName) -> void:
 	if not FileAccess.file_exists(run_effects_json_path):
 		return
 	
-	var entries := JsonHelper.read_json_array(run_effects_json_path)
+	var entries := Utils.read_json_array(run_effects_json_path)
 	if entries.is_empty():
 		return
 	
@@ -88,8 +88,10 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 	definition.id = run_effect_id
 	definition.display_name = str(entry.get("display_name", StringName(run_effect_id)))
 	definition.description = str(entry.get("description", String(run_effect_id)))
-	definition.stack_mode = definition.parse_stack_mode(str(entry.get("stack_mode", "TIMED")), run_effect_id)
-	definition.category = definition.parse_category(str(entry.get("category", "TIMED")), run_effect_id)
+	definition.stack_mode = Utils.parse_string_into_enum(
+		RunEffect.RunEffectStackMode, str(entry.get("stack_mode", "UNIQUE")), "") as RunEffect.RunEffectStackMode
+	definition.category = Utils.parse_string_into_enum(
+		RunEffect.RunEffectCategory, str(entry.get("category", "BUFF")), "") as RunEffect.RunEffectCategory
 
 	_register_run_effect_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
 

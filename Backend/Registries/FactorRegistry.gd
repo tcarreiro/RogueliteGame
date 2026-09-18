@@ -25,7 +25,7 @@ func _load_from_mod(mod_id: StringName) -> void:
 	if not FileAccess.file_exists(factors_json_path):
 		return
 	
-	var entries := JsonHelper.read_json_array(factors_json_path)
+	var entries := Utils.read_json_array(factors_json_path)
 	if entries.is_empty():
 		return
 	
