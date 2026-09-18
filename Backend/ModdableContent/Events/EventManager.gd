@@ -21,6 +21,8 @@ func register_event(event: Event, throttle: float = 5.0) -> void:
 	queue_throttle[event.id] = throttle
 	_queue_throttle_timers[event.id] = 0.0
 	event.triggered.connect(_on_event_triggered)
+	event_resolved.connect(_on_event_resolved)
+	event_blocked.connect(_on_event_blocked)
 	
 	if event is ReactiveEvent:
 		event_resolved.connect(event.consider_trigger)
@@ -35,6 +37,18 @@ func _on_event_triggered(event: Event, value: int) -> void:
 	if not event_queue.has(event.id):
 		return
 	event_queue[event.id].append(EventOccurrence.new(event, value))
+
+
+func _on_event_resolved(event_id: StringName, value: int) -> void:
+	var event := GameManager.get_event(event_id)
+	if event.on_resolved.is_valid():
+		event.on_resolved.call(null, event_id, value)
+
+
+func _on_event_blocked(event_id: StringName) -> void:
+	var event := GameManager.get_event(event_id)
+	if event.on_blocked.is_valid():
+		event.on_blocked.call(null, event_id)
 
 
 func process(delta: float) -> void:

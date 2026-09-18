@@ -1,0 +1,10 @@
+[
+	{
+		"id": "event_resonance",
+		"name": "Resonance Event",
+		"event_trigger": "TIMED",
+		"interval": 30.0,
+		"throttle": 0.0,
+		"script_path": "events/scripts/event_resonance.lua"
+	}
+]
