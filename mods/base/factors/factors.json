@@ -1,0 +1,9 @@
+[
+	{
+		"id": "factor_resonance", 
+		"display_name": "Resonance",
+		"max_level": 100,
+		"default_level": 0,
+		"script_path": "factors/factor_resonance.lua"
+	}
+]

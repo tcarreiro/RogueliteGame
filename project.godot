@@ -22,6 +22,8 @@ FactorRegistry="*uid://44emqs5n2hpy"
 EventRegistry="*uid://dmvxbgsci0dd7"
 RunEffectRegistry="*uid://fsakxy43arw3"
 SceneMap="*uid://bfxewhtnqx4by"
+GdssRuntime="*res://addons/gdss/runtime.gd"
+LuaBridgeRegistry="*res://addons/lua-modder/lua_bridge_registry.gd"
 
 [display]
 
@@ -31,6 +33,16 @@ window/stretch/aspect="expand"
 [dotnet]
 
 project/assembly_name="RogueliteGame"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gdss/plugin.cfg", "res://addons/lua-gdextension/plugin.cfg", "res://addons/lua-modder/plugin.cfg")
+
+[gdss]
+
+internal/initialized=true
+editor/use_minimap=true
+editor/show_outline=true
 
 [gui]
 
