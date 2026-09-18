@@ -8,3 +8,4 @@ res://Backend/Registries/EventRegistry.gd
 res://Backend/Registries/FactorRegistry.gd
 res://Backend/Utils/Utils.gd
 res://Backend/ModdableContent/Events/EventDefinition.gd
+res://mods/base/runEffects/scripts/effect_addon_echo.lua

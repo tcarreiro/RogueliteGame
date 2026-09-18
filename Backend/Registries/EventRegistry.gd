@@ -8,6 +8,8 @@ var _definitions: Dictionary[StringName, EventDefinition] = {}
 var _content_bridge: ContentBridge
 var _mod_manager: ModManager
 
+var _is_mocked: bool = false
+
 # Call it to reload Events
 func load_from_mods(active_mods: Array[StringName]) -> void:
 	_mod_manager = GameManager.mod_manager
@@ -17,6 +19,11 @@ func load_from_mods(active_mods: Array[StringName]) -> void:
 
 
 func _load_from_mod(mod_id: StringName) -> void:
+	if _is_mocked:
+		for definition in _mock_definitions_for(mod_id):
+			register(definition)
+		return
+	
 	var metadata := _mod_manager.get_metadata(mod_id)
 	if not metadata:
 		return
@@ -89,17 +96,21 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		push_error("[EventRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
+	var definition := _create_definition_from_raw(entry)
+	_register_event_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
+
+	return definition
+
+
+func _create_definition_from_raw(entry) -> EventDefinition:
 	var definition := EventDefinition.new()
-	definition.id = event_id
-	definition.name = str(entry.get("name", String(event_id)))
+	definition.id = StringName(entry["id"])
+	definition.name = str(entry.get("name", definition.id))
 	definition.event_trigger = Utils.parse_string_into_enum(
-		Event.EventTrigger, str(entry.get("event_trigger", "TIMED")), "") as Event.EventTrigger
+		Event.EventTrigger, str(entry.get("event_trigger", "TIMED")), "[EventDefinition - event_trigger]") as Event.EventTrigger
 	definition.interval = float(entry.get("interval", 30.0))
 	definition.throttle = float(entry.get("throttle", 5.0))
 	definition.watched_event_id = StringName(entry.get("watched_event_id", ""))
-	
-	_register_event_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
-
 	return definition
 
 

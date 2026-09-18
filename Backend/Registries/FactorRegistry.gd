@@ -8,6 +8,8 @@ var _definitions: Dictionary[StringName, FactorDefinition] = {}
 var _content_bridge: ContentBridge
 var _mod_manager: ModManager
 
+var _is_mocked: bool = false
+
 # Call it to reload Factors
 func load_from_mods(active_mods: Array[StringName]) -> void:
 	_mod_manager = GameManager.mod_manager
@@ -17,6 +19,11 @@ func load_from_mods(active_mods: Array[StringName]) -> void:
 
 
 func _load_from_mod(mod_id: StringName) -> void:
+	if _is_mocked:
+		for definition in _mock_definitions_for(mod_id):
+			register(definition)
+		return
+	
 	var metadata := _mod_manager.get_metadata(mod_id)
 	if not metadata:
 		return
@@ -84,14 +91,18 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		push_error("[FactorRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
-	var definition := FactorDefinition.new()
-	definition.id = factor_id
-	definition.display_name = str(entry.get("display_name", String(factor_id)))
-	definition.max_level = int(entry.get("max_level", 100))
-	definition.default_level = int(entry.get("default_level", 0))
-	
+	var definition := _create_definition_from_raw(entry)
 	_register_factor_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
 
+	return definition
+
+
+func _create_definition_from_raw(entry) -> FactorDefinition:
+	var definition := FactorDefinition.new()
+	definition.id = StringName(entry["id"])
+	definition.display_name = str(entry.get("display_name", definition.id))
+	definition.max_level = int(entry.get("max_level", 100))
+	definition.default_level = int(entry.get("default_level", 0))
 	return definition
 
 

@@ -8,6 +8,8 @@ var _definitions: Dictionary[StringName, RunEffectDefinition] = {}
 var _content_bridge: ContentBridge
 var _mod_manager: ModManager
 
+var _is_mocked: bool = false
+
 # Call it to reload RunEffects
 func load_from_mods(active_mods: Array[StringName]) -> void:
 	_mod_manager = GameManager.mod_manager
@@ -17,6 +19,11 @@ func load_from_mods(active_mods: Array[StringName]) -> void:
 
 
 func _load_from_mod(mod_id: StringName) -> void:
+	if _is_mocked:
+		for definition in _mock_definitions_for(mod_id):
+			register(definition)
+		return
+	
 	var metadata := _mod_manager.get_metadata(mod_id)
 	if not metadata:
 		return
@@ -84,17 +91,21 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		push_error("[RunEffectRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
-	var definition := RunEffectDefinition.new()
-	definition.id = run_effect_id
-	definition.display_name = str(entry.get("display_name", StringName(run_effect_id)))
-	definition.description = str(entry.get("description", String(run_effect_id)))
-	definition.stack_mode = Utils.parse_string_into_enum(
-		RunEffect.RunEffectStackMode, str(entry.get("stack_mode", "UNIQUE")), "") as RunEffect.RunEffectStackMode
-	definition.category = Utils.parse_string_into_enum(
-		RunEffect.RunEffectCategory, str(entry.get("category", "BUFF")), "") as RunEffect.RunEffectCategory
-
+	var definition := _create_definition_from_raw(entry)
 	_register_run_effect_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
 
+	return definition
+
+
+func _create_definition_from_raw(entry) -> RunEffectDefinition:
+	var definition := RunEffectDefinition.new()
+	definition.id = StringName(entry["id"])
+	definition.display_name = str(entry.get("display_name", definition.id))
+	definition.description = str(entry.get("description", definition.id))
+	definition.stack_mode = Utils.parse_string_into_enum(
+		RunEffect.RunEffectStackMode, str(entry.get("stack_mode", "UNIQUE")), "[RunEffectDefinition - stack_mode]") as RunEffect.RunEffectStackMode
+	definition.category = Utils.parse_string_into_enum(
+		RunEffect.RunEffectCategory, str(entry.get("category", "BUFF")), "[RunEffectDefinition - category]") as RunEffect.RunEffectCategory
 	return definition
 
 
