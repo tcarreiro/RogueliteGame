@@ -1,7 +1,7 @@
 class_name Datashard extends RefCounted
 
-signal obtained(datashard:Datashard)
-signal equipped(datashard:Datashard)
+#signal obtained(datashard:Datashard)
+#signal equipped(datashard:Datashard)
 
 var id: StringName
 var tier: int = 1

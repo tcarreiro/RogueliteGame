@@ -1,0 +1,16 @@
+[
+	{
+		"id": "gauntlet_bronze",
+		"display_name": "Bronze Gauntlet",
+		"description": "A magical gauntlet. It doesn't seem to be holding up pretty well",
+		"tier": 2,
+		"nature_id": "NONE",
+		"cost": 0.0,
+		"socket_slots": 1,
+		"type": "GAUNTLET",
+		"addons": [{"slot_id":0, "addon_id":""}],
+		"effect_ids": [],
+		"max_active_deck_size":10,
+		"script_path": "equipments/scripts/gauntlet_bronze.lua"
+	}
+]
