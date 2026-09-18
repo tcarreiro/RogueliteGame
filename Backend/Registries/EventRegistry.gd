@@ -8,6 +8,8 @@ var _definitions: Dictionary[StringName, EventDefinition] = {}
 var _content_bridge: ContentBridge
 var _mod_manager: ModManager
 
+var _is_mocked: bool = false
+
 # Call it to reload Events
 func load_from_mods(active_mods: Array[StringName]) -> void:
 	_mod_manager = GameManager.mod_manager
@@ -17,6 +19,11 @@ func load_from_mods(active_mods: Array[StringName]) -> void:
 
 
 func _load_from_mod(mod_id: StringName) -> void:
+	if _is_mocked:
+		for definition in _mock_definitions_for(mod_id):
+			register(definition)
+		return
+	
 	var metadata := _mod_manager.get_metadata(mod_id)
 	if not metadata:
 		return
@@ -25,7 +32,7 @@ func _load_from_mod(mod_id: StringName) -> void:
 	if not FileAccess.file_exists(events_json_path):
 		return
 	
-	var entries := JsonHelper.read_json_array(events_json_path)
+	var entries := Utils.read_json_array(events_json_path)
 	if entries.is_empty():
 		return
 	
@@ -89,23 +96,29 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		push_error("[EventRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
-	var definition := EventDefinition.new()
-	definition.id = event_id
-	definition.name = str(entry.get("name", String(event_id)))
-	definition.event_trigger = definition.parse_event_trigger(str(entry.get("event_trigger", "TIMED")), event_id)
-	definition.interval = float(entry.get("interval", 30.0))
-	definition.throttle = float(entry.get("throttle", 5.0))
-	
+	var definition := _create_definition_from_raw(entry)
 	_register_event_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
 
+	return definition
+
+
+func _create_definition_from_raw(entry) -> EventDefinition:
+	var definition := EventDefinition.new()
+	definition.id = StringName(entry["id"])
+	definition.name = str(entry.get("name", definition.id))
+	definition.event_trigger = Utils.parse_string_into_enum(
+		Event.EventTrigger, str(entry.get("event_trigger", "TIMED")), "[EventDefinition - event_trigger]") as Event.EventTrigger
+	definition.interval = float(entry.get("interval", 30.0))
+	definition.throttle = float(entry.get("throttle", 5.0))
+	definition.watched_event_id = StringName(entry.get("watched_event_id", ""))
 	return definition
 
 
 func _register_event_exclusive_contract(definition: EventDefinition, state: LuaState, state_name:StringName) -> void:
 	_content_bridge.register_event_exclusive_states(definition, state_name)
 	
-	# Two registered functions:
-	# onResolvedEvent and onBlockedEvent
+	# Three registered functions:
+	# onResolvedEvent, onBlockedEvent and onWatchEventTrigger (only for Reactive)
 	var on_resolved_fn = state.globals["onResolvedEvent"]
 	if on_resolved_fn is LuaFunction:
 		definition.on_resolved = LuaHelper.make_callable(on_resolved_fn)
@@ -113,6 +126,10 @@ func _register_event_exclusive_contract(definition: EventDefinition, state: LuaS
 	var on_blocked_fn = state.globals["onBlockedEvent"]
 	if on_blocked_fn is LuaFunction:
 		definition.on_blocked = LuaHelper.make_callable(on_blocked_fn)
+
+	var conditional_fn = state.globals["onWatchEventTrigger"]
+	if conditional_fn is LuaFunction:
+		definition.conditional = LuaHelper.make_callable(conditional_fn)
 
 
 #region Mock

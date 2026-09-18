@@ -7,14 +7,24 @@ var run_state: RunState
 
 var event_manager: EventManager
 var factor_manager: FactorManager
+var equipment_manager: EquipmentManager
 
 func _ready() -> void:
-	# Initializing event manager
 	event_manager = EventManager.new()
 	_register_events()
 	
 	factor_manager = FactorManager.new()
 	_register_factors()
+	
+	equipment_manager = EquipmentManager.new()
+	# Equipments data live inside Registry, not manager
+	_connect_signals()
+
+
+func _connect_signals() -> void:
+	# TODO: signals
+	equipment_manager.on_equip.connect(func(_equipment: Equipment, _slot_id: int): pass)
+	equipment_manager.on_unequip.connect(func(_equipment: Equipment, _slot_id: int): pass) # TBD: ??
 
 
 func _register_factors() -> void:
@@ -38,10 +48,18 @@ func _build_run_config() -> RunConfig:
 	return config
 
 
+func _apply_run_effects() -> void:
+	# TODO: Apply RunEffects
+	for effect: RunEffect in equipment_manager.get_all_effects():
+		print(effect.id)
+
+
 func start_run() -> void:
+	_apply_run_effects()
 	var config := _build_run_config()
 	run_state = RunState.new(config)
 	run_started.emit(config)
+
 
 func end_run(success: bool) -> void:
 	run_state.factor_levels = _snapshot_factor_levels()
