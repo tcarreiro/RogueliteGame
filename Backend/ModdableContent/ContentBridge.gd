@@ -53,17 +53,35 @@ func _create_factor_threshold_by_lua(level, repeatable, callback, owner: FactorD
 
 
 #region Event
-func register_event_exclusive_states(definition: EventDefinition, state_name: StringName) -> void:
+func register_event_exclusive_states(_definition: EventDefinition, __state_name: StringName) -> void:
 	#LuaBridgeRegistry.lua_register(state_name, CONTENT_NAMESPACE, "createThreshold", _create_event_by_lua.bind(definition))
 	pass
 
 
-func _create_event_by_lua(level, repeatable, callback, owner: EventDefinition):
-	var threshold := FactorThreshold.new()
-	threshold.level = int(level)
-	threshold.repeatable = bool(repeatable)
-	threshold.on_reached = LuaHelper.make_callable(callback)
-	owner.thresholds.append(threshold)
+func _create_event_by_lua(_level, _repeatable, _callback, _owner: EventDefinition):
+	#var threshold := FactorThreshold.new()
+	#threshold.level = int(level)
+	#threshold.repeatable = bool(repeatable)
+	#threshold.on_reached = LuaHelper.make_callable(callback)
+	#owner.thresholds.append(threshold)
+	pass
+
+#endregion
+
+
+#region RunEffect
+func register_run_effect_exclusive_states(_definition: RunEffectDefinition, __state_name: StringName) -> void:
+	#LuaBridgeRegistry.lua_register(state_name, CONTENT_NAMESPACE, "createThreshold", _create_run_effect_by_lua.bind(definition))
+	pass
+
+
+func _create_run_effect_by_lua(_level, _repeatable, _callback, _owner: RunEffectDefinition):
+	#var threshold := FactorThreshold.new()
+	#threshold.level = int(level)
+	#threshold.repeatable = bool(repeatable)
+	#threshold.on_reached = LuaHelper.make_callable(callback)
+	#owner.thresholds.append(threshold)
+	pass
 
 #endregion
 

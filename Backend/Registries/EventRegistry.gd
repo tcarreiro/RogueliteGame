@@ -95,6 +95,7 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 	definition.event_trigger = definition.parse_event_trigger(str(entry.get("event_trigger", "TIMED")), event_id)
 	definition.interval = float(entry.get("interval", 30.0))
 	definition.throttle = float(entry.get("throttle", 5.0))
+	definition.watched_event_id = StringName(entry.get("watched_event_id", ""))
 	
 	_register_event_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
 
@@ -104,8 +105,8 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 func _register_event_exclusive_contract(definition: EventDefinition, state: LuaState, state_name:StringName) -> void:
 	_content_bridge.register_event_exclusive_states(definition, state_name)
 	
-	# Two registered functions:
-	# onResolvedEvent and onBlockedEvent
+	# Three registered functions:
+	# onResolvedEvent, onBlockedEvent and onWatchEventTrigger (only for Reactive)
 	var on_resolved_fn = state.globals["onResolvedEvent"]
 	if on_resolved_fn is LuaFunction:
 		definition.on_resolved = LuaHelper.make_callable(on_resolved_fn)
@@ -113,6 +114,10 @@ func _register_event_exclusive_contract(definition: EventDefinition, state: LuaS
 	var on_blocked_fn = state.globals["onBlockedEvent"]
 	if on_blocked_fn is LuaFunction:
 		definition.on_blocked = LuaHelper.make_callable(on_blocked_fn)
+
+	var conditional_fn = state.globals["onWatchEventTrigger"]
+	if conditional_fn is LuaFunction:
+		definition.conditional = LuaHelper.make_callable(conditional_fn)
 
 
 #region Mock
