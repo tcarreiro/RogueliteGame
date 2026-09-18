@@ -1,11 +1,8 @@
 res://Frontend/Screens/MainMenu/MainMenuScene.tscn
-res://Backend/ModdableContent/ContentBridge.gd
-res://Backend/Registries/RunEffectRegistry.gd
-res://Backend/ModdableContent/RunEffects/RunEffectDefinition.gd
-res://mods/base/runEffects/runEffects.json
+res://Backend/Managers/Runs/RunManager.gd
 res://Backend/ModdableContent/RunEffects/RunEffect.gd
-res://Backend/Registries/EventRegistry.gd
-res://Backend/Registries/FactorRegistry.gd
-res://Backend/Utils/Utils.gd
-res://Backend/ModdableContent/Events/EventDefinition.gd
-res://mods/base/runEffects/scripts/effect_addon_echo.lua
+res://Backend/ModdableContent/RunEffects/RunEffectDefinition.gd
+res://Backend/ModdableContent/Equipments/Equipment.gd
+res://Backend/ModdableContent/Equipments/EquipmentManager.gd
+res://Backend/Registries/RunEffectRegistry.gd
+res://mods/base/runEffects/runEffects.json

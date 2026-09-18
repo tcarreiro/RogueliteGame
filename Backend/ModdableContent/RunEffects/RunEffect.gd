@@ -10,6 +10,7 @@ class_name RunEffect extends RefCounted
 # Deixando RunEffect como base (similar ao Event) e criando GauntletRunEffect extends RunEffect,
 # GauntletAddonEffect extends RunEffect e DatashardGauntletAddonEffect extends RunEffect
 
+# Deprecated
 enum RunEffectStackMode {
 	UNIQUE,
 	REFRESH,
@@ -24,7 +25,8 @@ enum RunEffectCategory {
 var id: StringName
 var display_name: StringName
 var description: String
-var stack_mode: RunEffectStackMode
+#var stack_mode: RunEffectStackMode
+var unique: bool = false
 var category: RunEffectCategory
 
 var on_equip: Callable
@@ -35,7 +37,8 @@ func _init(definition: RunEffectDefinition) -> void:
 	id = definition.id
 	display_name = definition.display_name
 	description = definition.description
-	stack_mode = definition.stack_mode
+	#stack_mode = definition.stack_mode
+	unique = definition.unique
 	category = definition.category
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip

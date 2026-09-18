@@ -6,7 +6,6 @@ const ALLOW_SAVE_ON_RUN = false
 var mod_manager: ModManager
 var run_manager: RunManager
 var content_bridge: ContentBridge
-
 var game_state: GameState
 
 func _ready() -> void:
