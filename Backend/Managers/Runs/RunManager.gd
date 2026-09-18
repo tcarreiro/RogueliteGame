@@ -6,20 +6,21 @@ signal run_ended(success: bool)
 var run_state: RunState
 
 var event_manager: EventManager
-
-var factors: Dictionary[StringName, Factor] = {} # TODO: move to future FactorManager
+var factor_manager: FactorManager
 
 func _ready() -> void:
 	# Initializing event manager
 	event_manager = EventManager.new()
-	_register_factors()
 	_register_events()
+	
+	factor_manager = FactorManager.new()
+	_register_factors()
 
 
 func _register_factors() -> void:
 	for id in FactorRegistry.get_all_ids():
-		factors[id] = FactorRegistry.create_factor(id)
-		# TODO: register into a possible FactorManager
+		var factor = FactorRegistry.create_factor(id)
+		factor_manager.register_factor(factor)
 
 
 func _register_events() -> void:
@@ -66,6 +67,6 @@ func is_run_active() -> bool:
 
 func _snapshot_factor_levels() -> Dictionary[StringName, int]:
 	var snapshot: Dictionary[StringName, int] = {}
-	for id in factors:
-		snapshot[id] = factors[id].current_level
+	for id in factor_manager.get_all_factor_ids():
+		snapshot[id] = factor_manager.get_factor(id).current_level
 	return snapshot

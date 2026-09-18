@@ -4,6 +4,6 @@
 		"display_name": "Resonance",
 		"max_level": 100,
 		"default_level": 0,
-		"script_path": "factors/factor_resonance.lua"
+		"script_path": "factors/scripts/factor_resonance.lua"
 	}
 ]

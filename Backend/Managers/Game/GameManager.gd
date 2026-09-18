@@ -1,3 +1,4 @@
+#GameManager
 extends Node
 
 const ALLOW_SAVE_ON_RUN = false
@@ -8,7 +9,6 @@ var run_manager: RunManager
 var game_state: GameState
 
 func _ready() -> void:
-	print("GameManager on!")
 	_setup_mods()
 	_setup_run_manager()
 	new_game() # TODO: Will eventually be moved to listen to a button on main menu screen
@@ -38,7 +38,6 @@ func _setup_mods():
 
 
 func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
-	#TODO: Connect each XRegistry and load content
 	FactorRegistry.load_from_mods(active_mod_ids)
 	EventRegistry.load_from_mods(active_mod_ids)
 	RunEffectRegistry.load_from_mods(active_mod_ids)
@@ -54,7 +53,6 @@ func _setup_run_manager() -> void:
 	add_child(run_manager)
 	run_manager.run_started.connect(on_run_started)
 	run_manager.run_ended.connect(on_run_ended)
-	print("RunManager on!")
 
 
 func on_run_started(config: RunConfig) -> void:
@@ -64,5 +62,16 @@ func on_run_started(config: RunConfig) -> void:
 func on_run_ended(success: bool) -> void:
 	print("Run ended with result %s"%str(success))
 
+
+#endregion
+
+
+#region Façade, Getters and Setters
+func get_factor(factor_id: StringName) -> Factor:
+	return run_manager.factor_manager.get_factor(factor_id)
+
+
+func get_event(event_id: StringName) -> Event:
+	return run_manager.event_manager.get_event(event_id)
 
 #endregion
