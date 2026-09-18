@@ -42,7 +42,7 @@ func get_all_ids() -> Array[StringName]:
 
 #region Mock
 func _mock_definitions_for(mod_id: StringName) -> Array[RunEffect]:
-	if mod_id != &"base_mod":
+	if mod_id != &"core":
 		return []
 	
 	var echo_addon := RunEffect.new()

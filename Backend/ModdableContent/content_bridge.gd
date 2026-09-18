@@ -1,8 +1,5 @@
 class_name ContentBridge extends RefCounted
 
-#signal lua_event(event_name: String, data)
-
-#const _state_name = "content_state"
 const CONTENT_NAMESPACE := "Content"
 
 var _lua_state: LuaState
@@ -10,31 +7,41 @@ var _state_name: StringName
 var _timers: Dictionary = {}
 var _next_id: int = 0
 
-func setup(state_name, lua_state) -> void:
+func setup(state_name) -> LuaState:
 	_state_name = state_name
-	_lua_state = lua_state
-	#_setup_lua_state()
-	_register_state()
+	_setup_lua_state()
+	_register_common_state()
+	return _lua_state
 
 
-#func _setup_lua_state() -> void:
-	#_lua_state = LuaState.new()
-	#_lua_state.open_libraries()
+func _setup_lua_state() -> void:
+	_lua_state = LuaState.new()
+	_lua_state.open_libraries()
 
 
-func _register_state() -> void:
-	#LuaBridgeRegistry.register_state(_state_name, get_lua_state())
+func _register_common_state() -> void:
+	LuaBridgeRegistry.register_state(_state_name, _lua_state)
 	
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorLevel", lua_get_factor_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doChangeFactorLevel", lua_do_change_factor_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doTriggerEvent", lua_do_trigger_event)
-	register_action(_state_name, CONTENT_NAMESPACE)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "addAction", lua_add_action)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "stopAction", lua_stop_action)
 
 
-func register_action(state_name: StringName, namespace_name: StringName) -> void:
-	LuaBridgeRegistry.lua_register(state_name, namespace_name, "addAction", lua_add_action)
-	LuaBridgeRegistry.lua_register(state_name, namespace_name, "stopAction", lua_stop_action)
+#region Factor
+func register_factor_exclusive_states(definition: FactorDefinition, state_name: StringName) -> void:
+	LuaBridgeRegistry.lua_register(state_name, CONTENT_NAMESPACE, "createThreshold", _create_factor_threshold_by_lua.bind(definition))
 
+
+func _create_factor_threshold_by_lua(level, repeatable, callback, owner: FactorDefinition):
+	var threshold := FactorThreshold.new()
+	threshold.level = int(level)
+	threshold.repeatable = bool(repeatable)
+	threshold.on_reached = LuaHelper.make_callable(callback)
+	owner.thresholds.append(threshold)
+
+#endregion
 
 #region Getters and Setters
 func get_lua_state() -> LuaState:
@@ -55,11 +62,11 @@ func lua_get_factor_level(_factor_id):
 	return -1#factor.current_level if factor != null else 0
 
 
-func lua_do_change_factor_level(factor_id, new_level):
-	#var factor: Factor = GameManager.factor_manager.get_factor(StringName(factor_id))
-	#if factor != null:
-		#factor.current_level = int(new_level)
+func lua_do_change_factor_level(factor_id: StringName, new_level:int):
 	print("%s changed to %s from lua script"%[factor_id, str(new_level)])
+	var factor: Factor = GameManager.get_factor(StringName(factor_id))
+	if factor != null:
+		factor.set_level(new_level)
 
 
 func lua_do_trigger_event(event_id, value = 1):
@@ -68,6 +75,7 @@ func lua_do_trigger_event(event_id, value = 1):
 	
 
 func lua_add_action(callback, time, ...args) -> int:
+	print("New action requested from lua %s: %s"%[callback, args])
 	_next_id += 1
 	var id := _next_id
 	var cb := LuaHelper.make_callable(callback)
@@ -77,7 +85,7 @@ func lua_add_action(callback, time, ...args) -> int:
 		push_error("[ContentBridge] SceneTree indisponível.")
 		return -1
 	
-	var timer = Engine.get_main_loop().create_timer(time / 1000.0)
+	var timer = tree.create_timer(time / 1000.0)
 	timer.timeout.connect(func():
 		if _timers.has(id):
 			cb.callv(args)

@@ -7,3 +7,8 @@ res://Backend/Managers/Runs/RunManager.gd
 res://Backend/Managers/Game/GameManager.gd
 res://Backend/Registries/FactorRegistry.gd
 res://mods/base/factors/factors.json
+res://mods/base/factors/scripts/factor_resonance.lua
+res://Backend/Registries/EventRegistry.gd
+res://mods/base/manifest.json
+res://Backend/Registries/RunEffectRegistry.gd
+res://addons/lua-modder/lua_bridge_registry.gd

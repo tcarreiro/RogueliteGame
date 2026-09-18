@@ -54,7 +54,7 @@ func create_event(id: StringName) -> Event:
 
 #region Mock
 func _mock_definitions_for(mod_id: StringName) -> Array[EventDefinition]:
-	if mod_id != &"base_mod":
+	if mod_id != &"core":
 		return []
 	
 	var resonance := EventDefinition.new()

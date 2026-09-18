@@ -42,7 +42,8 @@ func start_run() -> void:
 	var config := _build_run_config()
 	run_state = RunState.new(config)
 	run_started.emit(config)
-
+	# TODO: to be removed
+	factor_manager.mock("factor_resonance")
 
 func end_run(success: bool) -> void:
 	run_state.factor_levels = _snapshot_factor_levels()
