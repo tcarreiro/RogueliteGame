@@ -1,0 +1,9 @@
+res://Frontend/Screens/MainMenu/MainMenuScene.tscn
+res://Backend/ModdableContent/content_bridge.gd
+res://Backend/Utils/JsonHelper.gd
+res://Backend/ModdableContent/Events/EventManager.gd
+res://Backend/ModdableContent/Factors/FactorManager.gd
+res://Backend/Managers/Runs/RunManager.gd
+res://Backend/Managers/Game/GameManager.gd
+res://Backend/Registries/FactorRegistry.gd
+res://mods/base/factors/factors.json

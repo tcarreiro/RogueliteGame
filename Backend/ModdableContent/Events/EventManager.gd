@@ -3,7 +3,7 @@ class_name EventManager extends RefCounted
 signal event_resolved(event_id: StringName, value: int)
 signal event_blocked(event_id: StringName)
 
-var events: Dictionary[StringName, Event] = {}
+var _events: Dictionary[StringName, Event] = {}
 var queue_timers: Dictionary[StringName, float] = {}
 var event_queue: Dictionary[StringName, Array] = {} # Array[EventOccurrence]
 var block_queue: Dictionary[StringName, Array] = {} # Array[EventBlock]
@@ -15,7 +15,7 @@ func register_event(event: Event, throttle: float = 5.0) -> void:
 	if not event:
 		push_warning("Event not found.")
 		return
-	events[event.id] = event
+	_events[event.id] = event
 	event_queue[event.id] = []
 	block_queue[event.id] = []
 	queue_throttle[event.id] = throttle
@@ -39,7 +39,7 @@ func _on_event_triggered(event: Event, value: int) -> void:
 
 func process(delta: float) -> void:
 	# Process timed events
-	for event in events.values():
+	for event in _events.values():
 		if event is TimedEvent:
 			event.process(delta, _speed_multiplier)
 	
@@ -98,3 +98,11 @@ func _apply_blocks(value: int, blocks:Array) -> int:
 			i += 1
 	
 	return remaining
+
+
+func get_event(event_id: StringName) -> Event:
+	return _events.get(event_id)
+
+
+func get_all_event_ids() -> Array[StringName]:
+	return _events.keys()
