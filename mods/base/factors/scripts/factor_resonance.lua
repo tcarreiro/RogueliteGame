@@ -6,9 +6,9 @@ local function onThreshold80(player, factor)
 	print("Quase no limite!", "warning")
 end
 
-function createThresholds(player, factor)
-	Content.createThreshold(50, true, onThreshold50)
-	Content.createThreshold(80, false, onThreshold80)
+function onCreation(player, factor_id)
+	Content.createFactorThreshold(factor_id, 50, false, 1, "UP", onThreshold50)
+	Content.createFactorThreshold(factor_id, 80, false, 1, "UP", onThreshold80)
 end
 
 function onOverflow(player, factor_id)

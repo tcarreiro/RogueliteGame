@@ -7,6 +7,7 @@ func register_factor(factor: Factor) -> void:
 		push_warning("Factor not found.")
 		return
 	_factors[factor.id] = factor
+	factor.created()
 	factor.overflow.connect(_on_overflow)
 
 

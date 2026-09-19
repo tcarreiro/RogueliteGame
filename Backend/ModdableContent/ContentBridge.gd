@@ -7,8 +7,8 @@ var _state_name: StringName
 var _timers: Dictionary = {}
 var _next_id: int = 0
 
-func get_or_create_mod_state(mod_id: StringName) -> LuaState:
-	_state_name = LuaBridgeRegistry.get_state_name_by_mod_id(mod_id)
+func get_or_create_mod_state(mod_id: StringName, context: StringName) -> LuaState:
+	_state_name = LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, context)
 	var existing := LuaBridgeRegistry.get_lua_state(_state_name)
 	if existing != null:
 		return existing
@@ -36,72 +36,32 @@ func _register_common_state() -> void:
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doTriggerEvent", lua_do_trigger_event)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "addAction", lua_add_action)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "stopAction", lua_stop_action)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "createFactorThreshold", lua_create_factor_threshold)
 
 
 #region Factor
-func register_factor_exclusive_states(definition: FactorDefinition, state_name: StringName) -> void:
-	LuaBridgeRegistry.lua_register(state_name, CONTENT_NAMESPACE, "createThreshold", _create_factor_threshold_by_lua.bind(definition))
-
-
-func _create_factor_threshold_by_lua(level, repeatable, callback, owner: FactorDefinition):
-	var threshold := FactorThreshold.new()
-	threshold.level = int(level)
-	threshold.repeatable = bool(repeatable)
-	threshold.on_reached = LuaHelper.make_callable(callback)
-	owner.thresholds.append(threshold)
-
+func register_factor_exclusive_states(_definition: FactorDefinition, __state_name: StringName) -> void:
+	pass
 #endregion
 
 
 #region Event
 func register_event_exclusive_states(_definition: EventDefinition, __state_name: StringName) -> void:
-	#LuaBridgeRegistry.lua_register(state_name, CONTENT_NAMESPACE, "createThreshold", _create_event_by_lua.bind(definition))
 	pass
-
-
-func _create_event_by_lua(_level, _repeatable, _callback, _owner: EventDefinition):
-	#var threshold := FactorThreshold.new()
-	#threshold.level = int(level)
-	#threshold.repeatable = bool(repeatable)
-	#threshold.on_reached = LuaHelper.make_callable(callback)
-	#owner.thresholds.append(threshold)
-	pass
-
 #endregion
 
 
 #region RunEffect
 func register_run_effect_exclusive_states(_definition: RunEffectDefinition, __state_name: StringName) -> void:
-	#LuaBridgeRegistry.lua_register(state_name, CONTENT_NAMESPACE, "createThreshold", _create_run_effect_by_lua.bind(definition))
 	pass
-
-
-func _create_run_effect_by_lua(_level, _repeatable, _callback, _owner: RunEffectDefinition):
-	#var threshold := FactorThreshold.new()
-	#threshold.level = int(level)
-	#threshold.repeatable = bool(repeatable)
-	#threshold.on_reached = LuaHelper.make_callable(callback)
-	#owner.thresholds.append(threshold)
-	pass
-
 #endregion
 
 
 #region Equipment
 func register_equipment_exclusive_states(_definition: EquipmentDefinition, __state_name: StringName) -> void:
-	#LuaBridgeRegistry.lua_register(state_name, CONTENT_NAMESPACE, "createThreshold", _create_equipment_threshold_by_lua.bind(definition))
 	pass
-
-
-func _create_equipment_threshold_by_lua(_level, _repeatable, _callback, _owner: EquipmentDefinition):
-	#var threshold := FactorThreshold.new()
-	#threshold.level = int(level)
-	#threshold.repeatable = bool(repeatable)
-	#threshold.on_reached = LuaHelper.make_callable(callback)
-	#owner.thresholds.append(threshold)
-	pass
-
 #endregion
+
 
 #region Getters and Setters
 func get_lua_state() -> LuaState:
@@ -115,6 +75,7 @@ func get_content_namespace_name() -> StringName:
 func get_state_name() -> StringName:
 	return _state_name
 #endregion
+
 
 #region Lua Scripts
 func lua_get_factor_level(factor_id: StringName):
@@ -144,7 +105,7 @@ func lua_do_change_factor_max_level(factor_id: StringName, new_level:int):
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor != null:
 		factor.set_max_level(new_level)
-	print("%s max level changed to %s from lua script"%[factor_id, str(factor.current_level)])
+	print("%s max level changed to %s from lua script"%[factor_id, str(factor.max_level)])
 
 
 func lua_do_trigger_event(event_id: StringName, value: int = 1):
@@ -176,4 +137,10 @@ func lua_stop_action(action_id: int) -> void:
 	_timers.erase(int(action_id))
 
 
+func lua_create_factor_threshold(factor_id, level, infinite, charges, direction, callback):
+	var factor: Factor = GameManager.get_factor(factor_id)
+	if not factor:
+		return
+	var threshold := FactorThreshold.new(level, infinite, charges, direction, callback)
+	factor.add_threshold(threshold)
 #endregion

@@ -1,6 +1,7 @@
 #EquipmentRegistry
 extends Node
 
+const CONTEXT_NAME := &"equipment"
 const EQUIPMENT_DIR = "equipments"
 const EQUIPMENTS_JSON_REGISTRY = "equipments.json"
 
@@ -36,7 +37,7 @@ func _load_from_mod(mod_id: StringName) -> void:
 	if entries.is_empty():
 		return
 	
-	var state := _content_bridge.get_or_create_mod_state(mod_id)
+	var state := _content_bridge.get_or_create_mod_state(mod_id, CONTEXT_NAME)
 	
 	for entry in entries:
 		var definition := _load_definition_from_entry(entry, metadata.folder_path, mod_id, state)
@@ -94,32 +95,13 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		push_error("[EquipmentRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
-	var definition := _create_definition_from_raw(entry)
-	_register_factor_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
+	var definition := EquipmentDefinition.new(entry)
+	_register_callables(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
 
 	return definition
 
 
-func _create_definition_from_raw(entry) -> EquipmentDefinition:
-	var definition := EquipmentDefinition.new()
-	definition.id = StringName(entry["id"])
-	definition.display_name = str(entry.get("display_name", definition.id))
-	definition.description = str(entry.get("description", definition.id))
-	definition.tier = int(entry.get("tier", 1))
-	definition.nature_id = str(entry.get("nature_id", definition.id))
-	definition.cost = float(entry.get("cost", 0.0))
-	definition.socket_slots = int(entry.get("socket_slots", 0))
-	definition.type = Utils.parse_string_into_enum(
-		Equipment.EQUIPMENT_TYPE, str(entry.get("type", "GAUNTLET")), "[EquipmentDefinition - type]") as Equipment.EQUIPMENT_TYPE
-	# TBD TODO: get initial addons and effects from script? 
-	#var addons: Dictionary[int, Addon] = {} # slot_id
-	#var effects: Dictionary[StringName, RunEffect] = {}
-	definition.max_active_deck_size = int(entry.get("max_active_deck_size", 10))
-	
-	return definition
-
-
-func _register_factor_exclusive_contract(definition: EquipmentDefinition, state: LuaState, state_name:StringName) -> void:
+func _register_callables(definition: EquipmentDefinition, state: LuaState, state_name:StringName) -> void:
 	_content_bridge.register_equipment_exclusive_states(definition, state_name)
 	
 	# Two registered functions:
@@ -143,18 +125,23 @@ func _mock_definitions_for(mod_id: StringName) -> Array[EquipmentDefinition]:
 	if mod_id != &"core":
 		return []
 	
-	var gauntlet := EquipmentDefinition.new()
-	gauntlet.id = &"gauntlet"
-	gauntlet.display_name = &"Gauntlet"
-	gauntlet.description = "A magical gauntlet"
-	gauntlet.tier = 1
-	gauntlet.nature_id = "NONE"
-	gauntlet.cost = 0.0
-	gauntlet.socket_slots = 0
-	gauntlet.type = Equipment.EQUIPMENT_TYPE.GAUNTLET
-	gauntlet.max_active_deck_size = 10
+	var mockes_definitions: Array[EquipmentDefinition] = []
+	var entries : Array[Dictionary] = [
+		{
+			"id": &"gauntlet",
+			"display_name": &"Gauntlet",
+			"description": "A magical gauntlet",
+			"tier": 1,
+			"nature_id": "NONE",
+			"cost": 0.0,
+			"socket_slots": 0,
+			"type": "GAUNTLET",
+			"max_active_deck_size": 10,
+		}
+	]
 	
-	return [gauntlet]
-
-
+	for entry in entries:
+		mockes_definitions.append(EquipmentDefinition.new(entry))
+	
+	return mockes_definitions
 #endregion

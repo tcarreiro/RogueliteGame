@@ -13,3 +13,15 @@ class_name EventDefinition extends Resource
 @export_category("Reactive")
 @export var watched_event_id: StringName
 @export var conditional: Callable
+
+
+func _init(entry: Dictionary):
+	id = StringName(entry["id"])
+	name = str(entry.get("name", id))
+	event_trigger = Utils.parse_string_into_enum(
+		Event.EventTrigger, 
+		str(entry.get("event_trigger", "TIMED")), 
+		"[EventDefinition - event_trigger]") as Event.EventTrigger
+	interval = float(entry.get("interval", 30.0))
+	throttle = float(entry.get("throttle", 5.0))
+	watched_event_id = StringName(entry.get("watched_event_id", ""))

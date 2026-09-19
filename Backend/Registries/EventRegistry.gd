@@ -1,6 +1,7 @@
 #EventRegistry
 extends Node
 
+const CONTEXT_NAME := &"event"
 const EVENT_DIR = "events"
 const EVENTS_JSON_REGISTRY = "events.json"
 
@@ -36,7 +37,7 @@ func _load_from_mod(mod_id: StringName) -> void:
 	if entries.is_empty():
 		return
 	
-	var state := _content_bridge.get_or_create_mod_state(mod_id)
+	var state := _content_bridge.get_or_create_mod_state(mod_id, CONTEXT_NAME)
 	
 	for entry in entries:
 		var definition := _load_definition_from_entry(entry, metadata.folder_path, mod_id, state)
@@ -96,25 +97,13 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		push_error("[EventRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
-	var definition := _create_definition_from_raw(entry)
-	_register_event_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
+	var definition := EventDefinition.new(entry)
+	_register_callables(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
 
 	return definition
 
 
-func _create_definition_from_raw(entry) -> EventDefinition:
-	var definition := EventDefinition.new()
-	definition.id = StringName(entry["id"])
-	definition.name = str(entry.get("name", definition.id))
-	definition.event_trigger = Utils.parse_string_into_enum(
-		Event.EventTrigger, str(entry.get("event_trigger", "TIMED")), "[EventDefinition - event_trigger]") as Event.EventTrigger
-	definition.interval = float(entry.get("interval", 30.0))
-	definition.throttle = float(entry.get("throttle", 5.0))
-	definition.watched_event_id = StringName(entry.get("watched_event_id", ""))
-	return definition
-
-
-func _register_event_exclusive_contract(definition: EventDefinition, state: LuaState, state_name:StringName) -> void:
+func _register_callables(definition: EventDefinition, state: LuaState, state_name:StringName) -> void:
 	_content_bridge.register_event_exclusive_states(definition, state_name)
 	
 	# Three registered functions:
@@ -137,40 +126,47 @@ func _mock_definitions_for(mod_id: StringName) -> Array[EventDefinition]:
 	if mod_id != &"core":
 		return []
 	
-	var resonance := EventDefinition.new()
-	resonance.id = &"resonance_event"
-	resonance.name = &"Resonance Event"
-	resonance.event_trigger = Event.EventTrigger.TIMED
-	resonance.interval = 30.0
-	resonance.throttle = 5.0
+	var mockes_definitions: Array[EventDefinition] = []
+	var entries : Array[Dictionary] = [
+		{
+			"id": &"resonance_event",
+			"name": &"Resonance Event",
+			"event_trigger": "TIMED",
+			"interval": 30.0,
+			"throttle": 5.0
+		},
+		{
+			"id": &"surrender_event",
+			"name": &"Surrender Event",
+			"event_trigger": "REACTIVE"
+		},
+		{
+			"id": &"distortion_event",
+			"name": &"Distortion Event",
+			"event_trigger": "TIMED",
+			"interval": 40.0,
+			"throttle": 5.0
+		},
+		{
+			"id": &"card_draw_event",
+			"name": &"Card Draw Event",
+			"event_trigger": "TIMED",
+			"interval": 30.0,
+			"throttle": 0.3
+		},
+		{
+			"id": &"stumble_event",
+			"name": &"Stumble Event",
+			"event_trigger": "REACTIVE",
+			"watched_event_id": &"card_draw_event",
+			"conditional": _stumble_conditional_mock
+		}
+	]
 	
-	var surrender := EventDefinition.new()
-	surrender.id = &"surrender_event"
-	surrender.name = &"Surrender Event"
-	surrender.event_trigger = Event.EventTrigger.REACTIVE
+	for entry in entries:
+		mockes_definitions.append(EventDefinition.new(entry))
 	
-	var distortion := EventDefinition.new()
-	distortion.id = &"distortion_event"
-	distortion.name = &"Distortion Event"
-	distortion.event_trigger = Event.EventTrigger.TIMED
-	distortion.interval = 40.0
-	distortion.throttle = 5.0
-	
-	var card_draw := EventDefinition.new()
-	card_draw.id = &"card_draw_event"
-	card_draw.name = &"Card Draw Event"
-	card_draw.event_trigger = Event.EventTrigger.TIMED
-	card_draw.interval = 30.0
-	card_draw.throttle = 0.3
-	
-	var stumble := EventDefinition.new()
-	stumble.id = &"stumble_event"
-	stumble.name = &"Stumble Event"
-	stumble.event_trigger = Event.EventTrigger.REACTIVE
-	stumble.watched_event_id = &"card_draw_event"
-	stumble.conditional = _stumble_conditional_mock
-	
-	return [resonance, surrender, distortion, card_draw, stumble]
+	return mockes_definitions
 
 
 func _stumble_conditional_mock(_resolved_event_id: StringName, _value: int) -> bool:

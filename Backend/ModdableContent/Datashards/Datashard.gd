@@ -1,9 +1,10 @@
-class_name Datashard extends RefCounted
+class_name Datashard extends Enchantable
 
 #signal obtained(datashard:Datashard)
 #signal equipped(datashard:Datashard)
 
-var id: StringName
 var tier: int = 1
 var nature_id: StringName
-var effects: Array[RunEffect] = []
+
+func _compute_max_effects_allowed() -> int:
+	return max((tier - 1), 0)
