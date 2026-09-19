@@ -13,7 +13,7 @@ func _ready() -> void:
 	#RunManager.run_ended.connect(_on_run_ended)
 	
 	if not _get_hub_scene():
-		push_error("GameScene: Hub scene not defined.")
+		GameLogger.error("GameScene: Hub scene not defined.")
 	
 	if SaveManager.current_save:
 		if  SaveManager.current_save.get_meta("new_game"):
@@ -25,11 +25,11 @@ func _ready() -> void:
 	_load_level(_get_hub_scene())
 
 
-func _load_level(map_scene: PackedScene, spawn_name: String = "default_spawn") -> void:
+func _load_level(map_scene: PackedScene, _spawn_name: String = "default_spawn") -> void:
 	if not map_scene:
 		return
 	
-	var scene_id := map_scene.resource_path
+	var _scene_id := map_scene.resource_path
 	
 	# Pausa todos os mapas ativos
 	for child in level_container.get_children():
@@ -40,7 +40,7 @@ func _load_level(map_scene: PackedScene, spawn_name: String = "default_spawn") -
 	#if not _get_loaded_maps().has(scene_id):
 		#var map_node = map_scene.instantiate() as RoomManager
 		#if not map_node:
-			#push_error("GameScene: Invalid map level.")
+			#GameLogger.error("GameScene: Invalid map level.")
 			#return
 		#level_container.add_child(map_node)
 		#_get_loaded_maps()[scene_id] = map_node
@@ -55,7 +55,7 @@ func _load_level(map_scene: PackedScene, spawn_name: String = "default_spawn") -
 		#GameManager.player.global_position = markers[0].global_position
 
 
-func _on_run_ended(success: bool) -> void:
+func _on_run_ended(_success: bool) -> void:
 	#GameLogger.info("Run ended. Success: %s" % success)
 	SaveManager._save_to_disk() 
 	

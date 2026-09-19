@@ -77,17 +77,17 @@ func _is_slot_occupied(slot_id: int) -> bool:
 
 func equip(slot_id: int, equipment: Equipment, force_swap:bool = true) -> void:
 	if _get_number_of_slots_by_equipment_type(equipment.type) - _get_number_of_equipment_type_equipped(equipment.type) <= 0:
-		push_warning(
+		GameLogger.error(
 			"[%s] could't equip equipment, because there is no slot available."%[Equipment.EQUIPMENT_TYPE.keys()[equipment.type]])
 		return
 	if _is_slot_occupied(slot_id):
 		if not force_swap:
-			push_warning("[%s] could't equip equipment, because the slot is already in use."%[Equipment.EQUIPMENT_TYPE.keys()[equipment.type]])
+			GameLogger.error(
+				"[%s] could't equip equipment, because the slot is already in use."%[Equipment.EQUIPMENT_TYPE.keys()[equipment.type]])
 			return
 		unequip(slot_id)
 	on_equip.emit(equipment, slot_id)
 	_equipments[equipment.get_unique_id()] = EquippedObject.new(slot_id, equipment)
-	print("Equipment %s equipped at %d"%[equipment.get_unique_id(), slot_id])
 
 
 func unequip(slot_id: int) -> void:

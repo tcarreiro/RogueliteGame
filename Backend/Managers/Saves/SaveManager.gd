@@ -33,7 +33,7 @@ func _save_to_disk() -> void:
 	save_ended.emit()
 	if err != OK:
 		# TODO: handle failure
-		push_error("Erro ao salvar: %s" % err)
+		GameLogger.error("Erro ao salvar: %s" % err)
 
 
 func load_data(slot:int) -> Save:

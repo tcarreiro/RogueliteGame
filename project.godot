@@ -25,6 +25,7 @@ RunEffectRegistry="*uid://fsakxy43arw3"
 SceneMap="*uid://bfxewhtnqx4by"
 GdssRuntime="*res://addons/gdss/runtime.gd"
 LuaBridgeRegistry="*res://addons/lua-modder/lua_bridge_registry.gd"
+GameLogger="*uid://cubsfekvkib58"
 
 [display]
 

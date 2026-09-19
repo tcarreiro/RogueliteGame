@@ -48,10 +48,10 @@ func _load_from_mod(mod_id: StringName) -> void:
 
 func register(definition: RunEffectDefinition) -> void:
 	if _definitions.has(definition.id):
-		push_warning("RunEffect %s already registered."%definition.id)
+		GameLogger.error("RunEffect %s already registered."%definition.id)
 		return
 	_definitions[definition.id] = definition
-	print("RunEffect %s registered."%definition.id)
+	GameLogger.debug("RunEffect %s registered."%definition.id)
 
 
 func get_definition(id: StringName) -> RunEffectDefinition:
@@ -74,22 +74,22 @@ func create_run_effect(effect_id: StringName) -> RunEffect:
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> RunEffectDefinition:
 	if not entry.has("id") or not entry.has("script_path"):
-		push_error("[RunEffectRegistry] RunEffect with no 'id' or 'script_path' at '%s'"%[mod_id])
+		GameLogger.error("[RunEffectRegistry] RunEffect with no 'id' or 'script_path' at '%s'"%[mod_id])
 		return null
 	
 	var run_effect_id := StringName(entry["id"])
 	if _definitions.has(run_effect_id):
-		push_warning("[RunEffectRegistry] RunEffect '%s' already defined."%[run_effect_id])
+		GameLogger.warn("[RunEffectRegistry] RunEffect '%s' already defined."%[run_effect_id])
 		return null
 	
 	var script_path := mod_base_path.path_join(str(entry["script_path"]))
 	if not FileAccess.file_exists(script_path):
-		push_warning("[RunEffectRegistry] Script not fount for factor '%s' at '%s'"%[run_effect_id, script_path])
+		GameLogger.warn("[RunEffectRegistry] Script not fount for factor '%s' at '%s'"%[run_effect_id, script_path])
 		return null
 	
 	var result = state.do_file(script_path)
 	if result is LuaError:
-		push_error("[RunEffectRegistry] Erro ao carregar '%s': %s" % [script_path, result])
+		GameLogger.error("[RunEffectRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
 	var definition := RunEffectDefinition.new(entry)

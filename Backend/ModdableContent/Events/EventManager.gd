@@ -13,7 +13,7 @@ var _speed_multiplier: float = 10.0
 
 func register_event(event: Event, throttle: float = 5.0) -> void:
 	if not event:
-		push_warning("Event not found.")
+		GameLogger.error("Event not found.")
 		return
 	_events[event.id] = event
 	event_queue[event.id] = []
@@ -21,7 +21,6 @@ func register_event(event: Event, throttle: float = 5.0) -> void:
 	queue_throttle[event.id] = throttle
 	_queue_throttle_timers[event.id] = 0.0
 	event.triggered.connect(_on_event_triggered)
-	print("Event %s registered to Manager"%event.id)
 	if event is ReactiveEvent:
 		event_resolved.connect(event.consider_trigger)
 

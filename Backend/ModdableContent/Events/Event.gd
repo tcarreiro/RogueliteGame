@@ -24,7 +24,7 @@ func _init(definition: EventDefinition) -> void:
 
 
 func trigger(value: int = 1) -> void:
-	print("Event %s processed."%id)
+	GameLogger.debug("Event %s being processed."%id)
 	triggered.emit(self, value)
 
 

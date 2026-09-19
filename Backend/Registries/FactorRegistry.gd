@@ -47,10 +47,10 @@ func _load_from_mod(mod_id: StringName) -> void:
 
 func register(definition: FactorDefinition) -> void:
 	if _definitions.has(definition.id):
-		push_warning("Factor %s already registered."%definition.id)
+		GameLogger.error("Factor %s already registered."%definition.id)
 		return
 	_definitions[definition.id] = definition
-	print("Factor %s registered."%definition.id)
+	GameLogger.debug("Factor %s registered."%definition.id)
 
 
 func get_definition(id: StringName) -> FactorDefinition:
@@ -74,22 +74,22 @@ func create_factor(id: StringName) -> Factor:
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> FactorDefinition:
 	if not entry.has("id") or not entry.has("script_path"):
-		push_error("[FactorRegistry] Factor with no 'id' or 'script_path' at '%s'"%[mod_id])
+		GameLogger.error("[FactorRegistry] Factor with no 'id' or 'script_path' at '%s'"%[mod_id])
 		return null
 	
 	var factor_id := StringName(entry["id"])
 	if _definitions.has(factor_id):
-		push_warning("[FactorRegistry] Factor '%s' already defined."%[factor_id])
+		GameLogger.warn("[FactorRegistry] Factor '%s' already defined."%[factor_id])
 		return null
 	
 	var script_path := mod_base_path.path_join(str(entry["script_path"]))
 	if not FileAccess.file_exists(script_path):
-		push_warning("[FactorRegistry] Script not fount for factor '%s' at '%s'"%[factor_id, script_path])
+		GameLogger.warn("[FactorRegistry] Script not fount for factor '%s' at '%s'"%[factor_id, script_path])
 		return null
 	
 	var result = state.do_file(script_path)
 	if result is LuaError:
-		push_error("[FactorRegistry] Erro ao carregar '%s': %s" % [script_path, result])
+		GameLogger.error("[FactorRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
 	var definition := FactorDefinition.new(entry)
