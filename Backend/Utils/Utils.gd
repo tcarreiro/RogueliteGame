@@ -6,7 +6,7 @@ class_name Utils extends Node
 static func read_json_array(path: String) -> Array:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		push_error("Não foi possível abrir: %s" % path)
+		GameLogger.error("Não foi possível abrir: %s" % path)
 		return []
 
 	var text := file.get_as_text()
@@ -14,11 +14,11 @@ static func read_json_array(path: String) -> Array:
 
 	var parsed = JSON.parse_string(text)
 	if parsed == null:
-		push_error("JSON inválido em: %s" % path)
+		GameLogger.error("JSON inválido em: %s" % path)
 		return []
 
 	if not parsed is Array:
-		push_error("Esperado um array em: %s" % path)
+		GameLogger.error("Esperado um array em: %s" % path)
 		return []
 
 	return parsed
@@ -29,7 +29,7 @@ static func parse_string_into_enum(enum_dict: Dictionary, raw: String, context: 
 	if enum_dict.has(key):
 		return enum_dict[key]
 
-	push_error("[%s] invalid value '%s'. Fallback %s as default." % [context, raw, enum_dict.keys()[0]])
+	GameLogger.error("[%s] invalid value '%s'. Fallback %s as default." % [context, raw, enum_dict.keys()[0]])
 	return 0
 
 

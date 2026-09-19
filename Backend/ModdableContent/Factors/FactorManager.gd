@@ -4,7 +4,7 @@ var _factors: Dictionary[StringName, Factor] = {}
 
 func register_factor(factor: Factor) -> void:
 	if not factor:
-		push_warning("Factor not found.")
+		GameLogger.error("Factor not found.")
 		return
 	_factors[factor.id] = factor
 	factor.created()
@@ -22,4 +22,4 @@ func get_all_factor_ids() -> Array[StringName]:
 func _on_overflow(factor: Factor) -> void:
 	if factor.on_overflow.is_valid():
 		factor.on_overflow.call(null, factor.id)  # TODO: player
-	print("%s overflow" % [factor.id])
+	GameLogger.debug("%s overflow" % [factor.id])

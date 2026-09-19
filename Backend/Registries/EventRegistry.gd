@@ -47,10 +47,10 @@ func _load_from_mod(mod_id: StringName) -> void:
 
 func register(definition: EventDefinition) -> void:
 	if _definitions.has(definition.id):
-		push_warning("Event %s already registered."%definition.id)
+		GameLogger.error("Event %s already registered."%definition.id)
 		return
 	_definitions[definition.id] = definition
-	print("Event %s registered."%definition.id)
+	GameLogger.debug("Event %s registered."%definition.id)
 
 
 func get_definition(id: StringName) -> EventDefinition:
@@ -79,22 +79,22 @@ func create_event(id: StringName) -> Event:
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> EventDefinition:
 	if not entry.has("id") or not entry.has("script_path"):
-		push_error("[EventRegistry] Event with no 'id' or 'script_path' at '%s'"%[mod_id])
+		GameLogger.error("[EventRegistry] Event with no 'id' or 'script_path' at '%s'"%[mod_id])
 		return null
 	
 	var event_id := StringName(entry["id"])
 	if _definitions.has(event_id):
-		push_warning("[EventRegistry] Event '%s' already defined."%[event_id])
+		GameLogger.warn("[EventRegistry] Event '%s' already defined."%[event_id])
 		return null
 	
 	var script_path := mod_base_path.path_join(str(entry["script_path"]))
 	if not FileAccess.file_exists(script_path):
-		push_warning("[EventRegistry] Script not fount for factor '%s' at '%s'"%[event_id, script_path])
+		GameLogger.warn("[EventRegistry] Script not fount for factor '%s' at '%s'"%[event_id, script_path])
 		return null
 	
 	var result = state.do_file(script_path)
 	if result is LuaError:
-		push_error("[EventRegistry] Erro ao carregar '%s': %s" % [script_path, result])
+		GameLogger.error("[EventRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
 	var definition := EventDefinition.new(entry)
@@ -189,6 +189,4 @@ func _stumble_conditional_mock(_resolved_event_id: StringName, _value: int) -> b
 func _stumble_result_mock(_player, _event_id, _amount) -> void:
 	_content_bridge.lua_do_change_factor_level("factor_resonance", 2)
 	_content_bridge.lua_do_change_factor_level("factor_distortion", 1)
-	print(_content_bridge.lua_get_factor_level("factor_resonance"))
-	print(_content_bridge.lua_get_factor_level("factor_distortion"))
 #endregion

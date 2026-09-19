@@ -29,7 +29,8 @@ func _setup_mods():
 	mod_manager = ModManager.new()
 	
 	# connect signals
-	mod_manager.mods_discoreved.connect(func(mods:Array[ModMetadata]): for mod in mods: print("%s found"%mod.id)) # TODO: show list
+	mod_manager.mods_discoreved.connect(
+		func(mods:Array[ModMetadata]): for mod in mods: GameLogger.debug("%s found"%mod.id)) # TODO: show list
 	mod_manager.active_mods_changed.connect(_on_active_mods_changed)
 	
 	# start activities
@@ -43,8 +44,6 @@ func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
 	EventRegistry.load_from_mods(active_mod_ids)
 	RunEffectRegistry.load_from_mods(active_mod_ids)
 	EquipmentRegistry.load_from_mods(active_mod_ids)
-	for id in active_mod_ids:
-		print("%s loaded"%id)
 
 #endregion
 
@@ -58,11 +57,11 @@ func _setup_run_manager() -> void:
 
 
 func on_run_started(config: RunConfig) -> void:
-	print("Run %s started."%config.run_id)
+	GameLogger.info("Run %s started."%config.run_id)
 
 
 func on_run_ended(success: bool) -> void:
-	print("Run ended with result %s"%str(success))
+	GameLogger.info("Run ended with result %s"%str(success))
 
 
 #endregion

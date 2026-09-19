@@ -20,7 +20,7 @@ func get_all_effects_from_equipment() -> Array[RunEffect]:
 
 func add_effect(effect_id: StringName) -> void:
 	if _compute_max_effects_allowed() - get_total_effects_on_equipment() <= 0:
-		push_warning(
+		GameLogger.warn(
 			"[Enchantable] could't add effect %s to enchantable %s, because there is no slot available."%[effect_id, id])
 		return
 	var effect = RunEffectRegistry.create_run_effect(effect_id)
@@ -33,7 +33,7 @@ func add_effect(effect_id: StringName) -> void:
 
 func remove_effect(effect_id: StringName) -> void:
 	if not effects.has(effect_id):
-		push_warning(
+		GameLogger.warn(
 			"[Enchantable] could't remove effect %s not found in equip %s."%[effect_id, id])
 		return
 	var effect: RunEffect = effects.get(effect_id)

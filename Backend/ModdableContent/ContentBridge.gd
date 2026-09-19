@@ -81,7 +81,7 @@ func get_state_name() -> StringName:
 func lua_get_factor_level(factor_id: StringName):
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor == null:
-		push_error("Factor '%s' not found"%[factor_id])
+		GameLogger.error("Factor '%s' not found"%[factor_id])
 		return 0
 	return factor.current_level
 
@@ -89,7 +89,7 @@ func lua_get_factor_level(factor_id: StringName):
 func lua_get_factor_max_level(factor_id: StringName):
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor == null:
-		push_error("Factor '%s' not found"%[factor_id])
+		GameLogger.error("Factor '%s' not found"%[factor_id])
 		return 0
 	return factor.max_level
 
@@ -97,33 +97,32 @@ func lua_get_factor_max_level(factor_id: StringName):
 func lua_do_change_factor_level(factor_id: StringName, new_level:int):
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor == null:
-		print("%s not found"%factor_id)
+		GameLogger.error("Factor %s not found"%factor_id)
 		return
 	factor.increase_level(new_level)
-	print("%s changed to %s from lua script"%[factor_id, str(factor.current_level)])
+	GameLogger.debug("%s changed to %s from lua script"%[factor_id, str(factor.current_level)])
 
 
 func lua_do_change_factor_max_level(factor_id: StringName, new_level:int):
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor != null:
 		factor.set_max_level(new_level)
-	print("%s max level changed to %s from lua script"%[factor_id, str(factor.max_level)])
+	GameLogger.debug("%s max level changed to %s from lua script"%[factor_id, str(factor.max_level)])
 
 
 func lua_do_trigger_event(event_id: StringName, value: int = 1):
 	#GameManager.run_manager.event_manager.trigger_by_id(StringName(event_id), int(value))
-	print("%s trigerred from lua script with value %d"%[event_id, str(value)])
+	GameLogger.debug("%s trigerred from lua script with value %d"%[event_id, str(value)])
 	
 
 func lua_add_action(callback, time, ...args) -> int:
-	print("[GD] - ACTION CREATED")
 	_next_id += 1
 	var id := _next_id
 	var cb := LuaHelper.make_callable(callback)
 	
 	var tree := Engine.get_main_loop() as SceneTree
 	if tree == null:
-		push_error("[ContentBridge] SceneTree not available.")
+		GameLogger.error("[ContentBridge] SceneTree not available.")
 		return -1
 	
 	var timer = tree.create_timer(time / 1000.0)

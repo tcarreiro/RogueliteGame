@@ -34,12 +34,12 @@ func _scan_folder(base_path: String) -> void:
 func _try_load_metadata(mod_folder:String) -> void:
 	var metadata_path := mod_folder.path_join(MOD_METADATA_FILENAME)
 	if not FileAccess.file_exists(metadata_path):
-		push_error("%s file missing."%MOD_METADATA_FILENAME)
+		GameLogger.error("%s file missing."%MOD_METADATA_FILENAME)
 		return
 	
 	var metadata := _parse_metadata(metadata_path)
 	if not metadata:
-		push_error("Not valid mod metadata found.")
+		GameLogger.error("Not valid mod metadata found.")
 		return
 	metadata.folder_path = mod_folder
 	_discovered[metadata.id] = metadata
@@ -56,7 +56,7 @@ func _parse_metadata(path: String) -> ModMetadata:
 	
 	metadata.id = StringName(data.get("id", ""))
 	if metadata.id == "":
-		push_error("Invalid mod ID.")
+		GameLogger.error("Invalid mod ID.")
 		return null
 	
 	metadata.display_name = StringName(data.get("display_name", metadata.id))

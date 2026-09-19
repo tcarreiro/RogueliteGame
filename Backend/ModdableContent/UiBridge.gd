@@ -83,7 +83,7 @@ func open_ui(state: LuaState, raw_definition) -> int:
 	var definition = LuaHelper.normalize_lua(raw_definition)
 
 	if not definition is Dictionary:
-		push_error("[LuaUiBridge] UI.open espera uma tabela de definição.")
+		GameLogger.error("[LuaUiBridge] UI.open espera uma tabela de definição.")
 		return -1
 
 	return _ui_manager.open(definition, state)
@@ -93,7 +93,7 @@ func open_at(state: LuaState, raw_definition, anchor_control: Control) -> int:
 	var definition = LuaHelper.normalize_lua(raw_definition)
 
 	if not definition is Dictionary:
-		push_error("[LuaUiBridge] UI.open_at espera uma tabela de definição.")
+		GameLogger.error("[LuaUiBridge] UI.open_at espera uma tabela de definição.")
 		return -1
 
 	return _ui_manager.open_at(definition, anchor_control, state)

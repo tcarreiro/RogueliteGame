@@ -47,10 +47,10 @@ func _load_from_mod(mod_id: StringName) -> void:
 
 func register(definition: EquipmentDefinition) -> void:
 	if _definitions.has(definition.id):
-		push_warning("Equipment %s already registered."%definition.id)
+		GameLogger.error("Equipment %s already registered."%definition.id)
 		return
 	_definitions[definition.id] = definition
-	print("Equipment %s registered."%definition.id)
+	GameLogger.debug("Equipment %s registered."%definition.id)
 
 
 func get_definition(id: StringName) -> EquipmentDefinition:
@@ -77,22 +77,22 @@ func create_equipment(id: StringName) -> Equipment:
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> EquipmentDefinition:
 	if not entry.has("id") or not entry.has("script_path"):
-		push_error("[EquipmentRegistry] Equipment with no 'id' or 'script_path' at '%s'"%[mod_id])
+		GameLogger.error("[EquipmentRegistry] Equipment with no 'id' or 'script_path' at '%s'"%[mod_id])
 		return null
 	
 	var factor_id := StringName(entry["id"])
 	if _definitions.has(factor_id):
-		push_warning("[EquipmentRegistry] Equipment '%s' already defined."%[factor_id])
+		GameLogger.warn("[EquipmentRegistry] Equipment '%s' already defined."%[factor_id])
 		return null
 	
 	var script_path := mod_base_path.path_join(str(entry["script_path"]))
 	if not FileAccess.file_exists(script_path):
-		push_warning("[EquipmentRegistry] Script not fount for factor '%s' at '%s'"%[factor_id, script_path])
+		GameLogger.warn("[EquipmentRegistry] Script not fount for factor '%s' at '%s'"%[factor_id, script_path])
 		return null
 	
 	var result = state.do_file(script_path)
 	if result is LuaError:
-		push_error("[EquipmentRegistry] Erro ao carregar '%s': %s" % [script_path, result])
+		GameLogger.error("[EquipmentRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
 	var definition := EquipmentDefinition.new(entry)

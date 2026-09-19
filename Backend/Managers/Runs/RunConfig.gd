@@ -18,5 +18,5 @@ func _init() -> void:
 		run_seed = randi()
 	
 	#if DatashardDatabase.all_datashards.values().is_empty():
-		#push_error("RunConfig: At least 1 registered Datashard needed.")
+		#GameLogger.error("RunConfig: At least 1 registered Datashard needed.")
 	#datashard = DatashardDatabase.all_datashards.values()[0]

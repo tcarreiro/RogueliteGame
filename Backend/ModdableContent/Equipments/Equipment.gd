@@ -40,11 +40,11 @@ func get_unique_id() -> StringName:
 #region Addons
 func equip_addon(slot_id: int, addon: Addon, force_swap:bool = true) -> void:
 	if get_available_slots() <= 0:
-		push_warning("[%s] could't equip addon, because there is no slot available."%[EQUIPMENT_TYPE.keys()[type]])
+		GameLogger.warn("[%s] could't equip addon, because there is no slot available."%[EQUIPMENT_TYPE.keys()[type]])
 		return
 	if addons.has(slot_id) and addons.get(slot_id) != null:
 		if not force_swap:
-			push_warning("[%s] could't equip addon, because the slot is already in use."%[EQUIPMENT_TYPE.keys()[type]])
+			GameLogger.warn("[%s] could't equip addon, because the slot is already in use."%[EQUIPMENT_TYPE.keys()[type]])
 			return
 		unequip_addon(slot_id)
 	on_equip_addon.emit(self, addon)

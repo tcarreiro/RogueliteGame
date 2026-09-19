@@ -30,8 +30,10 @@ func _set_run_equipment() -> void:
 
 func _connect_signals() -> void:
 	# TODO: signals
-	equipment_manager.on_equip.connect(func(_equipment: Equipment, _slot_id: int): print("Equipment equipped"))
-	equipment_manager.on_unequip.connect(func(_equipment: Equipment, _slot_id: int): pass) # TBD: ??
+	equipment_manager.on_equip.connect(
+		func(equipment: Equipment, _slot_id: int): GameLogger.info("Equipment %s equipped"%equipment.id))
+	equipment_manager.on_unequip.connect(
+		func(equipment: Equipment, _slot_id: int): GameLogger.info("Equipment %s unequipped"%equipment.id)) # TBD: ??
 
 
 func _register_factors() -> void:
