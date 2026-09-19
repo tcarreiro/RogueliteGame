@@ -9,7 +9,7 @@ var event_manager: EventManager
 var factor_manager: FactorManager
 var equipment_manager: EquipmentManager
 
-func _ready() -> void:
+func _setup_managers() -> void:
 	event_manager = EventManager.new()
 	_register_events()
 	
@@ -57,12 +57,12 @@ func _build_run_config() -> RunConfig:
 
 
 func _apply_run_effects() -> void:
-	# TODO: Apply RunEffects
 	for effect: RunEffect in equipment_manager.get_all_effects():
-		print(effect.id)
+		effect.connect_run_start_effects()
 
 
 func start_run() -> void:
+	_setup_managers()
 	_apply_run_effects()
 	var config := _build_run_config()
 	run_state = RunState.new(config)

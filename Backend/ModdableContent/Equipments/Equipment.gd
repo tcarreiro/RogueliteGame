@@ -1,16 +1,13 @@
-class_name Equipment extends RefCounted
+class_name Equipment extends Enchantable
 
 signal on_equip_addon(equipment: Equipment, addon: Addon)
 signal on_unequip_addon(equipment: Equipment, addon: Addon)
-signal on_effect_added(equipment: Equipment, run_effect: RunEffect)
-signal on_effect_removed(equipment: Equipment, run_effect: RunEffect)
 
 enum EQUIPMENT_TYPE {
 	GAUNTLET
 }
 
-var id: StringName
-var uuid: StringName
+var uuid: UUID = UUID.new_uuid()
 var display_name: StringName
 var description: String
 var tier: int
@@ -18,7 +15,6 @@ var nature_id: StringName
 var cost: float
 var socket_slots: int
 var addons: Dictionary[int, Addon] = {} # slot_id
-var effects: Dictionary[StringName, RunEffect] = {}
 var type: EQUIPMENT_TYPE
 
 
@@ -26,7 +22,6 @@ func _init(definition: EquipmentDefinition) -> void:
 	for i in range(socket_slots):
 		addons[i] = null
 	id = definition.id
-	#uuid = definition.uuid # TODO: UUID
 	display_name = definition.display_name
 	description = definition.description
 	tier = definition.tier
@@ -78,7 +73,7 @@ func get_all_addons_ids() -> Array[StringName]:
 func get_all_effects_from_addons() -> Array[RunEffect]:
 	var all_effects: Array[RunEffect] = []
 	for addon: Addon in addons.values():
-		for effect: RunEffect in addon.effects:
+		for effect: RunEffect in addon.effects.values():
 			if all_effects.has(effect) and effect.unique:
 				continue
 			all_effects.append(effect)
@@ -86,7 +81,11 @@ func get_all_effects_from_addons() -> Array[RunEffect]:
 
 
 func get_all_effects_ids_from_addons() -> Array[StringName]:
-	return effects.keys()
+	var all_ids: Array[StringName] = []
+	for addon: Addon in addons.values():
+		for effect: RunEffect in addon.effects.values():
+			all_ids.append(effect.id)
+	return all_ids
 
 
 func get_all_effects() -> Array[RunEffect]:
@@ -102,44 +101,4 @@ func get_all_effects() -> Array[RunEffect]:
 #region Effects
 func _compute_max_effects_allowed() -> int:
 	return max((tier - 1), 0)
-
-
-func get_total_effects_on_equipment() -> int:
-	return get_all_effects_from_equipment().size()
-
-
-func get_all_effects_from_equipment() -> Array[RunEffect]:
-	return effects.values()
-
-
-func get_all_effects_ids_from_equipment() -> Array[StringName]:
-	return effects.keys()
-
-
-func add_effect(effect_id: StringName) -> void:
-	if _compute_max_effects_allowed() - get_total_effects_on_equipment() <= 0:
-		push_warning(
-			"[%s] could't add effect %s to equip %s, because there is no slot available."%[EQUIPMENT_TYPE.keys()[type], effect_id, id])
-		return
-	var effect = RunEffectRegistry.get_run_effects(effect_id)
-	if effects.has(effect_id) and effect.unique:
-		return
-	on_effect_added.emit(self, effect)
-	effects[effect_id] = effect
-	GameManager.run_manager.run_started.connect(_on_run_started.bind(effect))
-
-
-func _on_run_started(_config: RunConfig, effect: RunEffect) -> void:
-	if effect.on_run_start.is_valid():
-		effect.on_run_start.call(null, effect.id)  # TODO: player
-	print("%s effect" % [effect.id])
-
-
-func remove_effect(effect_id: StringName) -> void:
-	if not effects.has(effect_id):
-		push_warning(
-			"[%s] could't remove effect %s not found in equip %s."%[EQUIPMENT_TYPE.keys()[type], effect_id, id])
-		return
-	on_effect_removed.emit(self, effects.get(effect_id))
-	effects.erase(effect_id)
 #endregion

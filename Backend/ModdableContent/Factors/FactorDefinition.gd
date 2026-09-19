@@ -5,4 +5,13 @@ class_name FactorDefinition extends Resource
 @export var max_level: int = 100
 @export var default_level: int = 0
 @export var thresholds: Array[FactorThreshold] = []
+@export var on_creation: Callable
 @export var on_overflow: Callable
+
+
+func _init(entry: Dictionary):
+	id = StringName(entry["id"])
+	display_name = str(entry.get("display_name", id))
+	max_level = int(entry.get("max_level", 100))
+	default_level = int(entry.get("default_level", 0))
+	# TODO: THRESHOLDS

@@ -1,6 +1,7 @@
 #FactorRegistry
 extends Node
 
+const CONTEXT_NAME := &"factor"
 const FACTOR_DIR = "factors"
 const FACTORS_JSON_REGISTRY = "factors.json"
 
@@ -36,7 +37,7 @@ func _load_from_mod(mod_id: StringName) -> void:
 	if entries.is_empty():
 		return
 	
-	var state := _content_bridge.get_or_create_mod_state(mod_id)
+	var state := _content_bridge.get_or_create_mod_state(mod_id, CONTEXT_NAME)
 	
 	for entry in entries:
 		var definition := _load_definition_from_entry(entry, metadata.folder_path, mod_id, state)
@@ -91,31 +92,21 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		push_error("[FactorRegistry] Erro ao carregar '%s': %s" % [script_path, result])
 		return null
 		
-	var definition := _create_definition_from_raw(entry)
-	_register_factor_exclusive_contract(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id))
+	var definition := FactorDefinition.new(entry)
+	_register_callables(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
 
 	return definition
 
 
-func _create_definition_from_raw(entry) -> FactorDefinition:
-	var definition := FactorDefinition.new()
-	definition.id = StringName(entry["id"])
-	definition.display_name = str(entry.get("display_name", definition.id))
-	definition.max_level = int(entry.get("max_level", 100))
-	definition.default_level = int(entry.get("default_level", 0))
-	return definition
-
-
-func _register_factor_exclusive_contract(definition: FactorDefinition, state: LuaState, state_name:StringName) -> void:
+func _register_callables(definition: FactorDefinition, state: LuaState, state_name:StringName) -> void:
 	_content_bridge.register_factor_exclusive_states(definition, state_name)
 	
 	# Two registered functions:
-	# createThresholds and onOverflow
-	var create_thresholds_fn = state.globals["createThresholds"]
-	if create_thresholds_fn is LuaFunction:
-		# Immediatly calls createThreshold, so each threshold's callable is registered at definition
-		LuaHelper.call_by_name(state, "createThresholds", [null, String(definition.id)])
-
+	# onOverflow and onCreation
+	var on_creation_fn = state.globals["onCreation"]
+	if on_creation_fn is LuaFunction:
+		definition.on_creation = LuaHelper.make_callable(on_creation_fn)
+	
 	var overflow_fn = state.globals["onOverflow"]
 	if overflow_fn is LuaFunction:
 		definition.on_overflow = LuaHelper.make_callable(overflow_fn)
@@ -125,19 +116,26 @@ func _mock_definitions_for(mod_id: StringName) -> Array[FactorDefinition]:
 	if mod_id != &"core":
 		return []
 	
-	var resonance := FactorDefinition.new()
-	resonance.id = &"resonance"
-	resonance.display_name = &"Resonance"
+	var mockes_definitions: Array[FactorDefinition] = []
+	var entries : Array[Dictionary] = [
+		{
+			"id": &"factor_resonance",
+			"display_name": &"Resonance",
+		},
+		{
+			"id": &"factor_surrender",
+			"display_name": &"Surrender",
+		},
+		{
+			"id": &"factor_distortion",
+			"display_name": &"Distortion",
+		}
+	]
 	
-	var surrender := FactorDefinition.new()
-	surrender.id = &"surrender"
-	surrender.display_name = &"Surrender"
+	for entry in entries:
+		mockes_definitions.append(FactorDefinition.new(entry))
 	
-	var distortion := FactorDefinition.new()
-	distortion.id = &"distortion"
-	distortion.display_name = &"Distortion"
-	
-	return [resonance, surrender, distortion]
+	return mockes_definitions
 
 
 #endregion

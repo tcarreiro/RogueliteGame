@@ -12,4 +12,23 @@ var addons: Dictionary[int, Addon] = {} # slot_id
 var effects: Dictionary[StringName, RunEffect] = {}
 
 # Gauntlet
+@export var max_hand_deck_size: int
 @export var max_active_deck_size: int
+
+
+func _init(entry: Dictionary):
+	id = StringName(entry["id"])
+	display_name = str(entry.get("display_name", id))
+	description = str(entry.get("description", id))
+	tier = int(entry.get("tier", 1))
+	nature_id = str(entry.get("nature_id", id))
+	cost = float(entry.get("cost", 0.0))
+	socket_slots = int(entry.get("socket_slots", 0))
+	type = Utils.parse_string_into_enum(
+		Equipment.EQUIPMENT_TYPE, str(entry.get("type", "GAUNTLET")), "[EquipmentDefinition - type]") as Equipment.EQUIPMENT_TYPE
+	# TBD TODO: get initial addons and effects from script? 
+	#var addons: Dictionary[int, Addon] = {} # slot_id
+	#var effects: Dictionary[StringName, RunEffect] = {}
+	max_hand_deck_size = int(entry.get("max_hand_deck_size", 5))
+	max_active_deck_size = int(entry.get("max_active_deck_size", 10))
+	

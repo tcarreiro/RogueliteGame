@@ -6,11 +6,6 @@ function onUnequip()
 
 end
 
-function onEffectTrigger()
-
-end
-
-
 function onRunStart(player, effect_id)
 	print("Run started with effect " .. effect_id .. " added")
 	local initial_max_level = Content.getFactorMaxLevel("factor_resonance")
