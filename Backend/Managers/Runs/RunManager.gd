@@ -17,13 +17,12 @@ func _setup_managers() -> void:
 	_register_factors()
 	
 	equipment_manager = EquipmentManager.new()
-	# TODO: Organize
 	_connect_signals()
 	_set_run_equipment()
 
 
 func _set_run_equipment() -> void:
-	equipment_manager.add_slot(Equipment.EQUIPMENT_TYPE.GAUNTLET) # TBD: only equipment allowed for now
+	# TODO: equipment will come from caller once HUB is done
 	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze")
 	gauntlet.add_effect("effect_addon_echo")
 	equipment_manager.equip(0, gauntlet)
@@ -44,8 +43,7 @@ func _register_factors() -> void:
 func _register_events() -> void:
 	for id in EventRegistry.get_all_ids():
 		var event := EventRegistry.create_event(id)
-		var definition := EventRegistry.get_definition(id)
-		event_manager.register_event(event, definition.throttle)
+		event_manager.register_event(event, event.throttle)
 
 
 func _build_run_config() -> RunConfig:

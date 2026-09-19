@@ -126,7 +126,7 @@ func _mock_definitions_for(mod_id: StringName) -> Array[EventDefinition]:
 	if mod_id != &"core":
 		return []
 	
-	var mockes_definitions: Array[EventDefinition] = []
+	var mocked_definitions: Array[EventDefinition] = []
 	var entries : Array[Dictionary] = [
 		{
 			"id": &"resonance_event",
@@ -138,7 +138,9 @@ func _mock_definitions_for(mod_id: StringName) -> Array[EventDefinition]:
 		{
 			"id": &"surrender_event",
 			"name": &"Surrender Event",
-			"event_trigger": "REACTIVE"
+			"event_trigger": "REACTIVE",
+			"conditional": "_stumble_conditional_mock",
+			"throttle": 0.2
 		},
 		{
 			"id": &"distortion_event",
@@ -159,14 +161,23 @@ func _mock_definitions_for(mod_id: StringName) -> Array[EventDefinition]:
 			"name": &"Stumble Event",
 			"event_trigger": "REACTIVE",
 			"watched_event_id": &"card_draw_event",
-			"conditional": _stumble_conditional_mock
+			"conditional": "_stumble_conditional_mock",
+			"on_resolved": "_stumble_result_mock",
+			"throttle": 0.2
 		}
 	]
 	
 	for entry in entries:
-		mockes_definitions.append(EventDefinition.new(entry))
+		var def := EventDefinition.new(entry)
+		if entry.has("conditional") and entry["conditional"]:
+			def.conditional = Callable(self, entry["conditional"])
+		if entry.has("on_resolved") and entry["on_resolved"]:
+			def.on_resolved = Callable(self, entry["on_resolved"])
+		if entry.has("on_blocked") and entry["on_blocked"]:
+			def.on_blocked = Callable(self, entry["on_blocked"])
+		mocked_definitions.append(def)
 	
-	return mockes_definitions
+	return mocked_definitions
 
 
 func _stumble_conditional_mock(_resolved_event_id: StringName, _value: int) -> bool:
@@ -174,4 +185,10 @@ func _stumble_conditional_mock(_resolved_event_id: StringName, _value: int) -> b
 		return true
 	return false
 
+
+func _stumble_result_mock(_player, _event_id, _amount) -> void:
+	_content_bridge.lua_do_change_factor_level("factor_resonance", 2)
+	_content_bridge.lua_do_change_factor_level("factor_distortion", 1)
+	print(_content_bridge.lua_get_factor_level("factor_resonance"))
+	print(_content_bridge.lua_get_factor_level("factor_distortion"))
 #endregion

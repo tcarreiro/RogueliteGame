@@ -15,6 +15,10 @@ class EquippedObject:
 var _equipments: Dictionary[StringName, EquippedObject] = {}
 var _slots: Dictionary[int, Equipment.EQUIPMENT_TYPE] = {}
 
+func _init() -> void:
+	add_slot(Equipment.EQUIPMENT_TYPE.GAUNTLET) # TBD: only equipment allowed for now
+
+
 func add_slot(equipment_type: Equipment.EQUIPMENT_TYPE) -> void:
 	_slots[_slots.size()] = equipment_type
 
@@ -82,8 +86,9 @@ func equip(slot_id: int, equipment: Equipment, force_swap:bool = true) -> void:
 			return
 		unequip(slot_id)
 	on_equip.emit(equipment, slot_id)
-	_equipments[equipment.id] = EquippedObject.new(slot_id, equipment)
-	print("Equipment %s equipped at %d"%[equipment.id, slot_id])
+	_equipments[equipment.get_unique_id()] = EquippedObject.new(slot_id, equipment)
+	print("Equipment %s equipped at %d"%[equipment.get_unique_id(), slot_id])
+
 
 func unequip(slot_id: int) -> void:
 	if not _is_slot_occupied(slot_id):
@@ -92,4 +97,4 @@ func unequip(slot_id: int) -> void:
 	if not equipment:
 		return
 	on_unequip.emit(equipment, slot_id)
-	_equipments[equipment.id] = EquippedObject.new(slot_id, null)
+	_equipments[equipment.get_unique_id()] = EquippedObject.new(slot_id, null)

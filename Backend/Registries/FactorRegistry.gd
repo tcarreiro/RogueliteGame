@@ -116,7 +116,7 @@ func _mock_definitions_for(mod_id: StringName) -> Array[FactorDefinition]:
 	if mod_id != &"core":
 		return []
 	
-	var mockes_definitions: Array[FactorDefinition] = []
+	var mocked_definitions: Array[FactorDefinition] = []
 	var entries : Array[Dictionary] = [
 		{
 			"id": &"factor_resonance",
@@ -133,9 +133,14 @@ func _mock_definitions_for(mod_id: StringName) -> Array[FactorDefinition]:
 	]
 	
 	for entry in entries:
-		mockes_definitions.append(FactorDefinition.new(entry))
+		var def := FactorDefinition.new(entry)
+		if entry.has("on_creation") and entry["on_creation"]:
+			def.on_creation = Callable(self, entry["on_creation"])
+		if entry.has("on_overflow") and entry["on_overflow"]:
+			def.on_overflow = Callable(self, entry["on_overflow"])
+		mocked_definitions.append(def)
 	
-	return mockes_definitions
+	return mocked_definitions
 
 
 #endregion

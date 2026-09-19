@@ -1,15 +1,15 @@
-function onEquip()
-
-end
-
-function onUnequip()
-
-end
-
 function onRunStart(player, effect_id)
-	print("Run started with effect " .. effect_id .. " added")
-	local initial_max_level = Content.getFactorMaxLevel("factor_resonance")
-	print("Res max level: " .. initial_max_level)
-	Content.doChangeFactorMaxLevel("factor_resonance", initial_max_level + 20)
-	print("Res NEW max level: " .. Content.getFactorMaxLevel("factor_resonance"))
+	local buff_timer = 5000
+	local buff_value = 20
+	local factor_id = "factor_resonance"
+	local initial_max_level = Content.getFactorMaxLevel(factor_id)
+	Content.doChangeFactorMaxLevel(factor_id, initial_max_level + buff_value)
+	print("[LUA] Res NEW max level: " .. Content.getFactorMaxLevel(factor_id))
+	Content.addAction(
+	function()
+		local cur_level = Content.getFactorMaxLevel(factor_id)
+		local new_level = cur_level - buff_value
+		Content.doChangeFactorMaxLevel(factor_id, new_level)
+		print("[LUA] new level: " .. Content.getFactorMaxLevel(factor_id))
+	end, buff_timer)
 end

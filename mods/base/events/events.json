@@ -4,7 +4,22 @@
 		"name": "Resonance Event",
 		"event_trigger": "TIMED",
 		"interval": 30.0,
-		"throttle": 0.0,
+		"throttle": 0.2,
 		"script_path": "events/scripts/event_resonance.lua"
+	},
+	{
+		"id": "event_card_draw",
+		"name": "Card Draw Event",
+		"event_trigger": "TIMED",
+		"interval": 30.0,
+		"throttle": 0.2,
+		"script_path": "events/scripts/event_card_draw.lua"
+	},
+	{
+		"id": "event_stumble",
+		"name": "Stumble Event",
+		"event_trigger": "REACTIVE",
+		"watched_event_id": "event_card_draw",
+		"script_path": "events/scripts/event_stumble.lua"
 	}
 ]

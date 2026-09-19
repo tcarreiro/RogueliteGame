@@ -1,7 +1,7 @@
 class_name EventManager extends RefCounted
 
-signal event_resolved(event_id: StringName, value: int)
-signal event_blocked(event_id: StringName)
+signal event_resolved(event_id: StringName, amount: int)
+signal event_blocked(event_id: StringName, amount: int)
 
 var _events: Dictionary[StringName, Event] = {}
 var queue_timers: Dictionary[StringName, float] = {}
@@ -21,9 +21,7 @@ func register_event(event: Event, throttle: float = 5.0) -> void:
 	queue_throttle[event.id] = throttle
 	_queue_throttle_timers[event.id] = 0.0
 	event.triggered.connect(_on_event_triggered)
-	event_resolved.connect(_on_event_resolved)
-	event_blocked.connect(_on_event_blocked)
-	
+	print("Event %s registered to Manager"%event.id)
 	if event is ReactiveEvent:
 		event_resolved.connect(event.consider_trigger)
 
@@ -34,21 +32,7 @@ func add_block(event_id: StringName, block: EventBlock) -> void:
 
 
 func _on_event_triggered(event: Event, value: int) -> void:
-	if not event_queue.has(event.id):
-		return
 	event_queue[event.id].append(EventOccurrence.new(event, value))
-
-
-func _on_event_resolved(event_id: StringName, value: int) -> void:
-	var event := GameManager.get_event(event_id)
-	if event.on_resolved.is_valid():
-		event.on_resolved.call(null, event_id, value)
-
-
-func _on_event_blocked(event_id: StringName) -> void:
-	var event := GameManager.get_event(event_id)
-	if event.on_blocked.is_valid():
-		event.on_blocked.call(null, event_id)
 
 
 func process(delta: float) -> void:
@@ -77,13 +61,15 @@ func _process_next_occurrence(event_id: StringName) -> void:
 	
 	var occurrence: EventOccurrence = queue.pop_front()
 	var projected_occurrences = occurrence.value
-	var final_value := _apply_blocks(occurrence.value, block_queue[event_id])
+	var remaining_occurrences := _apply_blocks(occurrence.value, block_queue[event_id])
 	
-	if final_value < projected_occurrences:
-		event_blocked.emit(event_id, projected_occurrences - final_value)
+	if remaining_occurrences < projected_occurrences:
+		event_blocked.emit(event_id, projected_occurrences - remaining_occurrences)
+		_events[event_id].block_event(projected_occurrences - remaining_occurrences)
 	
-	if final_value > 0:
-		event_resolved.emit(event_id, final_value)
+	if remaining_occurrences > 0:
+		event_resolved.emit(event_id, remaining_occurrences)
+		_events[event_id].resolve_event(remaining_occurrences)
 
 
 func _apply_blocks(value: int, blocks:Array) -> int:

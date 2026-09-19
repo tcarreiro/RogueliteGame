@@ -10,7 +10,7 @@ signal triggered(event: Event, value: int)
 var id: StringName
 var name: String
 var event_trigger: EventTrigger
-var throttle: float = 5.0
+var throttle: float = 0.2
 var on_resolved: Callable
 var on_blocked: Callable
 
@@ -26,3 +26,13 @@ func _init(definition: EventDefinition) -> void:
 func trigger(value: int = 1) -> void:
 	print("Event %s processed."%id)
 	triggered.emit(self, value)
+
+
+func resolve_event(value: int) -> void:
+	if on_resolved.is_valid():
+		on_resolved.call(null, id, value)
+
+
+func block_event(value: int) -> void:
+	if on_blocked.is_valid():
+		on_blocked.call(null, id, value)

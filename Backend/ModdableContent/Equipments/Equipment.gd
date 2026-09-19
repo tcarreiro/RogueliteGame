@@ -33,6 +33,10 @@ func _init(definition: EquipmentDefinition) -> void:
 	#effects = definition.effects # Fill from definition
 
 
+func get_unique_id() -> StringName:
+	return StringName("%s|%s"%[id, uuid])
+
+
 #region Addons
 func equip_addon(slot_id: int, addon: Addon, force_swap:bool = true) -> void:
 	if get_available_slots() <= 0:
