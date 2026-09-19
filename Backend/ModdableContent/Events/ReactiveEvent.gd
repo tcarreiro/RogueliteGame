@@ -12,6 +12,7 @@ func _init(definition: EventDefinition) -> void:
 func consider_trigger(resolved_event_id: StringName, value: int) -> void:
 	if resolved_event_id != watched_event_id:
 		return
-	if conditional.is_valid() and not conditional.call(resolved_event_id, value):
+	if not conditional.is_valid() or (conditional.is_valid() and not conditional.call(resolved_event_id, value)):
 		return
+	print("stumble!")
 	trigger(value)

@@ -104,18 +104,23 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 func _register_callables(definition: EquipmentDefinition, state: LuaState, state_name:StringName) -> void:
 	_content_bridge.register_equipment_exclusive_states(definition, state_name)
 	
-	# Two registered functions:
-	# setupAddons and setupEffects
-	var setup_addons_fn = state.globals["setupAddons"]
-	if setup_addons_fn is LuaFunction:
-		# Immediatly calls setupAddons, so each threshold's callable is registered at definition
-		LuaHelper.call_by_name(state, "setupAddons", [null, String(definition.id)])
-	
+	# Four registered functions:
+	# setupEffects
 	var setup_effects_fn = state.globals["setupEffects"]
 	if setup_effects_fn is LuaFunction:
+		
 		# Immediatly calls setupEffects, so each threshold's callable is registered at definition
 		LuaHelper.call_by_name(state, "setupEffects", [null, String(definition.id)])
 
+	## Three registered functions:
+	## onEquip, onUnequip and onRunStart
+	#var on_equip_fn = state.globals["onEquip"]
+	#if on_equip_fn is LuaFunction:
+		#definition.on_equip = LuaHelper.make_callable(on_equip_fn)
+#
+	#var on_unequip_fn = state.globals["onUnequip"]
+	#if on_unequip_fn is LuaFunction:
+		#definition.on_unequip = LuaHelper.make_callable(on_unequip_fn)
 	#var overflow_fn = state.globals["onOverflow"]
 	#if overflow_fn is LuaFunction:
 		#definition.on_overflow = LuaHelper.make_callable(overflow_fn)
@@ -125,7 +130,7 @@ func _mock_definitions_for(mod_id: StringName) -> Array[EquipmentDefinition]:
 	if mod_id != &"core":
 		return []
 	
-	var mockes_definitions: Array[EquipmentDefinition] = []
+	var mocked_definitions: Array[EquipmentDefinition] = []
 	var entries : Array[Dictionary] = [
 		{
 			"id": &"gauntlet",
@@ -141,7 +146,7 @@ func _mock_definitions_for(mod_id: StringName) -> Array[EquipmentDefinition]:
 	]
 	
 	for entry in entries:
-		mockes_definitions.append(EquipmentDefinition.new(entry))
+		mocked_definitions.append(EquipmentDefinition.new(entry))
 	
-	return mockes_definitions
+	return mocked_definitions
 #endregion

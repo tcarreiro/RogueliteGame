@@ -121,7 +121,7 @@ func _mock_definitions_for(mod_id: StringName) -> Array[RunEffectDefinition]:
 	if mod_id != &"core":
 		return []
 	
-	var mockes_definitions: Array[RunEffectDefinition] = []
+	var mocked_definitions: Array[RunEffectDefinition] = []
 	var entries : Array[Dictionary] = [
 		{
 			"id": &"echo_addon_effect",
@@ -133,7 +133,14 @@ func _mock_definitions_for(mod_id: StringName) -> Array[RunEffectDefinition]:
 	]
 	
 	for entry in entries:
-		mockes_definitions.append(RunEffectDefinition.new(entry))
+		var def := RunEffectDefinition.new(entry)
+		if entry.has("on_equip") and entry["on_equip"]:
+			def.on_equip = Callable(self, entry["on_equip"])
+		if entry.has("on_unequip") and entry["on_unequip"]:
+			def.on_unequip = Callable(self, entry["on_unequip"])
+		if entry.has("on_run_start") and entry["on_run_start"]:
+			def.on_run_start = Callable(self, entry["on_run_start"])
+		mocked_definitions.append(def)
 	
-	return mockes_definitions
+	return mocked_definitions
 #endregion
