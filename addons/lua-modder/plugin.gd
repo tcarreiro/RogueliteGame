@@ -7,12 +7,12 @@ const AUTOLOAD_LUA_BRIDGE_PATH := "res://addons/lua-modder/lua_bridge_registry.g
 func _enter_tree() -> void:
 	if not _check_dependencies():
 		return
-
-	add_autoload_singleton(AUTOLOAD_LUA_BRIDGE_NAME, AUTOLOAD_LUA_BRIDGE_PATH)
+	if not ProjectSettings.has_setting("autoload/%s"%AUTOLOAD_LUA_BRIDGE_NAME):
+		add_autoload_singleton(AUTOLOAD_LUA_BRIDGE_NAME, AUTOLOAD_LUA_BRIDGE_PATH)
 
 
 func _exit_tree() -> void:
-	if ClassDB.class_exists("LuaState"):
+	if ProjectSettings.has_setting("autoload/%s"%AUTOLOAD_LUA_BRIDGE_NAME):
 		remove_autoload_singleton(AUTOLOAD_LUA_BRIDGE_NAME)
 
 
