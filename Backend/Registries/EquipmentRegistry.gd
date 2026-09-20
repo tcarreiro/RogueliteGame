@@ -70,7 +70,7 @@ func create_equipment(id: StringName) -> Equipment:
 	if not definition:
 		return null
 	match definition.type:
-		Equipment.EQUIPMENT_TYPE.GAUNTLET:
+		Equipment.EquipmentType.GAUNTLET:
 			return Gauntlet.new(definition)
 	return null
 

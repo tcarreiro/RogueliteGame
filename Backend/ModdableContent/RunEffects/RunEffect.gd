@@ -36,16 +36,8 @@ func _init(definition: RunEffectDefinition) -> void:
 	on_run_start = definition.on_run_start
 
 
-func connect_run_start_effects() -> void:
-	var sig := GameManager.run_manager.run_started
-	if not sig.is_connected(_on_run_started):
-		sig.connect(_on_run_started)
-
-
-func disconnect_run_start_effects() -> void:
-	var sig := GameManager.run_manager.run_started
-	if sig.is_connected(_on_run_started):
-		sig.disconnect(_on_run_started)
+func connect_run_start() -> void:
+	Utils.ensure_connected(GameManager.run_manager.run_started, _on_run_started, ConnectFlags.CONNECT_ONE_SHOT)
 
 
 func _on_run_started(_config: RunConfig) -> void:
@@ -53,11 +45,11 @@ func _on_run_started(_config: RunConfig) -> void:
 		on_run_start.call(null, id)  # TODO: player
 
 
-func trigger_on_equip() -> void:
+func equip() -> void:
 	if on_equip.is_valid():
 		on_equip.call(id)
 
 
-func trigger_on_unequip() -> void:
+func unequip() -> void:
 	if on_unequip.is_valid():
 		on_unequip.call(id)

@@ -38,3 +38,31 @@ static func _enum_key(enum_dict: Dictionary, value: int) -> String:
 		if enum_dict[key] == value:
 			return key
 	return str(value)
+
+
+static func format_timer(time: float) -> String:
+	var total_seconds := int(time)
+
+	var hours := int(total_seconds / 3600.0)
+	var minutes := int((total_seconds % 3600) / 60.0)
+	var seconds := total_seconds % 60
+
+	return "%02d:%02d:%02d" % [hours, minutes, seconds]
+
+
+static func clear_connections(sig: Signal) -> void:
+	for conn in sig.get_connections():
+		var callable: Callable = conn["callable"]
+		if sig.is_connected(callable):
+			sig.disconnect(callable)
+
+
+static func ensure_disconnected(sig: Signal, callable: Callable) -> void:
+	if sig.is_connected(callable):
+		sig.disconnect(callable)
+
+
+static func ensure_connected(sig: Signal, callable: Callable, flags: int = 0) -> void:
+	if sig.is_connected(callable):
+		return
+	sig.connect(callable, flags)

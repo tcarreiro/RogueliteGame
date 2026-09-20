@@ -1,26 +1,24 @@
 class_name Equipment extends Enchantable
 
-signal on_equip_addon(equipment: Equipment, addon: Addon)
-signal on_unequip_addon(equipment: Equipment, addon: Addon)
+signal equipped(equipment: Equipment)
+signal unequipped(equipment: Equipment)
 
-enum EQUIPMENT_TYPE {
+enum EquipmentType {
 	GAUNTLET
 }
 
 var uuid: UUID = UUID.new_uuid()
-var display_name: StringName
-var description: String
 var tier: int
 var nature_id: StringName
 var cost: float
 var socket_slots: int
-var addons: Dictionary[int, Addon] = {} # slot_id
-var type: EQUIPMENT_TYPE
+var addons: Dictionary[UUID, Addon] = {}
+var type: EquipmentType
 
+var on_equip: Callable
+var on_unequip: Callable
 
 func _init(definition: EquipmentDefinition) -> void:
-	for i in range(socket_slots):
-		addons[i] = null
 	id = definition.id
 	display_name = definition.display_name
 	description = definition.description
@@ -37,25 +35,41 @@ func get_unique_id() -> StringName:
 	return StringName("%s|%s"%[id, uuid])
 
 
+#region Equipment
+func equip() -> void:
+	equipped.emit(self)
+	if on_equip.is_valid():
+		on_equip.call(id)
+
+
+func unequip() -> void:
+	unequipped.emit(self)
+	if on_unequip.is_valid():
+		on_unequip.call(id)
+#endregion
+
+
 #region Addons
-func equip_addon(slot_id: int, addon: Addon, force_swap:bool = true) -> void:
+func equip_addon(addon: Addon) -> void:
 	if get_available_slots() <= 0:
-		GameLogger.warn("[%s] could't equip addon, because there is no slot available."%[EQUIPMENT_TYPE.keys()[type]])
+		GameLogger.error("[%s] could't equip addon, because there is no slot available."%[EquipmentType.keys()[type]])
 		return
-	if addons.has(slot_id) and addons.get(slot_id) != null:
-		if not force_swap:
-			GameLogger.warn("[%s] could't equip addon, because the slot is already in use."%[EQUIPMENT_TYPE.keys()[type]])
-			return
-		unequip_addon(slot_id)
-	on_equip_addon.emit(self, addon)
-	addons[slot_id] = addon
+	if addons.has(addon.uuid) or addon.is_equipped:
+		GameLogger.error("[%s] this addon is already equipped."%[EquipmentType.keys()[type]])
+		return
+	if not addon.suits.has(type):
+		GameLogger.error("[%s] this addon is not suitable to this equipment."%[EquipmentType.keys()[type]])
+		return
+	addon.equip_at(self)
+	addons[addon.uuid] = addon
 
 
-func unequip_addon(slot_id: int) -> void:
-	if not addons.has(slot_id) or addons.get(slot_id) == null:
+func unequip_addon(addon: Addon) -> void:
+	if not addons.has(addon.uuid):
+		GameLogger.error("[%s] this addon is not equipped on this Equipment."%[EquipmentType.keys()[type]])
 		return
-	on_unequip_addon.emit(self, addons[slot_id])
-	addons[slot_id] = null
+	addon.unequip_from(self)
+	addons.erase(addon.uuid)
 
 
 func get_socket_slots() -> int:
@@ -94,7 +108,7 @@ func get_all_effects_ids_from_addons() -> Array[StringName]:
 
 func get_all_effects() -> Array[RunEffect]:
 	var all_effects: Array[RunEffect] = get_all_effects_from_addons()
-	for effect in get_all_effects_from_equipment():
+	for effect in get_all_effects():
 		if all_effects.has(effect) and effect.unique:
 			continue
 		all_effects.append(effect)

@@ -13,20 +13,20 @@ class EquippedObject:
 		equipment = _equipment
 
 var _equipments: Dictionary[StringName, EquippedObject] = {}
-var _slots: Dictionary[int, Equipment.EQUIPMENT_TYPE] = {}
+var _slots: Dictionary[int, Equipment.EquipmentType] = {}
 
 func _init() -> void:
-	add_slot(Equipment.EQUIPMENT_TYPE.GAUNTLET) # TBD: only equipment allowed for now
+	add_slot(Equipment.EquipmentType.GAUNTLET) # TBD: only equipment allowed for now
 
 
-func add_slot(equipment_type: Equipment.EQUIPMENT_TYPE) -> void:
-	_slots[_slots.size()] = equipment_type
+func add_slot(EquipmentType: Equipment.EquipmentType) -> void:
+	_slots[_slots.size()] = EquipmentType
 
 
 func remove_slot(slot_id: int) -> void:
 	# TBD: if can be used while in run, need to check for "unequip", or remove open slots first
 	_slots.erase(slot_id)
-	var new_array: Array[Equipment.EQUIPMENT_TYPE] = []
+	var new_array: Array[Equipment.EquipmentType] = []
 	for slot in _slots.values():
 		new_array.append(slot)
 		
@@ -60,12 +60,12 @@ func get_all_effects() -> Array[RunEffect]:
 	return all_effects
 
 
-func _get_number_of_equipment_type_equipped(equipment_type: Equipment.EQUIPMENT_TYPE) -> int:
-	return _equipments.values().map(func(eq: EquippedObject): if equipment_type == eq.equipment.type: return eq).size()
+func _get_number_of_EquipmentType_equipped(EquipmentType: Equipment.EquipmentType) -> int:
+	return _equipments.values().map(func(eq: EquippedObject): if EquipmentType == eq.equipment.type: return eq).size()
 
 
-func _get_number_of_slots_by_equipment_type(equipment_type: Equipment.EQUIPMENT_TYPE) -> int:
-	return _slots.values().filter(func(type: Equipment.EQUIPMENT_TYPE): return type == equipment_type).size()
+func _get_number_of_slots_by_EquipmentType(EquipmentType: Equipment.EquipmentType) -> int:
+	return _slots.values().filter(func(type: Equipment.EquipmentType): return type == EquipmentType).size()
 
 
 func _is_slot_occupied(slot_id: int) -> bool:
@@ -76,14 +76,14 @@ func _is_slot_occupied(slot_id: int) -> bool:
 
 
 func equip(slot_id: int, equipment: Equipment, force_swap:bool = true) -> void:
-	if _get_number_of_slots_by_equipment_type(equipment.type) - _get_number_of_equipment_type_equipped(equipment.type) <= 0:
+	if _get_number_of_slots_by_EquipmentType(equipment.type) - _get_number_of_EquipmentType_equipped(equipment.type) <= 0:
 		GameLogger.error(
-			"[%s] could't equip equipment, because there is no slot available."%[Equipment.EQUIPMENT_TYPE.keys()[equipment.type]])
+			"[%s] could't equip equipment, because there is no slot available."%[Equipment.EquipmentType.keys()[equipment.type]])
 		return
 	if _is_slot_occupied(slot_id):
 		if not force_swap:
 			GameLogger.error(
-				"[%s] could't equip equipment, because the slot is already in use."%[Equipment.EQUIPMENT_TYPE.keys()[equipment.type]])
+				"[%s] could't equip equipment, because the slot is already in use."%[Equipment.EquipmentType.keys()[equipment.type]])
 			return
 		unequip(slot_id)
 	on_equip.emit(equipment, slot_id)

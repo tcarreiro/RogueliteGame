@@ -58,7 +58,7 @@ func _build_run_config() -> RunConfig:
 
 func _apply_run_effects() -> void:
 	for effect: RunEffect in equipment_manager.get_all_effects():
-		effect.connect_run_start_effects()
+		effect.connect_run_start()
 
 
 func start_run() -> void:
