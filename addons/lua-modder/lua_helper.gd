@@ -3,7 +3,6 @@ class_name LuaHelper extends RefCounted
 static func call_by_name(lua_state: LuaState, function_name: String, args: Array = []):
 	var fn = lua_state.globals[function_name]
 	if not (fn is LuaFunction):
-		push_error("[Lua] '%s' function not found." % function_name)
 		return null
 
 	var result = fn.invoke.callv(args)

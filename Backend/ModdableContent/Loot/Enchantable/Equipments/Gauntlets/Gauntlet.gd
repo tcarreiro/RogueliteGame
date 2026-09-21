@@ -1,5 +1,7 @@
 class_name Gauntlet extends Equipment
 
+signal datashard_equipped(gauntlet: Gauntlet, datashard: Datashard)
+
 var datashard: Datashard
 var max_hand_deck_size: int
 var max_active_deck_size: int
@@ -9,3 +11,13 @@ func _init(definition: EquipmentDefinition) -> void:
 	type = EquipmentType.GAUNTLET
 	max_hand_deck_size = definition.max_hand_deck_size
 	max_active_deck_size = definition.max_active_deck_size
+
+
+func equip_datashard(_datashard: Datashard) -> void:
+	if datashard != null and datashard.id == _datashard.id:
+		return
+	if datashard != null:
+		datashard.unequip()
+	datashard = _datashard
+	datashard.equip()
+	datashard_equipped.emit(self, datashard)

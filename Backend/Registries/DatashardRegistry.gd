@@ -99,21 +99,18 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 
 
 func _register_callables(definition: DatashardDefinition, state: LuaState, state_name:StringName) -> void:
-	#_content_bridge.register_equipment_exclusive_states(definition, state_name)
+	_content_bridge.register_datashard_exclusive_states(definition, state_name)
 	
 	# Four registered functions:
 	# setupEffects
-	var setup_effects_fn = state.globals["setupEffects"]
-	if setup_effects_fn is LuaFunction:
-		
-		# Immediatly calls setupEffects, so each threshold's callable is registered at definition
-		LuaHelper.call_by_name(state, "setupEffects", [null, String(definition.id)])
+	# Immediatly calls setupEffects, so each threshold's callable is registered at definition
+	LuaHelper.call_by_name(state, "setupEffects", [null, String(definition.id)])
 
 	## Three registered functions:
 	## onEquip, onUnequip and onRunStart
 	#var on_equip_fn = state.globals["onEquip"]
 	#if on_equip_fn is LuaFunction:
-		#definition.on_equip = LuaHelper.make_callable(on_equip_fn)
+	definition.on_run_started = LuaHelper.make_callable(state.globals["onRunStart"])
 #
 	#var on_unequip_fn = state.globals["onUnequip"]
 	#if on_unequip_fn is LuaFunction:

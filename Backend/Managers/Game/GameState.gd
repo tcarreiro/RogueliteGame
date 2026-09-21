@@ -4,6 +4,8 @@ class_name GameState extends Resource
 @export var successful_runs: int = 0
 @export var total_play_time: float = 0.0
 
+# TBD: create "active_inventory" if decide to allow players to bring itens to run
+@export var persistent_loot: LootManager
 #@export var deck_collection: DeckData
 #@export var active_deck: DeckData
 
@@ -14,44 +16,55 @@ class_name GameState extends Resource
 	#Enums.Nature.VEIL: 0,
 #}
 
+@export var active_datashard_id: StringName = ""
+@export var unlocked_datashards: Dictionary[StringName, Datashard] = {}
 
-#@export var active_datashard: DatashardDefinition
-@export var unlocked_datashards: Array[StringName] = []
+@export var active_equipments: Dictionary[StringName, Equipment] = {}
 
-@export var upgrades: Dictionary = {}
-
-#@export var persistent_inventory: InventoryData
-# TBD: create "active_inventory" if decide to allow players to bring itens to run
-
-@export var loaded_maps: Dictionary = {}  # String (scene_id) -> RoomManager | scene_id is the resource path
+#@export var upgrades: Dictionary = {}
+#@export var loaded_maps: Dictionary = {}  # String (scene_id) -> RoomManager | scene_id is the resource path
 
 func _init() -> void:
 	# New Game
+	_setup_initial_inventory()
+	_setup_initial_equipment()
 	_setup_initial_datashard()
 	#_setup_initial_deck()
-	#_setup_initial_inventory()
 	# TODO: LOAD GAME
 
 
 func _setup_initial_datashard() -> void:
-	# TODO
-	unlocked_datashards.append("datashard_low_resonance")
-	#equip_datashard(DatashardDatabase.get_datashard("datashard_low_resonance"))
-	#equip_datashard(DatashardDatabase.get_random_datashard())
+	var shard = DatashardRegistry.create_datashard("initial_datashard") as Datashard
+	unlocked_datashards[shard.id] = shard
+
+
+func _setup_initial_equipment() -> void:
+	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
+	gauntlet.add_effect("effect_addon_echo")
+	active_equipments[gauntlet.id] = gauntlet
 
 
 func choose_datashard(_datashard_name: String) -> void:
-	#var datashard = DatashardDatabase.get_datashard(datashard_name)
-	#if datashard:
-		#equip_datashard(datashard)
-	pass
+	var gauntlet := get_equipped_gauntlet()
+	if not gauntlet:
+		return
+	if unlocked_datashards.has(_datashard_name):
+		active_datashard_id = _datashard_name
+		gauntlet.equip_datashard(get_active_datashard())
 
 
-#func equip_datashard(datashard: DatashardData) -> void:
-	#EventBus.datashard_equipped.emit()
-	#active_datashard = datashard
-#
-#
+func get_equipped_gauntlet() -> Gauntlet:
+	var index = active_equipments.values().find_custom(func(eq: Equipment): return eq.type == Equipment.EquipmentType.GAUNTLET)
+	if index == -1:
+		return null
+	return active_equipments.values().get(index)
+
+
+func get_active_datashard() -> Datashard:
+	if active_datashard_id == "":
+		return null
+	return unlocked_datashards.get(active_datashard_id)
+
 #func _setup_initial_deck() -> void:
 	#var cards: Array[CardData] = []
 	#var treasure_hunter := CardDatabase.get_card("card_treasure_hunter")
@@ -75,9 +88,8 @@ func choose_datashard(_datashard_name: String) -> void:
 	#active_deck = DeckData.new("PlayerActiveDeck", [], 10, true)
 #
 #
-#func _setup_initial_inventory() -> void:
-	#persistent_inventory = InventoryData.new("PlayerPersistentInventory", 10)
-	#GameManager.set_persistent_inventory.emit(persistent_inventory)
+func _setup_initial_inventory() -> void:
+	persistent_loot = LootManager.new("persistent_loot")
 
 
 func pause() -> void:

@@ -3,7 +3,7 @@ class_name Enchantable extends Loot
 signal effect_added(equipment: Equipment, run_effect: RunEffect)
 signal effect_removed(equipment: Equipment, run_effect: RunEffect)
 
-var effects: Dictionary[StringName, RunEffect] = {}
+@export var effects: Dictionary[StringName, RunEffect] = {}
 
 var on_effect_added: Callable
 var on_effect_removed: Callable

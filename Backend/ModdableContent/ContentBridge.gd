@@ -63,6 +63,12 @@ func register_equipment_exclusive_states(_definition: EquipmentDefinition, __sta
 #endregion
 
 
+#region Datashard
+func register_datashard_exclusive_states(_definition: DatashardDefinition, __state_name: StringName) -> void:
+	pass
+#endregion
+
+
 #region Getters and Setters
 func get_lua_state() -> LuaState:
 	return _lua_state
@@ -137,6 +143,10 @@ func lua_add_action(callback, time, ...args) -> int:
 
 func lua_stop_action(action_id: int) -> void:
 	_timers.erase(int(action_id))
+
+
+func lua_clear_pending_actions() -> void:
+	_timers.clear()
 
 
 func lua_create_factor_threshold(factor_id, level, infinite, charges, direction, callback):
