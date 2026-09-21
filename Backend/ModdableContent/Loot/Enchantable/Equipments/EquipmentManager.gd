@@ -1,19 +1,14 @@
 class_name EquipmentManager extends RefCounted
 
-signal on_equip(equipment: Equipment, slot_id: int)
-signal on_unequip(equipment: Equipment, slot_id: int)
+signal on_equip(equipment: Equipment)
+signal on_unequip(equipment: Equipment)
 
-class EquippedObject:
+class SlotAddress:
 	extends Resource
-	var slot_id: int
-	var equipment:Equipment
-	
-	func _init(_slot_id: int, _equipment: Equipment) -> void:
-		slot_id = _slot_id
-		equipment = _equipment
+	var amount: int = 0
+	var list:Array[Equipment] = []
 
-var _equipments: Dictionary[StringName, EquippedObject] = {}
-var _slots: Dictionary[int, Equipment.EquipmentType] = {}
+var _equipments: Dictionary[Equipment.EquipmentType, SlotAddress] = {}
 
 func _init() -> void:
 	add_slot(Equipment.EquipmentType.GAUNTLET) # TBD: only equipment allowed for now
@@ -21,107 +16,79 @@ func _init() -> void:
 
 func connect_all_loot_run_signals() -> void:
 	for loot in get_all_loot():
-		GameLogger.debug("%s had its run signals connected."%[loot.id])
 		loot.connect_run_start()
 		loot.connect_run_end()
+		GameLogger.debug("%s had its run signals connected."%[loot.id])
 
 
-func add_slot(EquipmentType: Equipment.EquipmentType) -> void:
-	_slots[_slots.size()] = EquipmentType
+func add_slot(equipment_type: Equipment.EquipmentType) -> void:
+	if not _equipments.has(equipment_type):
+		_equipments[equipment_type] = SlotAddress.new()
+	_equipments[equipment_type].amount += 1
 
 
-func remove_slot(slot_id: int) -> void:
+func remove_slot(equipment_type: Equipment.EquipmentType) -> void:
 	# TBD: if can be used while in run, need to check for "unequip", or remove open slots first
-	_slots.erase(slot_id)
-	var new_array: Array[Equipment.EquipmentType] = []
-	for slot in _slots.values():
-		new_array.append(slot)
-		
-	_slots = {}
-	for slot in new_array:
-		add_slot(slot)
+	if not _equipments.has(equipment_type):
+		return
+	_equipments[equipment_type].amount -= 1
+	if _equipments[equipment_type].amount <= 0:
+		_equipments.erase(equipment_type)
 
 
 func get_all_loot() -> Array[Loot]:
 	var all_loot :Array[Loot] = []
-	for eo: EquippedObject in _equipments.values():
-		var equipment : Equipment = eo.equipment
-		if equipment == null:
-			continue
-		all_loot.append(equipment)
-		if (equipment is Gauntlet):
-			if equipment.datashard != null:
-				all_loot.append(equipment.datashard)
-		for addon in equipment.get_all_addons():
-			if addon != null:
-				all_loot.append(addon)
+	for slot: SlotAddress in _equipments.values():
+		for equipment: Equipment in slot.list:
+			if equipment == null:
+				continue
+			all_loot.append(equipment)
+			if (equipment is Gauntlet):
+				if equipment.datashard != null:
+					all_loot.append(equipment.datashard)
+			for addon in equipment.get_all_addons():
+				if addon != null:
+					all_loot.append(addon)
 	return all_loot
-
-
-func get_equipment_by_slot(slot_id:int) -> Equipment:
-	var index = _equipments.values().find_custom(func(eo: EquippedObject): return eo.slot_id == slot_id)
-	if index == -1:
-		return null
-	return _equipments.values()[index].equipment
-
-
-func get_equipment(equipment_id: StringName) -> Equipment:
-	return _equipments.get(equipment_id).equipment
-
-
-func get_all_equipment_ids() -> Array[StringName]:
-	return _equipments.keys()
 
 
 func get_all_effects() -> Array[RunEffect]:
 	var all_effects: Array[RunEffect] = []
-	for equipment: Equipment in _equipments.values().map(func(eq):return eq.equipment):
-		for effect in equipment.get_all_effects_from_equipment():
-			if all_effects.has(effect) and effect.unique:
-				continue
-			all_effects.append(effect)
+	for list: Array[Equipment] in _equipments.values().map(func(sa: SlotAddress): return sa.list):
+		for equipment: Equipment in list:
+			for effect in equipment.get_all_effects_from_equipment():
+				print("Trying effect %s"%effect.id)
+				if all_effects.has(effect) and effect.unique:
+					continue
+				all_effects.append(effect)
 	return all_effects
 
 
-func _get_number_of_EquipmentType_equipped(EquipmentType: Equipment.EquipmentType) -> int:
-	return _equipments.values().map(func(eq: EquippedObject): if EquipmentType == eq.equipment.type: return eq).size()
+func _get_number_of_type_equipped(equipment_type: Equipment.EquipmentType) -> int:
+	if not _equipments.has(equipment_type):
+		return 0
+	return _equipments[equipment_type].list.size()
 
 
-func _get_number_of_slots_by_EquipmentType(EquipmentType: Equipment.EquipmentType) -> int:
-	return _slots.values().filter(func(type: Equipment.EquipmentType): return type == EquipmentType).size()
+func _get_number_of_slots_by_type(equipment_type: Equipment.EquipmentType) -> int:
+	if not _equipments.has(equipment_type):
+		return 0
+	return _equipments[equipment_type].amount
 
 
-func _is_slot_occupied(slot_id: int) -> bool:
-	var index = _equipments.values().find_custom(func(eo: EquippedObject): return eo.slot_id == slot_id)
-	if index == -1:
-		return false
-	return _equipments.values()[index] != null
-
-
-func equip(slot_id: int, equipment: Equipment, force_swap:bool = true) -> void:
-	if not _slots.values().has(equipment.type):
+func equip(equipment: Equipment) -> void:
+	if not _equipments.has(equipment.type):
 		GameLogger.error(
-			"[%s] this equipment is not suitable to this slot.."%[Equipment.EquipmentType.keys()[equipment.type]])
+			"[%s] There's no slot available for this equipment type"%[Equipment.EquipmentType.keys()[equipment.type]])
 		return
-	if _get_number_of_slots_by_EquipmentType(equipment.type) <= _get_number_of_EquipmentType_equipped(equipment.type):
+	if _get_number_of_slots_by_type(equipment.type) <= _get_number_of_type_equipped(equipment.type):
 		GameLogger.error(
 			"[%s] could't equip equipment, because there is no slot available."%[Equipment.EquipmentType.keys()[equipment.type]])
 		return
-	if _is_slot_occupied(slot_id):
-		if not force_swap:
-			GameLogger.error(
-				"[%s] could't equip equipment, because the slot is already in use."%[Equipment.EquipmentType.keys()[equipment.type]])
-			return
-		unequip(slot_id)
-	on_equip.emit(equipment, slot_id)
-	_equipments[equipment.get_unique_id()] = EquippedObject.new(slot_id, equipment)
+	on_equip.emit(equipment)
+	_equipments[equipment.type].list.append(equipment)
 
 
-func unequip(slot_id: int) -> void:
-	if not _is_slot_occupied(slot_id):
-		return
-	var equipment := get_equipment_by_slot(slot_id)
-	if not equipment:
-		return
-	on_unequip.emit(equipment, slot_id)
-	_equipments[equipment.get_unique_id()] = EquippedObject.new(slot_id, null)
+func unequip(equipment: Equipment) -> void:
+	on_unequip.emit(equipment)
+	_equipments[equipment.type].list.erase(equipment)

@@ -28,15 +28,15 @@ func _setup_managers() -> void:
 
 
 func _set_run_equipment() -> void:
-	equipment_manager.equip(0, GameManager.get_equipped_gauntlet())
+	equipment_manager.equip(GameManager.get_equipped_gauntlet())
 
 
 func _connect_signals() -> void:
 	# TODO: signals
 	equipment_manager.on_equip.connect(
-		func(equipment: Equipment, _slot_id: int): GameLogger.info("Equipment %s equipped"%equipment.id))
+		func(equipment: Equipment): GameLogger.info("Equipment %s equipped"%equipment.id))
 	equipment_manager.on_unequip.connect(
-		func(equipment: Equipment, _slot_id: int): GameLogger.info("Equipment %s unequipped"%equipment.id)) # TBD: ??
+		func(equipment: Equipment): GameLogger.info("Equipment %s unequipped"%equipment.id)) # TBD: ??
 
 
 func _register_factors() -> void:
@@ -61,6 +61,8 @@ func _build_run_config() -> RunConfig:
 
 func _apply_run_effects() -> void:
 	for effect: RunEffect in equipment_manager.get_all_effects():
+		effect.connect_run_start()
+	for effect: RunEffect in GameManager.get_active_datashard().get_all_effects():
 		effect.connect_run_start()
 
 

@@ -18,7 +18,6 @@ class_name GameState extends Resource
 
 @export var active_datashard_id: StringName = ""
 @export var unlocked_datashards: Dictionary[StringName, Datashard] = {}
-
 @export var active_equipments: Dictionary[StringName, Equipment] = {}
 
 #@export var upgrades: Dictionary = {}
