@@ -4,7 +4,7 @@ class_name GameState extends Resource
 @export var successful_runs: int = 0
 @export var total_play_time: float = 0.0
 
-# TBD: create "active_inventory" if decide to allow players to bring itens to run
+# TBD: create "active_loot" if decide to allow players to bring itens to run
 @export var persistent_loot: LootManager
 #@export var deck_collection: DeckData
 #@export var active_deck: DeckData
@@ -39,7 +39,6 @@ func _setup_initial_datashard() -> void:
 
 func _setup_initial_equipment() -> void:
 	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
-	#gauntlet.add_effect("effect_addon_echo")
 	active_equipments[gauntlet.id] = gauntlet
 
 
