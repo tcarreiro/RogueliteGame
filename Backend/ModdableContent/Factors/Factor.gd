@@ -1,7 +1,7 @@
 class_name Factor extends RefCounted
 
 signal overflow(factor: Factor)
-signal level_changed(factor: Factor, level: int)
+signal level_changed(factor: Factor)
 signal threshold_reached(factor: Factor, threshold: FactorThreshold)
 
 var id: StringName
@@ -47,7 +47,7 @@ func decrease_level(amount: int) -> void:
 func set_level(level: int, check_thresholds: bool = true) -> void:
 	var initial_level = current_level
 	current_level = max(min(level, max_level), 0)
-	level_changed.emit(self, current_level - initial_level)
+	level_changed.emit(self)
 	if check_thresholds:
 		_check_thresholds(initial_level, current_level)
 	if current_level >= max_level:

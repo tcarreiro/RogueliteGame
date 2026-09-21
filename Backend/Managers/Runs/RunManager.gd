@@ -2,6 +2,7 @@ class_name RunManager extends Node
 
 signal run_started(config: RunConfig)
 signal run_ended(success: bool)
+signal run_ticked(run_state: RunState)
 
 var run_state: RunState
 
@@ -84,6 +85,7 @@ func _process(delta: float) -> void:
 	if not is_run_active():
 		return
 	run_state.elapsed_time += delta
+	run_ticked.emit(run_state)
 	event_manager.process(delta)
 
 

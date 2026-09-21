@@ -61,6 +61,7 @@ func on_run_started(config: RunConfig) -> void:
 
 
 func on_run_ended(success: bool) -> void:
+	content_bridge._timers.clear()
 	GameLogger.info("Run ended with result %s"%str(success))
 
 

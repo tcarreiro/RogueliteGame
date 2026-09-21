@@ -19,7 +19,6 @@ var _list_map: Dictionary = {
 	Datashard: _datashards,
 }
 
-
 func _init(_n: StringName) -> void:
 	name = _n
 
@@ -36,6 +35,7 @@ func _on_remove(loot:Loot, dict:Dictionary[StringName, Array]) -> void:
 		
 	var list: Array = dict[loot.id]
 	var uuid: UUID = loot.get("uuid")
+	# TO TEST: isn't list.erase(loot) enough?
 	if uuid == null:
 		list.pop_front()
 		return
@@ -52,8 +52,12 @@ func _get_by_uuid(uuid: UUID, list: Array) -> Loot:
 	return list[index]
 
 
+func get_collection_of_same_type_as(loot: Loot) -> Dictionary:
+	return _list_map.get(loot.get_script(), {})
+
+
 func collect(loot: Loot) -> void:
-	var dict: Dictionary = _list_map.get(loot.get_script(), {})
+	var dict: Dictionary = get_collection_of_same_type_as(loot)
 	if dict.is_empty():
 		return
 	_on_collect(loot, dict)
@@ -63,7 +67,7 @@ func collect(loot: Loot) -> void:
 
 func remove(loot: Loot):
 	var loot_id = loot.id
-	var dict: Dictionary = _list_map.get(loot.get_script(), {})
+	var dict: Dictionary = get_collection_of_same_type_as(loot)
 	if dict.is_empty():
 		return
 	_on_remove(loot, dict)
