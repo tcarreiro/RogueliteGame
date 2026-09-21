@@ -69,6 +69,12 @@ func register_datashard_exclusive_states(_definition: DatashardDefinition, __sta
 #endregion
 
 
+#region Addon
+func register_addon_exclusive_states(_definition: AddonDefinition, __state_name: StringName) -> void:
+	pass
+#endregion
+
+
 #region Getters and Setters
 func get_lua_state() -> LuaState:
 	return _lua_state

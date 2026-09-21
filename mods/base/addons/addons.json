@@ -1,0 +1,12 @@
+[
+	{
+		"id": "echo_chip",
+		"display_name": "Echo Chip",
+		"description": "A small chip infused with flux",
+		"tier": 2,
+		"nature_id": "NONE",
+		"suits": ["GAUNTLET"],
+		"effect_ids": ["effect_addon_echo"],
+		"script_path": "addons/scripts/echo_chip.lua"
+	}
+]
