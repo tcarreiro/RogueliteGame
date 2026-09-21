@@ -17,6 +17,7 @@ func _ready() -> void:
 
 func new_game() -> void:
 	game_state = GameState.new()
+	equip_datashard("initial_datashard")
 
 
 func load_game() -> void:
@@ -36,7 +37,7 @@ func _setup_mods():
 	# start activities
 	mod_manager.discover_mods()
 	mod_manager.set_active_mods()
-	# eventually, mod_manager.set_active_mods(_load_player_mod_selection()) from some list
+	# TODO: eventually, mod_manager.set_active_mods(_load_player_mod_selection()) from some list
 
 
 func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
@@ -44,6 +45,7 @@ func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
 	EventRegistry.load_from_mods(active_mod_ids)
 	RunEffectRegistry.load_from_mods(active_mod_ids)
 	EquipmentRegistry.load_from_mods(active_mod_ids)
+	DatashardRegistry.load_from_mods(active_mod_ids)
 
 #endregion
 
@@ -61,10 +63,8 @@ func on_run_started(config: RunConfig) -> void:
 
 
 func on_run_ended(success: bool) -> void:
-	content_bridge._timers.clear()
+	content_bridge.lua_clear_pending_actions()
 	GameLogger.info("Run ended with result %s"%str(success))
-
-
 #endregion
 
 
@@ -75,5 +75,17 @@ func get_factor(factor_id: StringName) -> Factor:
 
 func get_event(event_id: StringName) -> Event:
 	return run_manager.event_manager.get_event(event_id)
+
+
+func equip_datashard(datashard_id) -> void:
+	game_state.choose_datashard(datashard_id)
+
+
+func get_equipped_gauntlet() -> Gauntlet:
+	return game_state.get_equipped_gauntlet()
+
+
+func get_active_datashard() -> Datashard:
+	return game_state.get_active_datashard()
 
 #endregion

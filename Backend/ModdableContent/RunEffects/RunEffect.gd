@@ -1,4 +1,4 @@
-class_name RunEffect extends RefCounted
+class_name RunEffect extends Resource
 
 # Modificadores do sistema de Enchantables (Equipment, Datashard, Addon)
 # todos eles possuem efeitos modificadores da run

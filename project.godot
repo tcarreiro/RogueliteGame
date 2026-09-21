@@ -20,8 +20,9 @@ GameManager="*uid://b70w5l6gytx1m"
 SaveManager="*uid://bm3pq26t61fye"
 FactorRegistry="*uid://44emqs5n2hpy"
 EventRegistry="*uid://dmvxbgsci0dd7"
-EquipmentRegistry="*uid://kissld841vf7"
 RunEffectRegistry="*uid://fsakxy43arw3"
+EquipmentRegistry="*uid://kissld841vf7"
+DatashardRegistry="*uid://c5cryitvv21i7"
 SceneMap="*uid://bfxewhtnqx4by"
 GdssRuntime="*res://addons/gdss/runtime.gd"
 LuaBridgeRegistry="*res://addons/lua-modder/lua_bridge_registry.gd"
@@ -43,7 +44,8 @@ enabled=PackedStringArray("res://addons/gdss/plugin.cfg", "res://addons/lua-gdex
 [file_customization]
 
 folder_colors={
-"res://Backend/ModdableContent/": "blue"
+"res://Backend/ModdableContent/": "blue",
+"res://Backend/Registries/": "red"
 }
 
 [gdss]

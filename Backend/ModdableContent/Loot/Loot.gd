@@ -1,12 +1,12 @@
-class_name Loot extends RefCounted
+class_name Loot extends Resource
 
 signal collected(loot: Loot)
 signal spawned(loot: Loot)
 
-var id: StringName
-var display_name: StringName
-var description: String
-var stackable: bool
+@export var id: StringName
+@export var display_name: StringName
+@export var description: String
+@export var stackable: bool
 
 var on_run_start: Callable
 var on_collect: Callable

@@ -1,4 +1,4 @@
-class_name LootManager extends RefCounted
+class_name LootManager extends Resource
 
 signal loot_changed(loot_manager: LootManager)
 

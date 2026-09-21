@@ -28,10 +28,7 @@ func _setup_managers() -> void:
 
 
 func _set_run_equipment() -> void:
-	# TODO: equipment will come from caller once HUB is done
-	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze")
-	gauntlet.add_effect("effect_addon_echo")
-	equipment_manager.equip(0, gauntlet)
+	equipment_manager.equip(0, GameManager.get_equipped_gauntlet())
 
 
 func _connect_signals() -> void:

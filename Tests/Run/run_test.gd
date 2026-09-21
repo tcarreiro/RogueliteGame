@@ -19,7 +19,10 @@ func _input(event: InputEvent) -> void:
 		if GameManager.run_manager.is_run_active():
 			GameManager.run_manager.end_run(true)
 		else:
-			GameManager.run_manager.start_run()
+			if GameManager.get_active_datashard():
+				GameManager.run_manager.start_run()
+			else:
+				GameLogger.debug("No datashard equipped")
 
 
 func _on_run_ended(_success:bool) -> void:
