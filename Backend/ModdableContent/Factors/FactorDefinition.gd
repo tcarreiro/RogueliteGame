@@ -14,4 +14,8 @@ func _init(entry: Dictionary):
 	display_name = str(entry.get("display_name", id))
 	max_level = int(entry.get("max_level", 100))
 	default_level = int(entry.get("default_level", 0))
-	# TODO: THRESHOLDS
+
+
+func connect_callables(state: LuaState) -> void:
+	on_creation = LuaHelper.make_callable(state.globals["onCreation"])
+	on_overflow = LuaHelper.make_callable(state.globals["onOverflow"])

@@ -11,6 +11,8 @@ var factor_manager: FactorManager
 var equipment_manager: EquipmentManager
 var run_loot_manager: LootManager
 
+var _active_datashard: Datashard
+
 func _setup_managers() -> void:
 	event_manager = EventManager.new()
 	_register_events()
@@ -55,18 +57,19 @@ func _build_run_config() -> RunConfig:
 	# TODO: RunEffects should influence RunConfig
 	var config := RunConfig.new()
 	config.run_id = "run_%d" % Time.get_unix_time_from_system()
-	config.datashard_id = "datashard_%d" % Time.get_unix_time_from_system()
+	config.datashard_id = _active_datashard.id
 	return config
 
 
 func _apply_run_effects() -> void:
 	for effect: RunEffect in equipment_manager.get_all_effects():
 		effect.connect_run_start()
-	for effect: RunEffect in GameManager.get_active_datashard().get_all_effects():
+	for effect: RunEffect in _active_datashard.get_all_effects():
 		effect.connect_run_start()
 
 
 func start_run() -> void:
+	_active_datashard = GameManager.get_active_datashard()
 	_setup_managers()
 	_apply_run_effects()
 	var config := _build_run_config()

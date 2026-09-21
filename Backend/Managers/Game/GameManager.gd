@@ -69,6 +69,10 @@ func on_run_ended(success: bool) -> void:
 
 
 #region Façade, Getters and Setters
+func get_run_state() -> RunState:
+	return run_manager.run_state
+
+
 func get_factor(factor_id: StringName) -> Factor:
 	return run_manager.factor_manager.get_factor(factor_id)
 

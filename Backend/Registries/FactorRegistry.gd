@@ -93,23 +93,10 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		return null
 		
 	var definition := FactorDefinition.new(entry)
-	_register_callables(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
-
+	_content_bridge.register_factor_exclusive_states(definition, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
+	definition.connect_callables(state)
 	return definition
 
-
-func _register_callables(definition: FactorDefinition, state: LuaState, state_name:StringName) -> void:
-	_content_bridge.register_factor_exclusive_states(definition, state_name)
-	
-	# Two registered functions:
-	# onOverflow and onCreation
-	var on_creation_fn = state.globals["onCreation"]
-	if on_creation_fn is LuaFunction:
-		definition.on_creation = LuaHelper.make_callable(on_creation_fn)
-	
-	var overflow_fn = state.globals["onOverflow"]
-	if overflow_fn is LuaFunction:
-		definition.on_overflow = LuaHelper.make_callable(overflow_fn)
 
 #region Mock
 func _mock_definitions_for(mod_id: StringName) -> Array[FactorDefinition]:

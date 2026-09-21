@@ -27,6 +27,8 @@ func _init(definition: EquipmentDefinition) -> void:
 	cost = definition.cost
 	socket_slots = definition.socket_slots
 	type = definition.type
+	on_equip = definition.on_equip
+	on_unequip = definition.on_unequip
 	#addons = definition.addons # Fill from definition
 	#effects = definition.effects # Fill from definition
 

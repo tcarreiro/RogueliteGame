@@ -39,7 +39,7 @@ func connect_run_start() -> void:
 
 func _on_run_started(_config: RunConfig) -> void:
 	if on_run_start.is_valid():
-		on_run_start.call(null, id)  # TODO: player
+		on_run_start.call(null)  # TODO: player
 
 
 func equip() -> void:

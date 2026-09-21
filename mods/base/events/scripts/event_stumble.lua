@@ -1,4 +1,4 @@
-function onWatchEventTrigger(watched_event_id, amount)
+function onWatchedEventTrigger(watched_event_id, amount)
 	-- TODO: getMaxHandSize
 	-- TODO: getCurrentHandSize
 	-- TODO: getAvailableCardsOnActiveDeck

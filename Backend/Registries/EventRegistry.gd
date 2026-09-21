@@ -98,27 +98,9 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		return null
 		
 	var definition := EventDefinition.new(entry)
-	_register_callables(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
-
+	_content_bridge.register_event_exclusive_states(definition, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
+	definition.connect_callables(state)
 	return definition
-
-
-func _register_callables(definition: EventDefinition, state: LuaState, state_name:StringName) -> void:
-	_content_bridge.register_event_exclusive_states(definition, state_name)
-	
-	# Three registered functions:
-	# onResolvedEvent, onBlockedEvent and onWatchEventTrigger (only for Reactive)
-	var on_resolved_fn = state.globals["onResolvedEvent"]
-	if on_resolved_fn is LuaFunction:
-		definition.on_resolved = LuaHelper.make_callable(on_resolved_fn)
-
-	var on_blocked_fn = state.globals["onBlockedEvent"]
-	if on_blocked_fn is LuaFunction:
-		definition.on_blocked = LuaHelper.make_callable(on_blocked_fn)
-
-	var conditional_fn = state.globals["onWatchEventTrigger"]
-	if conditional_fn is LuaFunction:
-		definition.conditional = LuaHelper.make_callable(conditional_fn)
 
 
 #region Mock

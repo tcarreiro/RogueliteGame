@@ -93,27 +93,9 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		return null
 		
 	var definition := RunEffectDefinition.new(entry)
-	_register_callables(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
-
+	_content_bridge.register_run_effect_exclusive_states(definition, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
+	definition.connect_callables(state)
 	return definition
-
-
-func _register_callables(definition: RunEffectDefinition, state: LuaState, state_name:StringName) -> void:
-	_content_bridge.register_run_effect_exclusive_states(definition, state_name)
-	
-	# Three registered functions:
-	# onEquip, onUnequip and onRunStart
-	var on_equip_fn = state.globals["onEquip"]
-	if on_equip_fn is LuaFunction:
-		definition.on_equip = LuaHelper.make_callable(on_equip_fn)
-
-	var on_unequip_fn = state.globals["onUnequip"]
-	if on_unequip_fn is LuaFunction:
-		definition.on_unequip = LuaHelper.make_callable(on_unequip_fn)
-
-	var on_run_start_fn = state.globals["onRunStart"]
-	if on_run_start_fn is LuaFunction:
-		definition.on_run_start = LuaHelper.make_callable(on_run_start_fn)
 
 
 #region Mock
