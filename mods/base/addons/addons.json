@@ -6,7 +6,7 @@
 		"tier": 2,
 		"nature_id": "NONE",
 		"suits": ["GAUNTLET"],
-		"effect_ids": ["effect_addon_echo"],
+		"effect_ids": ["effect_echo"],
 		"script_path": "addons/scripts/echo_chip.lua"
 	}
 ]

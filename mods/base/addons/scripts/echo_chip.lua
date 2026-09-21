@@ -1,5 +1,5 @@
 function onRunStart(player)
-	print("[LUA] Datashard run start function")
+	print("[LUA] Addon run start function")
 end
 
 function onEquip(player)

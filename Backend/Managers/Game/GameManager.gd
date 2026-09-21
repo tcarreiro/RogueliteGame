@@ -17,7 +17,7 @@ func _ready() -> void:
 
 func new_game() -> void:
 	game_state = GameState.new()
-	equip_datashard("initial_datashard")
+	#equip_datashard("initial_datashard")
 
 
 func load_game() -> void:
@@ -86,11 +86,27 @@ func equip_datashard(datashard_id) -> void:
 	game_state.choose_datashard(datashard_id)
 
 
+func equip_gauntlet(gauntlet: Gauntlet) -> void:
+	game_state.choose_gauntlet(gauntlet)
+
+
 func get_equipped_gauntlet() -> Gauntlet:
 	return game_state.get_equipped_gauntlet()
 
 
 func get_active_datashard() -> Datashard:
 	return game_state.get_active_datashard()
+
+
+func get_unlocked_datashards() -> Array[Datashard]:
+	return game_state.unlocked_datashards.values()
+
+
+func get_available_gauntlets() -> Array[Gauntlet]:
+	return game_state.get_available_gauntlets()
+
+
+func get_active_run_effects() -> Array[RunEffect]:
+	return game_state.get_active_run_effects()
 
 #endregion

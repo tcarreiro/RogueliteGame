@@ -28,8 +28,15 @@ func _init() -> void:
 	_setup_initial_inventory()
 	_setup_initial_equipment()
 	_setup_initial_datashard()
+	print(get_available_gauntlets().size())
 	#_setup_initial_deck()
 	# TODO: LOAD GAME
+
+
+func _setup_initial_inventory() -> void:
+	persistent_loot = LootManager.new("persistent_loot")
+	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
+	persistent_loot.collect(gauntlet)
 
 
 func _setup_initial_datashard() -> void:
@@ -38,8 +45,9 @@ func _setup_initial_datashard() -> void:
 
 
 func _setup_initial_equipment() -> void:
-	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
-	active_equipments[gauntlet.id] = gauntlet
+	#var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
+	#active_equipments[gauntlet.id] = gauntlet
+	pass
 
 
 func choose_datashard(_datashard_name: String) -> void:
@@ -62,6 +70,28 @@ func get_active_datashard() -> Datashard:
 	if active_datashard_id == "":
 		return null
 	return unlocked_datashards.get(active_datashard_id)
+
+
+func get_available_gauntlets() -> Array[Gauntlet]:
+	return persistent_loot.get_available_gauntlets()
+
+
+func choose_gauntlet(gauntlet: Gauntlet) -> void:
+	if get_available_gauntlets().find_custom(func(g: Gauntlet): return g.uuid == gauntlet.uuid) == -1:
+		GameLogger.error("[GameState] you don't own this gauntlet.")
+		return
+	active_equipments[gauntlet.id] = gauntlet
+
+
+func get_active_run_effects() -> Array[RunEffect]:
+	var all_effects: Array[RunEffect] = []
+	for a_eq: Equipment in active_equipments.values():
+		all_effects.append_array(a_eq.get_all_effects())
+		if a_eq is Gauntlet and a_eq.datashard:
+			all_effects.append_array(a_eq.datashard.get_all_effects())
+		for addon: Addon in a_eq.addons.values():
+			all_effects.append_array(addon.get_all_effects())
+	return all_effects
 
 #func _setup_initial_deck() -> void:
 	#var cards: Array[CardData] = []
@@ -86,8 +116,6 @@ func get_active_datashard() -> Datashard:
 	#active_deck = DeckData.new("PlayerActiveDeck", [], 10, true)
 #
 #
-func _setup_initial_inventory() -> void:
-	persistent_loot = LootManager.new("persistent_loot")
 
 
 func pause() -> void:

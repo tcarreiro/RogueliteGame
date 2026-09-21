@@ -106,7 +106,7 @@ func _mock_definitions_for(mod_id: StringName) -> Array[AddonDefinition]:
 	var mocked_definitions: Array[AddonDefinition] = []
 	var entries : Array[Dictionary] = [
 		{
-			"id": &"initial_datashard",
+			"id": &"initial_addon",
 			"display_name": &"Initial Addon",
 			"description": "It looks like a small condensed energy.",
 			"tier": 1,

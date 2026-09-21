@@ -11,14 +11,6 @@ var _currency: Dictionary[StringName, Array] = {} # Array[Currency]
 var _addon: Dictionary[StringName, Array] = {} # Array[Addon]
 var _datashards: Dictionary[StringName, Array] = {} # Array[Datashard]
 
-var _list_map: Dictionary = {
-	Equipment: _equipments,
-	Consumable: _consumables,
-	Currency: _currency,
-	Addon: _addon,
-	Datashard: _datashards,
-}
-
 func _init(_n: StringName) -> void:
 	name = _n
 
@@ -52,14 +44,25 @@ func _get_by_uuid(uuid: UUID, list: Array) -> Loot:
 	return list[index]
 
 
-func get_collection_of_same_type_as(loot: Loot) -> Dictionary:
-	return _list_map.get(loot.get_script(), {})
+func get_collection_of_same_type_as(loot: Loot):
+	if loot is Equipment:
+		return _equipments
+	if loot is Consumable:
+		return _consumables
+	if loot is Currency:
+		return _currency
+	if loot is Addon:
+		return _addon
+	if loot is Datashard:
+		return _datashards
+	return null
 
 
 func collect(loot: Loot) -> void:
-	var dict: Dictionary = get_collection_of_same_type_as(loot)
-	if dict.is_empty():
+	var dict = get_collection_of_same_type_as(loot)
+	if dict == null:
 		return
+	dict = dict as Dictionary
 	_on_collect(loot, dict)
 	loot_changed.emit(self)
 	loot.collect()
@@ -67,10 +70,21 @@ func collect(loot: Loot) -> void:
 
 func remove(loot: Loot):
 	var loot_id = loot.id
-	var dict: Dictionary = get_collection_of_same_type_as(loot)
-	if dict.is_empty():
+	var dict = get_collection_of_same_type_as(loot)
+	if dict == null:
 		return
+	dict = dict as Dictionary
 	_on_remove(loot, dict)
 	loot_changed.emit(self)
 	if dict[loot_id].is_empty():
 		dict.erase(loot_id)
+
+
+func get_available_gauntlets() -> Array[Gauntlet]:
+	var gauntlets: Array[Gauntlet] = []
+	for equipment_list in _equipments.values():
+		for equipment in equipment_list:
+			if equipment is Gauntlet:
+				gauntlets.append(equipment)
+
+	return gauntlets
