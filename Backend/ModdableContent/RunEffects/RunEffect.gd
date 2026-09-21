@@ -5,9 +5,6 @@ class_name RunEffect extends RefCounted
 # A ideia é justamente todos serem um "RunEffect", construído a partir do Lua
 # mas, ao menos no "mod base", ser diligente em quais peças (Equipment, Addon ou Datashard)
 # podem ter de efeito
-# Em último caso, posso separar em 3 classes iguais, uma para cada peça.
-# Deixando RunEffect como base (similar ao Event) e criando GauntletRunEffect extends RunEffect,
-# GauntletAddonRunEffect extends RunEffect e DatashardGauntletAddonRunEffect extends RunEffect
 
 enum RunEffectCategory {
 	BUFF,

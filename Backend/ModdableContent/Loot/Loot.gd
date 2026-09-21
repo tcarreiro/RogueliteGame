@@ -1,7 +1,7 @@
 class_name Loot extends RefCounted
 
-signal collected(loot: Loot, amount: int)
-signal spawned(loot: Loot, amount: int)
+signal collected(loot: Loot)
+signal spawned(loot: Loot)
 
 var id: StringName
 var display_name: StringName
@@ -31,13 +31,13 @@ func _on_run_ended(success: bool) -> void:
 		on_run_end.call(success)
 
 
-func spawn(amount: int) -> void:
-	spawned.emit(self, amount)
+func spawn() -> void:
+	spawned.emit(self)
 	if on_spawn.is_valid():
-		on_spawn.call(self, amount)
+		on_spawn.call(self)
 
 
-func collect(amount: int) -> void:
-	collected.emit(self, amount)
+func collect() -> void:
+	collected.emit(self)
 	if on_collect.is_valid():
-		on_collect.call(self, amount)
+		on_collect.call(self)

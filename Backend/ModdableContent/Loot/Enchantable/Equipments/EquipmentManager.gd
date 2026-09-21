@@ -19,6 +19,13 @@ func _init() -> void:
 	add_slot(Equipment.EquipmentType.GAUNTLET) # TBD: only equipment allowed for now
 
 
+func connect_all_loot_run_signals() -> void:
+	for loot in get_all_loot():
+		GameLogger.debug("%s had its run signals connected."%[loot.id])
+		loot.connect_run_start()
+		loot.connect_run_end()
+
+
 func add_slot(EquipmentType: Equipment.EquipmentType) -> void:
 	_slots[_slots.size()] = EquipmentType
 
@@ -35,8 +42,24 @@ func remove_slot(slot_id: int) -> void:
 		add_slot(slot)
 
 
+func get_all_loot() -> Array[Loot]:
+	var all_loot :Array[Loot] = []
+	for eo: EquippedObject in _equipments.values():
+		var equipment : Equipment = eo.equipment
+		if equipment == null:
+			continue
+		all_loot.append(equipment)
+		if (equipment is Gauntlet):
+			if equipment.datashard != null:
+				all_loot.append(equipment.datashard)
+		for addon in equipment.get_all_addons():
+			if addon != null:
+				all_loot.append(addon)
+	return all_loot
+
+
 func get_equipment_by_slot(slot_id:int) -> Equipment:
-	var index = _equipments.values().find(func(eo: EquippedObject): return eo.slot_id == slot_id)
+	var index = _equipments.values().find_custom(func(eo: EquippedObject): return eo.slot_id == slot_id)
 	if index == -1:
 		return null
 	return _equipments.values()[index].equipment
@@ -69,14 +92,18 @@ func _get_number_of_slots_by_EquipmentType(EquipmentType: Equipment.EquipmentTyp
 
 
 func _is_slot_occupied(slot_id: int) -> bool:
-	var index = _equipments.values().find(func(eo: EquippedObject): return eo.slot_id == slot_id)
+	var index = _equipments.values().find_custom(func(eo: EquippedObject): return eo.slot_id == slot_id)
 	if index == -1:
 		return false
 	return _equipments.values()[index] != null
 
 
 func equip(slot_id: int, equipment: Equipment, force_swap:bool = true) -> void:
-	if _get_number_of_slots_by_EquipmentType(equipment.type) - _get_number_of_EquipmentType_equipped(equipment.type) <= 0:
+	if not _slots.values().has(equipment.type):
+		GameLogger.error(
+			"[%s] this equipment is not suitable to this slot.."%[Equipment.EquipmentType.keys()[equipment.type]])
+		return
+	if _get_number_of_slots_by_EquipmentType(equipment.type) <= _get_number_of_EquipmentType_equipped(equipment.type):
 		GameLogger.error(
 			"[%s] could't equip equipment, because there is no slot available."%[Equipment.EquipmentType.keys()[equipment.type]])
 		return

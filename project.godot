@@ -27,10 +27,6 @@ GdssRuntime="*res://addons/gdss/runtime.gd"
 LuaBridgeRegistry="*res://addons/lua-modder/lua_bridge_registry.gd"
 GameLogger="*uid://cubsfekvkib58"
 
-[debug]
-
-gdscript/warnings/unused_signal=0
-
 [display]
 
 window/stretch/mode="canvas_items"

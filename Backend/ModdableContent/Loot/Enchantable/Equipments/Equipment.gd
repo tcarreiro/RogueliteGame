@@ -80,7 +80,7 @@ func get_available_slots() -> int:
 	return socket_slots - addons.size()
 
 
-func get_all_addons() -> Array[RunEffect]:
+func get_all_addons() -> Array[Addon]:
 	return addons.values()
 
 
@@ -106,7 +106,7 @@ func get_all_effects_ids_from_addons() -> Array[StringName]:
 	return all_ids
 
 
-func get_all_effects() -> Array[RunEffect]:
+func get_all_effects_from_equipment() -> Array[RunEffect]:
 	var all_effects: Array[RunEffect] = get_all_effects_from_addons()
 	for effect in get_all_effects():
 		if all_effects.has(effect) and effect.unique:
