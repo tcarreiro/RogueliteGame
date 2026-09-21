@@ -68,7 +68,7 @@ func get_all_ids() -> Array[StringName]:
 
 func create_run_effect(effect_id: StringName) -> RunEffect:
 	if not _definitions.has(effect_id):
-		return
+		return null
 	return RunEffect.new(_definitions.get(effect_id))
 
 

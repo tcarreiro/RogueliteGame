@@ -8,7 +8,9 @@
 		"cost": 0.0,
 		"socket_slots": 1,
 		"type": "GAUNTLET",
-		"effect_ids": [],
+		"effect_ids": [
+			"effect_addon_echo"
+		],
 		"max_active_deck_size":10,
 		"script_path": "equipments/scripts/gauntlet_bronze.lua"
 	}

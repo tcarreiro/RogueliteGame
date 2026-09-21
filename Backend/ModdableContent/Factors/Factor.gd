@@ -23,7 +23,7 @@ func _init(definition: FactorDefinition) -> void:
 
 func created():
 	if on_creation.is_valid():
-		on_creation.call(null, id)
+		on_creation.call(null, id) # TODO: player
 
 
 func add_threshold(threshold: FactorThreshold) -> void:

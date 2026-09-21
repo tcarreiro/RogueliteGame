@@ -30,7 +30,8 @@ func _init(definition: EquipmentDefinition) -> void:
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip
 	#addons = definition.addons # Fill from definition
-	#effects = definition.effects # Fill from definition
+	for effect_id in definition.effect_ids:
+		add_effect(effect_id)
 
 
 func get_unique_id() -> StringName:

@@ -22,10 +22,14 @@ func get_all_effects() -> Array[RunEffect]:
 
 func add_effect(effect_id: StringName) -> void:
 	if _compute_max_effects_allowed() - get_total_effects() <= 0:
-		GameLogger.warn(
+		GameLogger.error(
 			"[Enchantable] could't add effect %s to enchantable %s, because there is no slot available."%[effect_id, id])
 		return
 	var effect = RunEffectRegistry.create_run_effect(effect_id)
+	if not effect:
+		GameLogger.error(
+			"[Enchantable] effect %s not found."%[effect_id])
+		return
 	if effects.has(effect_id) and effect.unique:
 		return
 	effect_added.emit(self, effect)

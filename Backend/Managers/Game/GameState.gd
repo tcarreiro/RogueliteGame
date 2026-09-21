@@ -39,7 +39,7 @@ func _setup_initial_datashard() -> void:
 
 func _setup_initial_equipment() -> void:
 	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
-	gauntlet.add_effect("effect_addon_echo")
+	#gauntlet.add_effect("effect_addon_echo")
 	active_equipments[gauntlet.id] = gauntlet
 
 
