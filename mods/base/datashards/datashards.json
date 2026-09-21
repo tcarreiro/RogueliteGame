@@ -6,6 +6,6 @@
 		"tier": 1,
 		"nature_id": "NONE",
 		"effect_ids": [],
-		"script_path": "equipments/scripts/gauntlet_bronze.lua"
+		"script_path": "datashards/scripts/initial_datashard.lua"
 	}
 ]

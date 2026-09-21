@@ -29,46 +29,124 @@ theme_override_constants/margin_top = 3
 theme_override_constants/margin_right = 3
 theme_override_constants/margin_bottom = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer" unique_id=948915225]
+[node name="HubContainer" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer" unique_id=653807020]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 17
 size_flags_vertical = 17
 
-[node name="Header" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1337640873]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HubContainer" unique_id=948915225]
+layout_mode = 2
+size_flags_horizontal = 19
+size_flags_vertical = 17
+theme_override_constants/separation = 25
+
+[node name="Header" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HubContainer/VBoxContainer" unique_id=1337640873]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="GauntletContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HubContainer/VBoxContainer/Header" unique_id=94206709]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=252018785]
+[node name="DatashardsContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HubContainer/VBoxContainer/Header" unique_id=1712785567]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HubContainer/VBoxContainer" unique_id=1445849377]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="CardsContainer" type="GridContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HubContainer/VBoxContainer/HBoxContainer" unique_id=653659287]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HubContainer" unique_id=975921027]
+layout_mode = 2
+size_flags_horizontal = 19
+size_flags_vertical = 17
+size_flags_stretch_ratio = 0.25
+
+[node name="RunEffectsContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HubContainer/HBoxContainer2" unique_id=1811361971]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 19
+size_flags_vertical = 17
+
+[node name="RunContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer" unique_id=1204791223]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 17
+size_flags_vertical = 17
+
+[node name="Header" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/RunContainer" unique_id=1072188974]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/RunContainer/Header" unique_id=784121125]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Timer: "
 
-[node name="TimerLabel" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=342387182]
+[node name="TimerLabel" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/RunContainer/Header" unique_id=118869241]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 
-[node name="Separator" type="Control" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=876060513]
+[node name="Separator" type="Control" parent="CanvasLayer/PanelContainer/MarginContainer/RunContainer/Header" unique_id=1300416818]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 
-[node name="Label2" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=1083350140]
+[node name="Label2" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/RunContainer/Header" unique_id=1742754506]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Equipments: "
 
-[node name="EquipmentsLabel" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=2003938274]
+[node name="EquipmentsLabel" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/RunContainer/Header" unique_id=1296020348]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1445849377]
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/RunContainer" unique_id=1642011631]
 layout_mode = 2
 theme_override_constants/separation = 15
 
-[node name="Factors" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1311059434]
+[node name="Factors" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/RunContainer/HBoxContainer" unique_id=1860674438]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Events" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=573685964]
+[node name="Events" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/RunContainer/HBoxContainer" unique_id=734718038]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="ActionContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer" unique_id=1666718487]
+layout_mode = 2
+size_flags_horizontal = 17
+size_flags_vertical = 8
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/ActionContainer" unique_id=1690471480]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/PanelContainer/ActionContainer/VBoxContainer" unique_id=1402050661]
+layout_mode = 2
+text = "Equipments:"
+
+[node name="SelectedGauntlet" type="Label" parent="CanvasLayer/PanelContainer/ActionContainer/VBoxContainer" unique_id=1146167789]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SelectedDatashard" type="Label" parent="CanvasLayer/PanelContainer/ActionContainer/VBoxContainer" unique_id=676194215]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/PanelContainer/ActionContainer" unique_id=714235182]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 10
+
+[node name="RunBtn" type="Button" parent="CanvasLayer/PanelContainer/ActionContainer/HBoxContainer" unique_id=1922419163]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Start Run"

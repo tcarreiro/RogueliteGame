@@ -1,5 +1,29 @@
 extends Control
 
+signal gauntlet_selected()
+signal datashard_selected()
+
+@onready var hub_container: HBoxContainer = %HubContainer
+@onready var run_container: VBoxContainer = %RunContainer
+@onready var run_btn: Button = %RunBtn
+
+
+## Hub
+@onready var selected_datashard: Label = %SelectedDatashard
+@onready var selected_gauntlet: Label = %SelectedGauntlet
+
+@onready var gauntlet_container: VBoxContainer = %GauntletContainer
+var _gauntlets: Dictionary[StringName, Button] = {}
+var _selected_gauntlet_btn: Button
+
+@onready var datashards_container: VBoxContainer = %DatashardsContainer
+var _datashards: Dictionary[StringName, Button] = {}
+var _selected_datashard_btn: Button
+
+@onready var run_effects_container: VBoxContainer = %RunEffectsContainer
+var _run_effects: Dictionary[StringName, Label] = {}
+
+## Run
 @onready var timer_label: Label = %TimerLabel
 @onready var equipments_label: Label = %EquipmentsLabel
 @onready var factor_container: VBoxContainer = %Factors
@@ -12,21 +36,136 @@ func _ready() -> void:
 	GameManager.run_manager.run_ticked.connect(_on_run_ticked)
 	GameManager.run_manager.run_started.connect(_on_run_started)
 	GameManager.run_manager.run_ended.connect(_on_run_ended)
+	run_btn.pressed.connect(_run_btn)
+	datashard_selected.connect(func(): run_btn.disabled = false)
+	datashard_selected.connect(_create_run_effects_info)
+	gauntlet_selected.connect(_create_run_effects_info)
+	goto_hub()
 
 
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_accept"):
-		if GameManager.run_manager.is_run_active():
-			GameManager.run_manager.end_run(true)
+func goto_hub() -> void:
+	_clear_hub()
+	hub_container.show()
+	run_container.hide()
+	
+	selected_datashard.show()
+	var text = ""
+	if _selected_datashard_btn:
+		text = _selected_datashard_btn.text
+	selected_datashard.text = text
+	
+	selected_gauntlet.show()
+	text = ""
+	if _selected_gauntlet_btn:
+		text = _selected_gauntlet_btn.text
+	selected_gauntlet.text = text
+	
+	run_btn.disabled = GameManager.get_active_datashard() == null
+	run_btn.text = "Start Run"
+	
+	_create_gauntlets_info()
+	_create_datashards_info()
+	_create_run_effects_info()
+
+
+func _clear_hub() -> void:
+	_gauntlets.clear()
+	for child in gauntlet_container.get_children():
+		child.queue_free()
+	_datashards.clear()
+	for child in datashards_container.get_children():
+		child.queue_free()
+
+
+func goto_run() -> void:
+	hub_container.hide()
+	run_container.show()
+	
+	selected_datashard.hide()
+	selected_gauntlet.hide()
+	
+	run_btn.text = "End Run"
+	
+	_create_gauntlets_info()
+	_create_datashards_info()
+
+
+func _run_btn() -> void:
+	if GameManager.run_manager.is_run_active():
+		GameManager.run_manager.end_run(true)
+		goto_hub()
+	else:
+		if GameManager.get_active_datashard():
+			GameManager.run_manager.start_run()
+			goto_run()
 		else:
-			if GameManager.get_active_datashard():
-				GameManager.run_manager.start_run()
-			else:
-				GameLogger.debug("No datashard equipped")
+			GameLogger.debug("No datashard equipped")
 
 
 func _on_run_ended(_success:bool) -> void:
 	pass
+
+
+func _create_gauntlets_info() -> void:
+	var available_gauntlets = GameManager.get_available_gauntlets()
+	var container_label := Label.new()
+	container_label.text = "Gauntlets"
+	gauntlet_container.add_child(container_label)
+	
+	for gauntlet in available_gauntlets:
+		var gauntlet_btn := Button.new()
+		gauntlet_btn.text = gauntlet.display_name
+		gauntlet_container.add_child(gauntlet_btn)
+		gauntlet_btn.pressed.connect(_on_gauntlet_selected.bind(gauntlet_btn, gauntlet))
+		_gauntlets[gauntlet.id] = gauntlet_btn
+
+
+func _on_gauntlet_selected(gauntlet_btn: Button, gauntlet: Gauntlet) -> void:
+	GameManager.equip_gauntlet(gauntlet)
+	_selected_gauntlet_btn = gauntlet_btn
+	gauntlet_selected.emit()
+	selected_gauntlet.text = gauntlet.display_name
+
+
+func _create_datashards_info() -> void:
+	var unlocked_datashards = GameManager.get_unlocked_datashards()
+	var container_label := Label.new()
+	container_label.text = "Datashards"
+	datashards_container.add_child(container_label)
+	
+	for datashard in unlocked_datashards:
+		var datashard_btn := Button.new()
+		datashard_btn.text = datashard.display_name
+		datashards_container.add_child(datashard_btn)
+		if not GameManager.get_equipped_gauntlet():
+			datashard_btn.disabled = true
+		datashard_btn.pressed.connect(_on_datashard_selected.bind(datashard_btn, datashard))
+		gauntlet_selected.connect(func(): datashard_btn.disabled = false)
+		_datashards[datashard.id] = datashard_btn
+
+
+func _on_datashard_selected(datashard_btn: Button, datashard: Datashard) -> void:
+	GameManager.equip_datashard(datashard.id)
+	datashard_selected.emit()
+	_selected_datashard_btn = datashard_btn
+	selected_datashard.text = datashard.display_name
+
+
+func _create_run_effects_info() -> void:
+	_run_effects.clear()
+	for child in run_effects_container.get_children():
+		child.queue_free()
+	
+	var active_run_effects = GameManager.get_active_run_effects()
+	var container_label := Label.new()
+	container_label.text = "Run Effects"
+	run_effects_container.add_child(container_label)
+	
+	for run_effect in active_run_effects:
+		var run_effects_label := Label.new()
+		run_effects_label.text = run_effect.display_name
+		run_effects_container.add_child(run_effects_label)
+		_run_effects[run_effect.id] = run_effects_label
 
 
 func _clear_infos() -> void:

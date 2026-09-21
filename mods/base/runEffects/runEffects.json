@@ -1,11 +1,11 @@
 [
 	{
-		"id": "effect_addon_echo",
-		"display_name": "Addon Echo",
+		"id": "effect_echo",
+		"display_name": "Echo Effect",
 		"description": "Increase max Resonance level by 20",
 		"stack_mode": "UNIQUE",
 		"unique": false,
 		"category": "BUFF",
-		"script_path": "runEffects/scripts/effect_addon_echo.lua"
+		"script_path": "runEffects/scripts/effect_echo.lua"
 	}
 ]

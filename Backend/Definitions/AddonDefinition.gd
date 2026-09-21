@@ -18,7 +18,6 @@ var on_effect_removed: Callable
 var on_equip: Callable
 var on_unequip: Callable
 
-
 func _init(entry: Dictionary):
 	id = StringName(entry["id"])
 	display_name = str(entry.get("display_name", id))
