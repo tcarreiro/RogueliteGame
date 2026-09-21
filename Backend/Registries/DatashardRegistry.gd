@@ -93,31 +93,10 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		return null
 		
 	var definition := DatashardDefinition.new(entry)
-	_register_callables(definition, state, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
-
+	_content_bridge.register_datashard_exclusive_states(definition, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
+	definition.connect_callables(state)
 	return definition
 
-
-func _register_callables(definition: DatashardDefinition, state: LuaState, state_name:StringName) -> void:
-	_content_bridge.register_datashard_exclusive_states(definition, state_name)
-	
-	# Four registered functions:
-	# setupEffects
-	# Immediatly calls setupEffects, so each threshold's callable is registered at definition
-	LuaHelper.call_by_name(state, "setupEffects", [null, String(definition.id)])
-
-	## Three registered functions:
-	## onEquip, onUnequip and onRunStart
-	#var on_equip_fn = state.globals["onEquip"]
-	#if on_equip_fn is LuaFunction:
-	definition.on_run_started = LuaHelper.make_callable(state.globals["onRunStart"])
-#
-	#var on_unequip_fn = state.globals["onUnequip"]
-	#if on_unequip_fn is LuaFunction:
-		#definition.on_unequip = LuaHelper.make_callable(on_unequip_fn)
-	#var overflow_fn = state.globals["onOverflow"]
-	#if overflow_fn is LuaFunction:
-		#definition.on_overflow = LuaHelper.make_callable(overflow_fn)
 
 #region Mock
 func _mock_definitions_for(mod_id: StringName) -> Array[DatashardDefinition]:

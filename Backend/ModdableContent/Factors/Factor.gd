@@ -32,6 +32,7 @@ func add_threshold(threshold: FactorThreshold) -> void:
 
 func set_max_level(new_max_level: int) -> void:
 	max_level = max(new_max_level, 0)
+	level_changed.emit(self)
 	if current_level > max_level:
 		set_level(max_level, false)
 

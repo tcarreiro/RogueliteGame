@@ -21,7 +21,6 @@ static func make_callable(value) -> Callable:
 		return func(...args):
 			return value.invoke.callv(args)
 
-	push_warning("[LuaHelper] Unexpected callback value: %s" % typeof(value))
 	return Callable()
 
 

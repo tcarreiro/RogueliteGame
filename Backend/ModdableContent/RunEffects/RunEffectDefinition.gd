@@ -18,3 +18,9 @@ func _init(entry: Dictionary):
 	unique = bool(entry.get("unique", false))
 	category = Utils.parse_string_into_enum(
 		RunEffect.RunEffectCategory, str(entry.get("category", "BUFF")), "[RunEffectDefinition - category]") as RunEffect.RunEffectCategory
+
+
+func connect_callables(state: LuaState) -> void:
+	on_equip = LuaHelper.make_callable(state.globals["onEquip"])
+	on_unequip = LuaHelper.make_callable(state.globals["onUnequip"])
+	on_run_start = LuaHelper.make_callable(state.globals["onRunStart"])
