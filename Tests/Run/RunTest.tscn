@@ -2,5 +2,73 @@
 
 [ext_resource type="Script" uid="uid://b28cw6kv3557t" path="res://Tests/Run/run_test.gd" id="1_lyues"]
 
-[node name="RunTest" type="Node2D" unique_id=45681028]
+[node name="RunTest" type="Control" unique_id=535641446]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 19
+size_flags_vertical = 19
 script = ExtResource("1_lyues")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2145478126]
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" unique_id=1655633624]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/PanelContainer" unique_id=1509272843]
+layout_mode = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer" unique_id=948915225]
+layout_mode = 2
+size_flags_horizontal = 17
+size_flags_vertical = 17
+
+[node name="Header" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1337640873]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=252018785]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Timer: "
+
+[node name="TimerLabel" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=342387182]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+
+[node name="Separator" type="Control" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=876060513]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=1083350140]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Equipments: "
+
+[node name="EquipmentsLabel" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Header" unique_id=2003938274]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1445849377]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Factors" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1311059434]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Events" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=573685964]
+unique_name_in_owner = true
+layout_mode = 2

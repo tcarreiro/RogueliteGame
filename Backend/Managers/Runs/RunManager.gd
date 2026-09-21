@@ -2,12 +2,14 @@ class_name RunManager extends Node
 
 signal run_started(config: RunConfig)
 signal run_ended(success: bool)
+signal run_ticked(run_state: RunState)
 
 var run_state: RunState
 
 var event_manager: EventManager
 var factor_manager: FactorManager
 var equipment_manager: EquipmentManager
+var run_loot_manager: LootManager
 
 func _setup_managers() -> void:
 	event_manager = EventManager.new()
@@ -19,6 +21,10 @@ func _setup_managers() -> void:
 	equipment_manager = EquipmentManager.new()
 	_connect_signals()
 	_set_run_equipment()
+	equipment_manager.connect_all_loot_run_signals() # TODO: will eventually go to _connect_signals()
+	
+	# TBD: Run inventory always starts empty?
+	run_loot_manager = LootManager.new("run_loot")
 
 
 func _set_run_equipment() -> void:
@@ -38,13 +44,13 @@ func _connect_signals() -> void:
 
 func _register_factors() -> void:
 	for id in FactorRegistry.get_all_ids():
-		var factor = FactorRegistry.create_factor(id)
+		var factor = FactorRegistry.create_factor(id) as Factor
 		factor_manager.register_factor(factor)
 
 
 func _register_events() -> void:
 	for id in EventRegistry.get_all_ids():
-		var event := EventRegistry.create_event(id)
+		var event = EventRegistry.create_event(id) as Event
 		event_manager.register_event(event, event.throttle)
 
 
@@ -58,7 +64,7 @@ func _build_run_config() -> RunConfig:
 
 func _apply_run_effects() -> void:
 	for effect: RunEffect in equipment_manager.get_all_effects():
-		effect.connect_run_start_effects()
+		effect.connect_run_start()
 
 
 func start_run() -> void:
@@ -79,6 +85,7 @@ func _process(delta: float) -> void:
 	if not is_run_active():
 		return
 	run_state.elapsed_time += delta
+	run_ticked.emit(run_state)
 	event_manager.process(delta)
 
 

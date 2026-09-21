@@ -20,15 +20,23 @@ class LogEntry:
 		message = msg
 		timestamp = Time.get_datetime_string_from_system()
 
+class LevelColorMap:
+	var color: Color
+	var name: StringName
+	
+	func _init(_c: Color, _n: StringName) -> void:
+		color = _c
+		name = _n
+
 signal log_changed
 
 var _entries: Array[LogEntry] = []
-var _colors: Dictionary = {
-	Level.DEBUG: Color.GREEN,
-	Level.INFO: Color.MEDIUM_BLUE,
-	Level.WARN: Color.GOLDENROD,
-	Level.ERROR: Color.RED,
-	Level.COMMAND: Color.CORAL,
+var _colors: Dictionary[Level, LevelColorMap] = {
+	Level.DEBUG: LevelColorMap.new(Color.GREEN, "green"),
+	Level.INFO: LevelColorMap.new(Color.MEDIUM_BLUE, "blue"),
+	Level.WARN: LevelColorMap.new(Color.GOLDENROD, "yellow"),
+	Level.ERROR: LevelColorMap.new(Color.RED, "red"),
+	Level.COMMAND: LevelColorMap.new(Color.CORAL, "orange"),
 }
 
 
@@ -49,8 +57,9 @@ func command(message: String) -> void:
 
 
 func _add_entry(level: Level, message: String) -> void:
-	_entries.append(LogEntry.new(level, message))
-	print("[%s] --- %s"%[Level.keys()[level], message])
+	var log_entry := LogEntry.new(level, message)
+	_entries.append(log_entry)
+	print_rich("%s - [color=%s][%s][/color] --- %s"%[log_entry.timestamp, _colors.get(level).name, Level.keys()[level], message])
 	log_changed.emit()
 
 

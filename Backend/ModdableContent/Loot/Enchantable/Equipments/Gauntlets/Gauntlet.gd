@@ -6,6 +6,6 @@ var max_active_deck_size: int
 
 func _init(definition: EquipmentDefinition) -> void:
 	super._init(definition)
-	type = EQUIPMENT_TYPE.GAUNTLET
+	type = EquipmentType.GAUNTLET
 	max_hand_deck_size = definition.max_hand_deck_size
 	max_active_deck_size = definition.max_active_deck_size
