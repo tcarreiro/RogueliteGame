@@ -57,7 +57,6 @@ func get_all_effects() -> Array[RunEffect]:
 	for list: Array[Equipment] in _equipments.values().map(func(sa: SlotAddress): return sa.list):
 		for equipment: Equipment in list:
 			for effect in equipment.get_all_effects_from_equipment():
-				print("Trying effect %s"%effect.id)
 				if all_effects.has(effect) and effect.unique:
 					continue
 				all_effects.append(effect)

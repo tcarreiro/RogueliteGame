@@ -17,10 +17,12 @@ func _init(definition: DatashardDefinition) -> void:
 	description = definition.description
 	tier = definition.tier
 	nature_id = definition.nature_id
+	for effect_id in definition.effect_ids:
+		add_effect(effect_id)
 	on_obtained = definition.on_obtained
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip
-	on_run_start = definition.on_run_started
+	on_run_start = definition.on_run_start
 
 
 func _compute_max_effects_allowed() -> int:

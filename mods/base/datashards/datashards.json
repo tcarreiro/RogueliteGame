@@ -3,8 +3,9 @@
 		"id": "initial_datashard",
 		"display_name": "Initial Datashard",
 		"description": "It looks like a small condensed energy.",
-		"tier": 2.0,
+		"tier": 1,
 		"nature_id": "NONE",
-		"script_path": "datashards/scripts/initial_datashard.lua"
+		"effect_ids": [],
+		"script_path": "equipments/scripts/gauntlet_bronze.lua"
 	}
 ]

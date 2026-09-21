@@ -9,7 +9,7 @@ class_name EquipmentDefinition extends Resource
 @export var socket_slots: int
 @export var type: Equipment.EquipmentType
 var addons: Dictionary[int, Addon] = {} # slot_id
-var effects: Dictionary[StringName, RunEffect] = {}
+@export var effect_ids: Array[StringName] = []
 
 # Gauntlet
 @export var max_hand_deck_size: int
@@ -29,9 +29,8 @@ func _init(entry: Dictionary):
 	socket_slots = int(entry.get("socket_slots", 0))
 	type = Utils.parse_string_into_enum(
 		Equipment.EquipmentType, str(entry.get("type", "GAUNTLET")), "[EquipmentDefinition - type]") as Equipment.EquipmentType
-	# TBD TODO: get initial addons and effects from script? 
 	#var addons: Dictionary[int, Addon] = {} # slot_id
-	#var effects: Dictionary[StringName, RunEffect] = {}
+	effect_ids.append_array(entry.get("effect_ids", []))
 	max_hand_deck_size = int(entry.get("max_hand_deck_size", 5))
 	max_active_deck_size = int(entry.get("max_active_deck_size", 10))
 
