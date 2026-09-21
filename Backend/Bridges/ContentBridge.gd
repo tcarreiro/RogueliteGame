@@ -74,6 +74,11 @@ func register_addon_exclusive_states(_definition: AddonDefinition, __state_name:
 	pass
 #endregion
 
+#region Addon
+func register_card_exclusive_states(_definition: CardDefinition, __state_name: StringName) -> void:
+	pass
+#endregion
+
 
 #region Getters and Setters
 func get_lua_state() -> LuaState:

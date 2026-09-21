@@ -28,7 +28,6 @@ func _init() -> void:
 	_setup_initial_inventory()
 	_setup_initial_equipment()
 	_setup_initial_datashard()
-	print(get_available_gauntlets().size())
 	#_setup_initial_deck()
 	# TODO: LOAD GAME
 
@@ -93,6 +92,7 @@ func get_active_run_effects() -> Array[RunEffect]:
 			all_effects.append_array(addon.get_all_effects())
 	return all_effects
 
+
 #func _setup_initial_deck() -> void:
 	#var cards: Array[CardData] = []
 	#var treasure_hunter := CardDatabase.get_card("card_treasure_hunter")
@@ -114,8 +114,6 @@ func get_active_run_effects() -> Array[RunEffect]:
 	## TODO: Handles decks max size
 	#deck_collection = DeckData.new("PlayerPermanentDeck", cards, 40)
 	#active_deck = DeckData.new("PlayerActiveDeck", [], 10, true)
-#
-#
 
 
 func pause() -> void:

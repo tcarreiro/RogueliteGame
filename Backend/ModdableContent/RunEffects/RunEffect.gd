@@ -12,7 +12,6 @@ enum RunEffectCategory {
 }
 
 var id: StringName
-
 var display_name: StringName
 var description: String
 var unique: bool = false

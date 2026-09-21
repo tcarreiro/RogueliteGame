@@ -17,7 +17,6 @@ func _ready() -> void:
 
 func new_game() -> void:
 	game_state = GameState.new()
-	#equip_datashard("initial_datashard")
 
 
 func load_game() -> void:
@@ -47,6 +46,7 @@ func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
 	DatashardRegistry.load_from_mods(active_mod_ids)
 	AddonRegistry.load_from_mods(active_mod_ids)
 	EquipmentRegistry.load_from_mods(active_mod_ids)
+	CardRegistry.load_from_mods(active_mod_ids)
 
 #endregion
 
@@ -57,6 +57,7 @@ func _setup_run_manager() -> void:
 	add_child(run_manager)
 	run_manager.run_started.connect(on_run_started)
 	run_manager.run_ended.connect(on_run_ended)
+	# TODO: set
 
 
 func on_run_started(config: RunConfig) -> void:

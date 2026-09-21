@@ -3,10 +3,11 @@ extends Control
 signal gauntlet_selected()
 signal datashard_selected()
 
+@onready var header: HBoxContainer = %Header
 @onready var hub_container: HBoxContainer = %HubContainer
 @onready var run_container: VBoxContainer = %RunContainer
 @onready var run_btn: Button = %RunBtn
-
+@onready var timer: HBoxContainer = %Timer
 
 ## Hub
 @onready var selected_datashard: Label = %SelectedDatashard
@@ -23,9 +24,15 @@ var _selected_datashard_btn: Button
 @onready var run_effects_container: VBoxContainer = %RunEffectsContainer
 var _run_effects: Dictionary[StringName, Label] = {}
 
+@onready var cards_container: GridContainer = %CardsContainer
+var _cards: Dictionary[StringName, Button] = {}
+
+@onready var selected_cards_container: GridContainer = %SelectedCardsContainer
+var _selected_cards: Dictionary[StringName, Button] = {}
+
 ## Run
 @onready var timer_label: Label = %TimerLabel
-@onready var equipments_label: Label = %EquipmentsLabel
+
 @onready var factor_container: VBoxContainer = %Factors
 var _factors: Dictionary[StringName, Label] = {}
 
@@ -48,6 +55,10 @@ func goto_hub() -> void:
 	hub_container.show()
 	run_container.hide()
 	
+	gauntlet_container.show()
+	datashards_container.show()
+	timer.hide()
+	
 	selected_datashard.show()
 	var text = ""
 	if _selected_datashard_btn:
@@ -65,7 +76,30 @@ func goto_hub() -> void:
 	
 	_create_gauntlets_info()
 	_create_datashards_info()
+	_create_cards_container()
+	_create_selected_cards_container()
 	_create_run_effects_info()
+
+
+func _create_cards_container() -> void:
+	#var unlocked_datashards = GameManager.get_unlocked_datashards()
+	#var container_label := Label.new()
+	#container_label.text = "Datashards"
+	#datashards_container.add_child(container_label)
+	#
+	#for datashard in unlocked_datashards:
+		#var datashard_btn := Button.new()
+		#datashard_btn.text = datashard.display_name
+		#datashards_container.add_child(datashard_btn)
+		#if not GameManager.get_equipped_gauntlet():
+			#datashard_btn.disabled = true
+		#datashard_btn.pressed.connect(_on_datashard_selected.bind(datashard_btn, datashard))
+		#gauntlet_selected.connect(func(): datashard_btn.disabled = false)
+		#_datashards[datashard.id] = datashard_btn
+
+
+func _create_selected_cards_container() -> void:
+	pass
 
 
 func _clear_hub() -> void:
@@ -80,14 +114,12 @@ func _clear_hub() -> void:
 func goto_run() -> void:
 	hub_container.hide()
 	run_container.show()
+	timer.show()
 	
-	selected_datashard.hide()
-	selected_gauntlet.hide()
+	gauntlet_container.hide()
+	datashards_container.hide()
 	
 	run_btn.text = "End Run"
-	
-	_create_gauntlets_info()
-	_create_datashards_info()
 
 
 func _run_btn() -> void:
@@ -181,16 +213,8 @@ func _on_run_started(_config: RunConfig) -> void:
 	GameManager.run_manager.event_manager.event_resolved.connect(_on_event_resolved)
 	GameManager.run_manager.event_manager.event_blocked.connect(_on_event_blocked)
 	_clear_infos()
-	_create_loot_info()
 	_create_factor_info()
 	_create_event_info()
-
-
-func _create_loot_info() -> void:
-	var text :PackedStringArray= []
-	for loot: Loot in GameManager.run_manager.equipment_manager.get_all_loot():
-		text.append(loot.display_name)
-	equipments_label.text = ", ".join(text)
 
 
 func _create_factor_info() -> void:
