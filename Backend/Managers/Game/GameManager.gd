@@ -44,6 +44,7 @@ func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
 	EventRegistry.load_from_mods(active_mod_ids)
 	RunEffectRegistry.load_from_mods(active_mod_ids)
 	EquipmentRegistry.load_from_mods(active_mod_ids)
+	DatashardRegistry.load_from_mods(active_mod_ids)
 
 #endregion
 
