@@ -52,8 +52,8 @@ func get_all_loot() -> Array[Loot]:
 	return all_loot
 
 
-func get_all_effects() -> Array[RunEffect]:
-	var all_effects: Array[RunEffect] = []
+func get_all_effects() -> Array[Effect]:
+	var all_effects: Array[Effect] = []
 	for list: Array[Equipment] in _equipments.values().map(func(sa: SlotAddress): return sa.list):
 		for equipment: Equipment in list:
 			for effect in equipment.get_all_effects_from_equipment():

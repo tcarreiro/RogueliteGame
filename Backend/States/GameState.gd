@@ -84,8 +84,8 @@ func choose_gauntlet(gauntlet: Gauntlet) -> void:
 	active_equipments[gauntlet.id] = gauntlet
 
 
-func get_active_run_effects() -> Array[RunEffect]:
-	var all_effects: Array[RunEffect] = []
+func get_active_effects() -> Array[Effect]:
+	var all_effects: Array[Effect] = []
 	for a_eq: Equipment in active_equipments.values():
 		all_effects.append_array(a_eq.get_all_effects())
 		if a_eq is Gauntlet and a_eq.datashard:

@@ -42,7 +42,7 @@ func _setup_mods():
 func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
 	FactorRegistry.load_from_mods(active_mod_ids)
 	EventRegistry.load_from_mods(active_mod_ids)
-	RunEffectRegistry.load_from_mods(active_mod_ids)
+	EffectRegistry.load_from_mods(active_mod_ids)
 	DatashardRegistry.load_from_mods(active_mod_ids)
 	AddonRegistry.load_from_mods(active_mod_ids)
 	EquipmentRegistry.load_from_mods(active_mod_ids)
@@ -119,8 +119,8 @@ func get_available_gauntlets() -> Array[Gauntlet]:
 	return game_state.get_available_gauntlets()
 
 
-func get_active_run_effects() -> Array[RunEffect]:
-	return game_state.get_active_run_effects()
+func get_active_effects() -> Array[Effect]:
+	return game_state.get_active_effects()
 
 
 func get_permanent_deck() -> Array[Card]:

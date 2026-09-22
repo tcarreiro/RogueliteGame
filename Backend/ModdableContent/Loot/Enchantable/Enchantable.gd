@@ -1,9 +1,9 @@
 class_name Enchantable extends Loot
 
-signal effect_added(equipment: Equipment, run_effect: RunEffect)
-signal effect_removed(equipment: Equipment, run_effect: RunEffect)
+signal effect_added(equipment: Equipment, effect: Effect)
+signal effect_removed(equipment: Equipment, effect: Effect)
 
-@export var effects: Dictionary[StringName, RunEffect] = {}
+@export var effects: Dictionary[StringName, Effect] = {}
 
 var on_effect_added: Callable
 var on_effect_removed: Callable
@@ -16,7 +16,7 @@ func get_total_effects() -> int:
 	return get_all_effects().size()
 
 
-func get_all_effects() -> Array[RunEffect]:
+func get_all_effects() -> Array[Effect]:
 	return effects.values()
 
 
@@ -25,7 +25,7 @@ func add_effect(effect_id: StringName) -> void:
 		GameLogger.error(
 			"[Enchantable] could't add effect %s to enchantable %s, because there is no slot available."%[effect_id, id])
 		return
-	var effect = RunEffectRegistry.create_run_effect(effect_id)
+	var effect = EffectRegistry.create_effect(effect_id)
 	if not effect:
 		GameLogger.error(
 			"[Enchantable] effect %s not found."%[effect_id])
@@ -35,7 +35,7 @@ func add_effect(effect_id: StringName) -> void:
 	effect_added.emit(self, effect)
 	if on_effect_added.is_valid():
 		on_effect_added.call(effect_id)
-	effect.equip()
+	#effect.equip()
 	effects[effect_id] = effect
 
 
@@ -44,9 +44,9 @@ func remove_effect(effect_id: StringName) -> void:
 		GameLogger.warn(
 			"[Enchantable] could't remove effect %s not found in equip %s."%[effect_id, id])
 		return
-	var effect: RunEffect = effects.get(effect_id)
+	var effect: Effect = effects.get(effect_id)
 	effect_removed.emit(self, effect)
 	if on_effect_removed.is_valid():
 		on_effect_removed.call(effect_id)
-	effect.unequip()
+	#effect.unequip()
 	effects.erase(effect_id)

@@ -34,7 +34,7 @@ func setup_managers() -> void:
 	_setup_equipment_manager()
 	_setup_loot_manager()
 	_setup_deck_manager()
-	_apply_run_effects()
+	_apply_effects()
 
 
 func _setup_event_manager() -> void:
@@ -73,14 +73,15 @@ func _setup_loot_manager() -> void:
 func _setup_deck_manager() -> void:
 	run_deck_manager = DeckManager.new()
 	run_deck_manager.setup_run_decks(GameManager.get_active_card_pile(), _gauntlet.max_hand_deck_size)
-	print(equipment_manager.get_all_effects().size())
 
 
-func _apply_run_effects() -> void:
-	for effect: RunEffect in equipment_manager.get_all_effects():
+func _apply_effects() -> void:
+	var all_equipped_effects = equipment_manager.get_all_effects()
+	all_equipped_effects.append_array(_datashard.get_all_effects())
+	# Apply "trigger" effects of equipments/addons/datashards right at the start
+	for effect: Effect in all_equipped_effects:
 		effect.connect_run_start()
-	for effect: RunEffect in _datashard.get_all_effects():
-		effect.connect_run_start()
+		effect.connect_run_end()
 
 
 func end(_success: bool) -> void:

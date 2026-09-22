@@ -51,8 +51,8 @@ func register_event_exclusive_states(_definition: EventDefinition, __state_name:
 #endregion
 
 
-#region RunEffect
-func register_run_effect_exclusive_states(_definition: RunEffectDefinition, __state_name: StringName) -> void:
+#region Effect
+func register_effect_exclusive_states(_definition: EffectDefinition, __state_name: StringName) -> void:
 	pass
 #endregion
 

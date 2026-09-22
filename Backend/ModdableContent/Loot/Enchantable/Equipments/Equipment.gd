@@ -92,10 +92,10 @@ func get_all_addons_ids() -> Array[StringName]:
 	return get_all_addons().map(func(addon:Addon): return addon.id)
 
 
-func get_all_effects_from_addons() -> Array[RunEffect]:
-	var all_effects: Array[RunEffect] = []
+func get_all_effects_from_addons() -> Array[Effect]:
+	var all_effects: Array[Effect] = []
 	for addon: Addon in addons.values():
-		for effect: RunEffect in addon.effects.values():
+		for effect: Effect in addon.effects.values():
 			if all_effects.has(effect) and effect.unique:
 				continue
 			all_effects.append(effect)
@@ -105,13 +105,13 @@ func get_all_effects_from_addons() -> Array[RunEffect]:
 func get_all_effects_ids_from_addons() -> Array[StringName]:
 	var all_ids: Array[StringName] = []
 	for addon: Addon in addons.values():
-		for effect: RunEffect in addon.effects.values():
+		for effect: Effect in addon.effects.values():
 			all_ids.append(effect.id)
 	return all_ids
 
 
-func get_all_effects_from_equipment() -> Array[RunEffect]:
-	var all_effects: Array[RunEffect] = get_all_effects_from_addons()
+func get_all_effects_from_equipment() -> Array[Effect]:
+	var all_effects: Array[Effect] = get_all_effects_from_addons()
 	for effect in get_all_effects():
 		if all_effects.has(effect) and effect.unique:
 			continue

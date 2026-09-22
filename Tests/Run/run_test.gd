@@ -22,8 +22,8 @@ var _selected_gauntlet_btn: Button
 var _datashards: Dictionary[StringName, Button] = {}
 var _selected_datashard_btn: Button
 
-@onready var run_effects_container: VBoxContainer = %RunEffectsContainer
-var _run_effects: Dictionary[StringName, Label] = {}
+@onready var effects_container: VBoxContainer = %EffectsContainer
+var _effects: Dictionary[StringName, Label] = {}
 
 @onready var cards_container: GridContainer = %CardsContainer
 var _cards: Dictionary[UUID, CheckButton] = {}
@@ -46,8 +46,8 @@ func _ready() -> void:
 	GameManager.run_manager.run_ended.connect(_on_run_ended)
 	run_btn.pressed.connect(_run_btn)
 	datashard_selected.connect(func(): run_btn.disabled = false)
-	datashard_selected.connect(_create_run_effects_info)
-	gauntlet_selected.connect(_create_run_effects_info)
+	datashard_selected.connect(_create_effects_info)
+	gauntlet_selected.connect(_create_effects_info)
 	deck_updated.connect(_create_cards_container)
 	deck_updated.connect(_create_selected_cards_container)
 	goto_hub()
@@ -81,7 +81,7 @@ func goto_hub() -> void:
 	_create_datashards_info()
 	_create_cards_container()
 	_create_selected_cards_container()
-	_create_run_effects_info()
+	_create_effects_info()
 
 
 func _create_cards_container() -> void:
@@ -207,21 +207,21 @@ func _on_datashard_selected(datashard_btn: Button, datashard: Datashard) -> void
 	selected_datashard.text = datashard.display_name
 
 
-func _create_run_effects_info() -> void:
-	_run_effects.clear()
-	for child in run_effects_container.get_children():
+func _create_effects_info() -> void:
+	_effects.clear()
+	for child in effects_container.get_children():
 		child.queue_free()
 	
-	var active_run_effects = GameManager.get_active_run_effects()
+	var active_effects = GameManager.get_active_effects()
 	var container_label := Label.new()
 	container_label.text = "Run Effects"
-	run_effects_container.add_child(container_label)
+	effects_container.add_child(container_label)
 	
-	for run_effect in active_run_effects:
-		var run_effects_label := Label.new()
-		run_effects_label.text = run_effect.display_name
-		run_effects_container.add_child(run_effects_label)
-		_run_effects[run_effect.id] = run_effects_label
+	for effect in active_effects:
+		var effects_label := Label.new()
+		effects_label.text = effect.display_name
+		effects_container.add_child(effects_label)
+		_effects[effect.id] = effects_label
 
 
 func _clear_infos() -> void:
