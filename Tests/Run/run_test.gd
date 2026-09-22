@@ -2,6 +2,7 @@ extends Control
 
 signal gauntlet_selected()
 signal datashard_selected()
+signal deck_updated()
 
 @onready var header: HBoxContainer = %Header
 @onready var hub_container: HBoxContainer = %HubContainer
@@ -25,10 +26,10 @@ var _selected_datashard_btn: Button
 var _run_effects: Dictionary[StringName, Label] = {}
 
 @onready var cards_container: GridContainer = %CardsContainer
-var _cards: Dictionary[StringName, Button] = {}
+var _cards: Dictionary[UUID, CheckButton] = {}
 
 @onready var selected_cards_container: GridContainer = %SelectedCardsContainer
-var _selected_cards: Dictionary[StringName, Button] = {}
+var _selected_cards: Dictionary[UUID, Button] = {}
 
 ## Run
 @onready var timer_label: Label = %TimerLabel
@@ -47,6 +48,8 @@ func _ready() -> void:
 	datashard_selected.connect(func(): run_btn.disabled = false)
 	datashard_selected.connect(_create_run_effects_info)
 	gauntlet_selected.connect(_create_run_effects_info)
+	deck_updated.connect(_create_cards_container)
+	deck_updated.connect(_create_selected_cards_container)
 	goto_hub()
 
 
@@ -82,24 +85,45 @@ func goto_hub() -> void:
 
 
 func _create_cards_container() -> void:
-	#var unlocked_datashards = GameManager.get_unlocked_datashards()
-	#var container_label := Label.new()
-	#container_label.text = "Datashards"
-	#datashards_container.add_child(container_label)
-	#
-	#for datashard in unlocked_datashards:
-		#var datashard_btn := Button.new()
-		#datashard_btn.text = datashard.display_name
-		#datashards_container.add_child(datashard_btn)
-		#if not GameManager.get_equipped_gauntlet():
-			#datashard_btn.disabled = true
-		#datashard_btn.pressed.connect(_on_datashard_selected.bind(datashard_btn, datashard))
-		#gauntlet_selected.connect(func(): datashard_btn.disabled = false)
-		#_datashards[datashard.id] = datashard_btn
+	_cards.clear()
+	for child in cards_container.get_children():
+		child.queue_free()
+	
+	var card_collection = GameManager.get_permanent_deck()
+	for card in card_collection:
+		var card_btn := CheckButton.new()
+		card_btn.text = card.display_name
+		cards_container.add_child(card_btn)
+		card_btn.button_pressed = GameManager.get_active_deck().has(card)
+		card_btn.pressed.connect(_on_activate_card.bind(card))
+		_cards[card.uuid] = card_btn
+
+
+func _on_activate_card(card: Card) -> void:
+	if GameManager.get_active_deck().has(card):
+		_on_deactivate_card(card)
+		return
+	if GameManager.activate_card(card):
+		deck_updated.emit()
 
 
 func _create_selected_cards_container() -> void:
-	pass
+	_selected_cards.clear()
+	for child in selected_cards_container.get_children():
+		child.queue_free()
+	
+	var card_collection = GameManager.get_active_deck()
+	for card in card_collection:
+		var card_btn := Button.new()
+		card_btn.text = card.display_name
+		selected_cards_container.add_child(card_btn)
+		card_btn.pressed.connect(_on_deactivate_card.bind(card))
+		_selected_cards[card.uuid] = card_btn
+
+
+func _on_deactivate_card(card: Card) -> void:
+	if GameManager.deactivate_card(card):
+		deck_updated.emit()
 
 
 func _clear_hub() -> void:

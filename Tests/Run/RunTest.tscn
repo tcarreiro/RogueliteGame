@@ -82,27 +82,47 @@ size_flags_horizontal = 19
 size_flags_vertical = 17
 theme_override_constants/separation = 15
 
-[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer" unique_id=61572086]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer" unique_id=1298106817]
 layout_mode = 2
 size_flags_horizontal = 19
 size_flags_vertical = 17
 
-[node name="CardsContainer" type="GridContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer/ScrollContainer" unique_id=653659287]
-unique_name_in_owner = true
+[node name="Label" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer/VBoxContainer" unique_id=1885780005]
+layout_mode = 2
+text = "Collection"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer/VBoxContainer" unique_id=61572086]
 layout_mode = 2
 size_flags_horizontal = 19
 size_flags_vertical = 19
 
-[node name="ScrollContainer2" type="ScrollContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer" unique_id=1345581294]
+[node name="CardsContainer" type="GridContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer/VBoxContainer/ScrollContainer" unique_id=653659287]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 19
+size_flags_vertical = 19
+columns = 5
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer" unique_id=1435117701]
 layout_mode = 2
 size_flags_horizontal = 19
 size_flags_vertical = 17
 
-[node name="SelectedCardsContainer" type="GridContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer/ScrollContainer2" unique_id=1164709778]
+[node name="Label" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer/VBoxContainer2" unique_id=1385933831]
+layout_mode = 2
+text = "Active"
+
+[node name="ScrollContainer2" type="ScrollContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer/VBoxContainer2" unique_id=1345581294]
+layout_mode = 2
+size_flags_horizontal = 19
+size_flags_vertical = 19
+
+[node name="SelectedCardsContainer" type="GridContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer/HubContainer/VBoxContainer2/ScrollContainer2" unique_id=1164709778]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 19
 size_flags_vertical = 19
+columns = 5
 
 [node name="RunContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/MainContainer" unique_id=1204791223]
 unique_name_in_owner = true
