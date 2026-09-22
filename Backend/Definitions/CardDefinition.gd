@@ -32,10 +32,12 @@ func _init(entry: Dictionary):
 	id = StringName(entry["id"])
 	display_name = str(entry.get("display_name", id))
 	description = str(entry.get("description", id))
+	stackable = bool(entry.get("stackable", true))
 	tier = int(entry.get("tier", 1))
 	nature_id = str(entry.get("nature_id", id))
-	#effect_ids.append_array(entry.get("effect_ids", []))
-	stackable = bool(entry.get("stackable", true))
+	cost = int(entry.get("cost", 1))
+	max_copies_in_active_deck = int(entry.get("max_copies_in_active_deck", 1))
+	flags.append_array(entry.get("flags", []))
 
 
 func connect_callables(state: LuaState) -> void:

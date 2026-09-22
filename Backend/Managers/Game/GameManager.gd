@@ -110,4 +110,21 @@ func get_available_gauntlets() -> Array[Gauntlet]:
 func get_active_run_effects() -> Array[RunEffect]:
 	return game_state.get_active_run_effects()
 
+
+func get_permanent_deck() -> Array[Card]:
+	return game_state.get_permanent_deck()
+
+
+func get_active_deck() -> Array[Card]:
+	return game_state.get_active_deck()
+
+
+func activate_card(card: Card) -> bool:
+	return game_state.activate_card(card)
+
+
+func deactivate_card(card: Card) -> bool:
+	return game_state.deactivate_card(card)
+
+
 #endregion

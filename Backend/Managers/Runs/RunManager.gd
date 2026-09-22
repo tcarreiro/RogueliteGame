@@ -10,6 +10,7 @@ var event_manager: EventManager
 var factor_manager: FactorManager
 var equipment_manager: EquipmentManager
 var run_loot_manager: LootManager
+var run_deck_manager: DeckManager
 
 var _active_datashard: Datashard
 
@@ -27,6 +28,10 @@ func _setup_managers() -> void:
 	
 	# TBD: Run inventory always starts empty?
 	run_loot_manager = LootManager.new("run_loot")
+	
+	run_deck_manager = DeckManager.new()
+	_active_datashard = GameManager.get_active_datashard()
+	#run_deck_manager.setup_run_decks()
 
 
 func _set_run_equipment() -> void:

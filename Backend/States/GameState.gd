@@ -6,6 +6,8 @@ class_name GameState extends Resource
 
 # TBD: create "active_loot" if decide to allow players to bring itens to run
 @export var persistent_loot: LootManager
+@export var card_collection: CardPile
+@export var active_cards: CardPile
 #@export var deck_collection: DeckData
 #@export var active_deck: DeckData
 
@@ -28,7 +30,7 @@ func _init() -> void:
 	_setup_initial_inventory()
 	_setup_initial_equipment()
 	_setup_initial_datashard()
-	#_setup_initial_deck()
+	_setup_initial_deck()
 	# TODO: LOAD GAME
 
 
@@ -93,7 +95,34 @@ func get_active_run_effects() -> Array[RunEffect]:
 	return all_effects
 
 
-#func _setup_initial_deck() -> void:
+func get_permanent_deck() -> Array[Card]:
+	return card_collection.get_cards()
+
+
+func get_active_deck() -> Array[Card]:
+	return active_cards.get_cards()
+
+
+func activate_card(card: Card) -> bool:
+	if not card_collection.get_all_cards_uuid().has(card.uuid):
+		return false
+	return active_cards.add_card(card)
+
+
+func deactivate_card(card: Card) -> bool:
+	if not active_cards.get_all_cards_uuid().has(card.uuid):
+		return false
+	return active_cards.remove_card(card)
+
+
+func _setup_initial_deck() -> void:
+	var _cards: Array[Card] = []
+	_cards.append(CardRegistry.create_card("card_evasion"))
+	_cards.append(CardRegistry.create_card("card_evasion"))
+	_cards.append(CardRegistry.create_card("card_evasion"))
+	card_collection = CardPile.new("PermanentDeck", _cards)
+	active_cards = CardPile.new("ActiveDeck", [])
+	#func _init(_deck_id:StringName, _cards: Array[Card], _max_deck_size: int = 0, _max_card_copies_validation: bool = false) -> void:
 	#var cards: Array[CardData] = []
 	#var treasure_hunter := CardDatabase.get_card("card_treasure_hunter")
 	#var essence_seeker := CardDatabase.get_card("card_essence_seeker")
