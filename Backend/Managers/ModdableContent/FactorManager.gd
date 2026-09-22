@@ -1,4 +1,4 @@
-class_name FactorManager extends RefCounted
+class_name FactorManager extends Resource
 
 var _factors: Dictionary[StringName, Factor] = {}
 

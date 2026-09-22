@@ -60,8 +60,8 @@ func _setup_run_manager() -> void:
 	# TODO: set
 
 
-func on_run_started(config: RunConfig) -> void:
-	GameLogger.info("Run %s started."%config.run_id)
+func on_run_started() -> void:
+	GameLogger.info("Run started.")
 
 
 func on_run_ended(success: bool) -> void:
@@ -75,12 +75,24 @@ func get_run_state() -> RunState:
 	return run_manager.run_state
 
 
+func get_factor_manager() -> FactorManager:
+	return get_run_state().factor_manager
+
+
+func get_event_manager() -> EventManager:
+	return get_run_state().event_manager
+
+
+func get_equipment_manager() -> EquipmentManager:
+	return get_run_state().equipment_manager
+
+
 func get_factor(factor_id: StringName) -> Factor:
-	return run_manager.factor_manager.get_factor(factor_id)
+	return get_factor_manager().get_factor(factor_id)
 
 
 func get_event(event_id: StringName) -> Event:
-	return run_manager.event_manager.get_event(event_id)
+	return get_event_manager().get_event(event_id)
 
 
 func equip_datashard(datashard_id) -> void:
@@ -126,5 +138,8 @@ func activate_card(card: Card) -> bool:
 func deactivate_card(card: Card) -> bool:
 	return game_state.deactivate_card(card)
 
+
+func get_active_card_pile() -> CardPile:
+	return game_state.get_active_card_pile()
 
 #endregion

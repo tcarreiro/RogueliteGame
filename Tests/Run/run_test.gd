@@ -233,16 +233,16 @@ func _clear_infos() -> void:
 		child.queue_free()
 
 
-func _on_run_started(_config: RunConfig) -> void:
-	GameManager.run_manager.event_manager.event_resolved.connect(_on_event_resolved)
-	GameManager.run_manager.event_manager.event_blocked.connect(_on_event_blocked)
+func _on_run_started() -> void:
+	GameManager.run_manager.run_state.event_manager.event_resolved.connect(_on_event_resolved)
+	GameManager.run_manager.run_state.event_manager.event_blocked.connect(_on_event_blocked)
 	_clear_infos()
 	_create_factor_info()
 	_create_event_info()
 
 
 func _create_factor_info() -> void:
-	var all_factor_ids = GameManager.run_manager.factor_manager.get_all_factor_ids()
+	var all_factor_ids = GameManager.get_factor_manager().get_all_factor_ids()
 	var container_label := Label.new()
 	container_label.text = "Factors"
 	factor_container.add_child(container_label)
@@ -264,7 +264,7 @@ func _create_factor_info() -> void:
 
 
 func _create_event_info() -> void:
-	var all_event_ids = GameManager.run_manager.event_manager.get_all_event_ids()
+	var all_event_ids = GameManager.get_event_manager().get_all_event_ids()
 	var container_label := Label.new()
 	container_label.text = "Events (resolved|blocked)"
 	event_container.add_child(container_label)

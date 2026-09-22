@@ -36,7 +36,7 @@ func connect_run_start() -> void:
 	Utils.ensure_connected(GameManager.run_manager.run_started, _on_run_started, ConnectFlags.CONNECT_ONE_SHOT)
 
 
-func _on_run_started(_config: RunConfig) -> void:
+func _on_run_started() -> void:
 	if on_run_start.is_valid():
 		on_run_start.call(null)  # TODO: player
 

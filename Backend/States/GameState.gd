@@ -115,6 +115,10 @@ func deactivate_card(card: Card) -> bool:
 	return active_cards.remove_card(card)
 
 
+func get_active_card_pile() -> CardPile:
+	return active_cards
+
+
 func _setup_initial_deck() -> void:
 	var _cards: Array[Card] = []
 	_cards.append(CardRegistry.create_card("card_evasion"))

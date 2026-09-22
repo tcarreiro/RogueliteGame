@@ -21,9 +21,9 @@ func connect_run_end() -> void:
 	Utils.ensure_connected(GameManager.run_manager.run_ended, _on_run_ended, ConnectFlags.CONNECT_ONE_SHOT)
 
 
-func _on_run_started(config: RunConfig) -> void:
+func _on_run_started() -> void:
 	if on_run_start.is_valid():
-		on_run_start.call(config)
+		on_run_start.call()
 
 
 func _on_run_ended(success: bool) -> void:
