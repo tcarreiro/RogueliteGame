@@ -33,52 +33,6 @@ enum EventCategory {
 	EC_LE_COLLECTED
 }
 
-#enum RunEvent {
-	#START, 
-	#END, 
-	#EVENT_TRIGGERED,
-	#EVENT_RESOLVED,
-	#EVENT_BLOCKED,
-#}
-#
-#enum CardEvent {
-	#CARD_DRAWN,
-	#CARD_PLAYED,
-	#CARD_DISCARDED
-#}
-#
-#enum FactorEvent {
-	#OVERFLOW,
-	#LEVEL_CHANGED,
-	#MAX_LEVEL_CHANGED,
-	#THRESHOLD_REACHED,
-#}
-#
-#enum PlayerEvent {
-	#PLAYER_HIT,
-	#PLAYER_DEATH,
-	#PLAYER_SPOTTED,
-#}
-#
-#enum LootEvent {
-	#LOOT_COLLECTED
-#}
-
-#@export var id: StringName
-#@export var uuid: UUID = UUID.new_uuid()
-#@export var display_name: StringName
-#@export var description: String
-#@export var unique: bool = false
-#@export var category: EffectCategory
-#@export var duration: float = NAN # NAN means it doesn't have a timer
-#@export var stacks: int = -1 # negative means it doesn't consume stacks
-
-#var on_run_event: Callable
-#var on_card_event: Callable
-#var on_factor_event: Callable
-#var on_player_event: Callable
-#var on_loot_event: Callable
-
 @export var uuid: UUID = UUID.new_uuid()
 @export var display_name: StringName
 @export var description: String
@@ -123,7 +77,7 @@ func matches(filter: StringName, _event_category: EventCategory = EventCategory.
 
 
 func has_time_remaining() -> bool:
-	return is_nan(duration) and duration > 0.0
+	return is_nan(duration) or duration > 0.0
 
 func can_fire() -> bool:
 	return stacks != 0
