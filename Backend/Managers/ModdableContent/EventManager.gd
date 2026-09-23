@@ -1,4 +1,4 @@
-class_name EventManager extends RefCounted
+class_name EventManager extends Resource
 
 signal event_resolved(event_id: StringName, amount: int)
 signal event_blocked(event_id: StringName, amount: int)

@@ -2,11 +2,13 @@ extends Control
 
 signal gauntlet_selected()
 signal datashard_selected()
+signal deck_updated()
 
+@onready var header: HBoxContainer = %Header
 @onready var hub_container: HBoxContainer = %HubContainer
 @onready var run_container: VBoxContainer = %RunContainer
 @onready var run_btn: Button = %RunBtn
-
+@onready var timer: HBoxContainer = %Timer
 
 ## Hub
 @onready var selected_datashard: Label = %SelectedDatashard
@@ -20,12 +22,18 @@ var _selected_gauntlet_btn: Button
 var _datashards: Dictionary[StringName, Button] = {}
 var _selected_datashard_btn: Button
 
-@onready var run_effects_container: VBoxContainer = %RunEffectsContainer
-var _run_effects: Dictionary[StringName, Label] = {}
+@onready var effects_container: VBoxContainer = %EffectsContainer
+var _effects: Dictionary[StringName, Label] = {}
+
+@onready var cards_container: GridContainer = %CardsContainer
+var _cards: Dictionary[UUID, CheckButton] = {}
+
+@onready var selected_cards_container: GridContainer = %SelectedCardsContainer
+var _selected_cards: Dictionary[UUID, Button] = {}
 
 ## Run
 @onready var timer_label: Label = %TimerLabel
-@onready var equipments_label: Label = %EquipmentsLabel
+
 @onready var factor_container: VBoxContainer = %Factors
 var _factors: Dictionary[StringName, Label] = {}
 
@@ -38,8 +46,10 @@ func _ready() -> void:
 	GameManager.run_manager.run_ended.connect(_on_run_ended)
 	run_btn.pressed.connect(_run_btn)
 	datashard_selected.connect(func(): run_btn.disabled = false)
-	datashard_selected.connect(_create_run_effects_info)
-	gauntlet_selected.connect(_create_run_effects_info)
+	datashard_selected.connect(_create_effects_info)
+	gauntlet_selected.connect(_create_effects_info)
+	deck_updated.connect(_create_cards_container)
+	deck_updated.connect(_create_selected_cards_container)
 	goto_hub()
 
 
@@ -47,6 +57,10 @@ func goto_hub() -> void:
 	_clear_hub()
 	hub_container.show()
 	run_container.hide()
+	
+	gauntlet_container.show()
+	datashards_container.show()
+	timer.hide()
 	
 	selected_datashard.show()
 	var text = ""
@@ -65,7 +79,51 @@ func goto_hub() -> void:
 	
 	_create_gauntlets_info()
 	_create_datashards_info()
-	_create_run_effects_info()
+	_create_cards_container()
+	_create_selected_cards_container()
+	_create_effects_info()
+
+
+func _create_cards_container() -> void:
+	_cards.clear()
+	for child in cards_container.get_children():
+		child.queue_free()
+	
+	var card_collection = GameManager.get_permanent_deck()
+	for card in card_collection:
+		var card_btn := CheckButton.new()
+		card_btn.text = card.display_name
+		cards_container.add_child(card_btn)
+		card_btn.button_pressed = GameManager.get_active_deck().has(card)
+		card_btn.pressed.connect(_on_activate_card.bind(card))
+		_cards[card.uuid] = card_btn
+
+
+func _on_activate_card(card: Card) -> void:
+	if GameManager.get_active_deck().has(card):
+		_on_deactivate_card(card)
+		return
+	if GameManager.activate_card(card):
+		deck_updated.emit()
+
+
+func _create_selected_cards_container() -> void:
+	_selected_cards.clear()
+	for child in selected_cards_container.get_children():
+		child.queue_free()
+	
+	var card_collection = GameManager.get_active_deck()
+	for card in card_collection:
+		var card_btn := Button.new()
+		card_btn.text = card.display_name
+		selected_cards_container.add_child(card_btn)
+		card_btn.pressed.connect(_on_deactivate_card.bind(card))
+		_selected_cards[card.uuid] = card_btn
+
+
+func _on_deactivate_card(card: Card) -> void:
+	if GameManager.deactivate_card(card):
+		deck_updated.emit()
 
 
 func _clear_hub() -> void:
@@ -80,14 +138,12 @@ func _clear_hub() -> void:
 func goto_run() -> void:
 	hub_container.hide()
 	run_container.show()
+	timer.show()
 	
-	selected_datashard.hide()
-	selected_gauntlet.hide()
+	gauntlet_container.hide()
+	datashards_container.hide()
 	
 	run_btn.text = "End Run"
-	
-	_create_gauntlets_info()
-	_create_datashards_info()
 
 
 func _run_btn() -> void:
@@ -151,21 +207,21 @@ func _on_datashard_selected(datashard_btn: Button, datashard: Datashard) -> void
 	selected_datashard.text = datashard.display_name
 
 
-func _create_run_effects_info() -> void:
-	_run_effects.clear()
-	for child in run_effects_container.get_children():
+func _create_effects_info() -> void:
+	_effects.clear()
+	for child in effects_container.get_children():
 		child.queue_free()
 	
-	var active_run_effects = GameManager.get_active_run_effects()
+	var active_effects = GameManager.get_active_effects()
 	var container_label := Label.new()
 	container_label.text = "Run Effects"
-	run_effects_container.add_child(container_label)
+	effects_container.add_child(container_label)
 	
-	for run_effect in active_run_effects:
-		var run_effects_label := Label.new()
-		run_effects_label.text = run_effect.display_name
-		run_effects_container.add_child(run_effects_label)
-		_run_effects[run_effect.id] = run_effects_label
+	for effect in active_effects:
+		var effects_label := Label.new()
+		effects_label.text = effect.display_name
+		effects_container.add_child(effects_label)
+		_effects[effect.id] = effects_label
 
 
 func _clear_infos() -> void:
@@ -177,24 +233,16 @@ func _clear_infos() -> void:
 		child.queue_free()
 
 
-func _on_run_started(_config: RunConfig) -> void:
-	GameManager.run_manager.event_manager.event_resolved.connect(_on_event_resolved)
-	GameManager.run_manager.event_manager.event_blocked.connect(_on_event_blocked)
+func _on_run_started() -> void:
+	GameManager.run_manager.run_state.event_manager.event_resolved.connect(_on_event_resolved)
+	GameManager.run_manager.run_state.event_manager.event_blocked.connect(_on_event_blocked)
 	_clear_infos()
-	_create_loot_info()
 	_create_factor_info()
 	_create_event_info()
 
 
-func _create_loot_info() -> void:
-	var text :PackedStringArray= []
-	for loot: Loot in GameManager.run_manager.equipment_manager.get_all_loot():
-		text.append(loot.display_name)
-	equipments_label.text = ", ".join(text)
-
-
 func _create_factor_info() -> void:
-	var all_factor_ids = GameManager.run_manager.factor_manager.get_all_factor_ids()
+	var all_factor_ids = GameManager.get_factor_manager().get_all_factor_ids()
 	var container_label := Label.new()
 	container_label.text = "Factors"
 	factor_container.add_child(container_label)
@@ -216,7 +264,7 @@ func _create_factor_info() -> void:
 
 
 func _create_event_info() -> void:
-	var all_event_ids = GameManager.run_manager.event_manager.get_all_event_ids()
+	var all_event_ids = GameManager.get_event_manager().get_all_event_ids()
 	var container_label := Label.new()
 	container_label.text = "Events (resolved|blocked)"
 	event_container.add_child(container_label)

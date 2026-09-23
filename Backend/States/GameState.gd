@@ -6,6 +6,8 @@ class_name GameState extends Resource
 
 # TBD: create "active_loot" if decide to allow players to bring itens to run
 @export var persistent_loot: LootManager
+@export var card_collection: CardPile
+@export var active_cards: CardPile
 #@export var deck_collection: DeckData
 #@export var active_deck: DeckData
 
@@ -28,8 +30,7 @@ func _init() -> void:
 	_setup_initial_inventory()
 	_setup_initial_equipment()
 	_setup_initial_datashard()
-	print(get_available_gauntlets().size())
-	#_setup_initial_deck()
+	_setup_initial_deck()
 	# TODO: LOAD GAME
 
 
@@ -83,8 +84,8 @@ func choose_gauntlet(gauntlet: Gauntlet) -> void:
 	active_equipments[gauntlet.id] = gauntlet
 
 
-func get_active_run_effects() -> Array[RunEffect]:
-	var all_effects: Array[RunEffect] = []
+func get_active_effects() -> Array[Effect]:
+	var all_effects: Array[Effect] = []
 	for a_eq: Equipment in active_equipments.values():
 		all_effects.append_array(a_eq.get_all_effects())
 		if a_eq is Gauntlet and a_eq.datashard:
@@ -93,7 +94,39 @@ func get_active_run_effects() -> Array[RunEffect]:
 			all_effects.append_array(addon.get_all_effects())
 	return all_effects
 
-#func _setup_initial_deck() -> void:
+
+func get_permanent_deck() -> Array[Card]:
+	return card_collection.get_cards()
+
+
+func get_active_deck() -> Array[Card]:
+	return active_cards.get_cards()
+
+
+func activate_card(card: Card) -> bool:
+	if not card_collection.get_all_cards_uuid().has(card.uuid):
+		return false
+	return active_cards.add_card(card)
+
+
+func deactivate_card(card: Card) -> bool:
+	if not active_cards.get_all_cards_uuid().has(card.uuid):
+		return false
+	return active_cards.remove_card(card)
+
+
+func get_active_card_pile() -> CardPile:
+	return active_cards
+
+
+func _setup_initial_deck() -> void:
+	var _cards: Array[Card] = []
+	_cards.append(CardRegistry.create_card("card_evasion"))
+	_cards.append(CardRegistry.create_card("card_evasion"))
+	_cards.append(CardRegistry.create_card("card_evasion"))
+	card_collection = CardPile.new("PermanentDeck", _cards)
+	active_cards = CardPile.new("ActiveDeck", [])
+	#func _init(_deck_id:StringName, _cards: Array[Card], _max_deck_size: int = 0, _max_card_copies_validation: bool = false) -> void:
 	#var cards: Array[CardData] = []
 	#var treasure_hunter := CardDatabase.get_card("card_treasure_hunter")
 	#var essence_seeker := CardDatabase.get_card("card_essence_seeker")
@@ -114,8 +147,6 @@ func get_active_run_effects() -> Array[RunEffect]:
 	## TODO: Handles decks max size
 	#deck_collection = DeckData.new("PlayerPermanentDeck", cards, 40)
 	#active_deck = DeckData.new("PlayerActiveDeck", [], 10, true)
-#
-#
 
 
 func pause() -> void:

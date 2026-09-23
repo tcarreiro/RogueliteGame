@@ -1,4 +1,4 @@
-class_name EquipmentManager extends RefCounted
+class_name EquipmentManager extends Resource
 
 signal on_equip(equipment: Equipment)
 signal on_unequip(equipment: Equipment)
@@ -52,8 +52,8 @@ func get_all_loot() -> Array[Loot]:
 	return all_loot
 
 
-func get_all_effects() -> Array[RunEffect]:
-	var all_effects: Array[RunEffect] = []
+func get_all_effects() -> Array[Effect]:
+	var all_effects: Array[Effect] = []
 	for list: Array[Equipment] in _equipments.values().map(func(sa: SlotAddress): return sa.list):
 		for equipment: Equipment in list:
 			for effect in equipment.get_all_effects_from_equipment():
@@ -91,3 +91,12 @@ func equip(equipment: Equipment) -> void:
 func unequip(equipment: Equipment) -> void:
 	on_unequip.emit(equipment)
 	_equipments[equipment.type].list.erase(equipment)
+
+
+func get_equipped_gauntlet() -> Gauntlet:
+	if not _equipments.has(Equipment.EquipmentType.GAUNTLET):
+		return null
+	var eq_list := _equipments[Equipment.EquipmentType.GAUNTLET].list
+	if eq_list.size() == 0:
+		return null
+	return eq_list.get(0)

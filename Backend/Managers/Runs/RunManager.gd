@@ -1,84 +1,18 @@
 class_name RunManager extends Node
 
-signal run_started(config: RunConfig)
+signal run_started()
 signal run_ended(success: bool)
 signal run_ticked(run_state: RunState)
 
 var run_state: RunState
 
-var event_manager: EventManager
-var factor_manager: FactorManager
-var equipment_manager: EquipmentManager
-var run_loot_manager: LootManager
-
-var _active_datashard: Datashard
-
-func _setup_managers() -> void:
-	event_manager = EventManager.new()
-	_register_events()
-	
-	factor_manager = FactorManager.new()
-	_register_factors()
-	
-	equipment_manager = EquipmentManager.new()
-	_connect_signals()
-	_set_run_equipment()
-	equipment_manager.connect_all_loot_run_signals() # TODO: will eventually go to _connect_signals()
-	
-	# TBD: Run inventory always starts empty?
-	run_loot_manager = LootManager.new("run_loot")
-
-
-func _set_run_equipment() -> void:
-	equipment_manager.equip(GameManager.get_equipped_gauntlet())
-
-
-func _connect_signals() -> void:
-	# TODO: signals
-	equipment_manager.on_equip.connect(
-		func(equipment: Equipment): GameLogger.info("Equipment %s equipped"%equipment.id))
-	equipment_manager.on_unequip.connect(
-		func(equipment: Equipment): GameLogger.info("Equipment %s unequipped"%equipment.id)) # TBD: ??
-
-
-func _register_factors() -> void:
-	for id in FactorRegistry.get_all_ids():
-		var factor = FactorRegistry.create_factor(id) as Factor
-		factor_manager.register_factor(factor)
-
-
-func _register_events() -> void:
-	for id in EventRegistry.get_all_ids():
-		var event = EventRegistry.create_event(id) as Event
-		event_manager.register_event(event, event.throttle)
-
-
-func _build_run_config() -> RunConfig:
-	# TODO: RunEffects should influence RunConfig
-	var config := RunConfig.new()
-	config.run_id = "run_%d" % Time.get_unix_time_from_system()
-	config.datashard_id = _active_datashard.id
-	return config
-
-
-func _apply_run_effects() -> void:
-	for effect: RunEffect in equipment_manager.get_all_effects():
-		effect.connect_run_start()
-	for effect: RunEffect in _active_datashard.get_all_effects():
-		effect.connect_run_start()
-
-
 func start_run() -> void:
-	_active_datashard = GameManager.get_active_datashard()
-	_setup_managers()
-	_apply_run_effects()
-	var config := _build_run_config()
-	run_state = RunState.new(config)
-	run_started.emit(config)
+	run_state = RunState.new()
+	run_state.setup_managers()
+	run_started.emit()
 
 
 func end_run(success: bool) -> void:
-	run_state.factor_levels = _snapshot_factor_levels()
 	run_state.end(success)
 	run_ended.emit(success)
 
@@ -88,7 +22,7 @@ func _process(delta: float) -> void:
 		return
 	run_state.elapsed_time += delta
 	run_ticked.emit(run_state)
-	event_manager.process(delta)
+	run_state.event_manager.process(delta)
 
 
 func is_in_run() -> bool:
@@ -97,10 +31,3 @@ func is_in_run() -> bool:
 
 func is_run_active() -> bool:
 	return is_in_run() and run_state.active
-
-
-func _snapshot_factor_levels() -> Dictionary[StringName, int]:
-	var snapshot: Dictionary[StringName, int] = {}
-	for id in factor_manager.get_all_factor_ids():
-		snapshot[id] = factor_manager.get_factor(id).current_level
-	return snapshot

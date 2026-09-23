@@ -17,7 +17,6 @@ func _ready() -> void:
 
 func new_game() -> void:
 	game_state = GameState.new()
-	#equip_datashard("initial_datashard")
 
 
 func load_game() -> void:
@@ -43,10 +42,11 @@ func _setup_mods():
 func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
 	FactorRegistry.load_from_mods(active_mod_ids)
 	EventRegistry.load_from_mods(active_mod_ids)
-	RunEffectRegistry.load_from_mods(active_mod_ids)
+	EffectRegistry.load_from_mods(active_mod_ids)
 	DatashardRegistry.load_from_mods(active_mod_ids)
 	AddonRegistry.load_from_mods(active_mod_ids)
 	EquipmentRegistry.load_from_mods(active_mod_ids)
+	CardRegistry.load_from_mods(active_mod_ids)
 
 #endregion
 
@@ -57,10 +57,11 @@ func _setup_run_manager() -> void:
 	add_child(run_manager)
 	run_manager.run_started.connect(on_run_started)
 	run_manager.run_ended.connect(on_run_ended)
+	# TODO: set
 
 
-func on_run_started(config: RunConfig) -> void:
-	GameLogger.info("Run %s started."%config.run_id)
+func on_run_started() -> void:
+	GameLogger.info("Run started.")
 
 
 func on_run_ended(success: bool) -> void:
@@ -74,12 +75,24 @@ func get_run_state() -> RunState:
 	return run_manager.run_state
 
 
+func get_factor_manager() -> FactorManager:
+	return get_run_state().factor_manager
+
+
+func get_event_manager() -> EventManager:
+	return get_run_state().event_manager
+
+
+func get_equipment_manager() -> EquipmentManager:
+	return get_run_state().equipment_manager
+
+
 func get_factor(factor_id: StringName) -> Factor:
-	return run_manager.factor_manager.get_factor(factor_id)
+	return get_factor_manager().get_factor(factor_id)
 
 
 func get_event(event_id: StringName) -> Event:
-	return run_manager.event_manager.get_event(event_id)
+	return get_event_manager().get_event(event_id)
 
 
 func equip_datashard(datashard_id) -> void:
@@ -106,7 +119,27 @@ func get_available_gauntlets() -> Array[Gauntlet]:
 	return game_state.get_available_gauntlets()
 
 
-func get_active_run_effects() -> Array[RunEffect]:
-	return game_state.get_active_run_effects()
+func get_active_effects() -> Array[Effect]:
+	return game_state.get_active_effects()
+
+
+func get_permanent_deck() -> Array[Card]:
+	return game_state.get_permanent_deck()
+
+
+func get_active_deck() -> Array[Card]:
+	return game_state.get_active_deck()
+
+
+func activate_card(card: Card) -> bool:
+	return game_state.activate_card(card)
+
+
+func deactivate_card(card: Card) -> bool:
+	return game_state.deactivate_card(card)
+
+
+func get_active_card_pile() -> CardPile:
+	return game_state.get_active_card_pile()
 
 #endregion
