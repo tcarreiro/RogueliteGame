@@ -134,6 +134,17 @@ func goto_run() -> void:
 	datashards_container.hide()
 	
 	run_btn.text = "End Run"
+	
+	var cards := GameManager.get_run_deck_manager().draw(1)
+	for card in cards:
+		var btn := Button.new()
+		btn.text = card.display_name
+		btn.pressed.connect(func():
+			var played_card := GameManager.get_run_deck_manager().play(card.uuid)
+			if played_card:
+				btn.queue_free()
+		)
+		run_container.add_child(btn)
 
 
 func _run_btn() -> void:
@@ -217,9 +228,9 @@ func _create_effects_info() -> void:
 	
 	for effect in active_effects:
 		var effects_label := Label.new()
-		effects_label.text = effect.display_name
+		effects_label.text = effect.description
 		effects_container.add_child(effects_label)
-		_effects[effect.id] = effects_label
+		#_effects[effect.id] = effects_label
 
 
 func _on_run_started() -> void:

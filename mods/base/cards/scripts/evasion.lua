@@ -26,6 +26,10 @@
 	--EC_LE_COLLECTED
 --}
 
+function onDrawn(card_id)
+	print("Draw card " .. card_id)
+end
+
 function onPlayed(card_id)
 	print("[LUA] Playing card " .. card_id)
 	local change_max_level_table = {

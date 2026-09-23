@@ -91,6 +91,10 @@ func get_equipment_manager() -> EquipmentManager:
 	return get_run_state().equipment_manager
 
 
+func get_run_deck_manager() -> DeckManager:
+	return get_run_state().run_deck_manager
+
+
 func get_factor(factor_id: StringName) -> Factor:
 	return get_factor_manager().get_factor(factor_id)
 

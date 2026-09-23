@@ -14,7 +14,7 @@ signal card_discarded(card: Card)
 
 func setup_run_decks(deck: CardPile, hand_limit) -> void:
 	GameLogger.debug("Run deck initialized with %s cards and hand size %s."%[deck.get_deck_size(), str(hand_limit)])
-	draw_pile = CardPile.new("DrawPile", [])
+	draw_pile = CardPile.new("DrawPile", deck.get_cards())
 	hand_pile = CardPile.new("Hand", [], hand_limit)
 	discard_pile = CardPile.new("DiscardPile", [])
 	played_pile = []
@@ -40,7 +40,7 @@ func play(card_uuid: UUID) -> Card:
 	if card.is_permanent():
 		permanent_played_pile.append(card.uuid)
 		
-	return null
+	return card
 
 
 func draw(count: int = 1) -> Array[Card]:

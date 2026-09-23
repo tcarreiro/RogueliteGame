@@ -16,7 +16,6 @@ enum CardFlag {
 @export var cost: int = 0
 @export var max_copies_in_active_deck: int = 3
 @export var flags: Array[StringName] = []
-@export var effect_ids: Array[StringName] = []
 
 var on_run_start: Callable
 var on_run_end: Callable
@@ -36,7 +35,6 @@ func _init(entry: Dictionary):
 	tier = int(entry.get("tier", 1))
 	nature_id = str(entry.get("nature_id", id))
 	cost = int(entry.get("cost", 1))
-	effect_ids.append_array(entry.get("effect_ids", []))
 	max_copies_in_active_deck = int(entry.get("max_copies_in_active_deck", 1))
 	flags.append_array(entry.get("flags", []))
 

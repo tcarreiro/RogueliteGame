@@ -26,15 +26,15 @@
 	--EC_LE_COLLECTED
 --}
 
-function onRunStart(player)
+function onRunStart(loot)
 	Content.doCreateEffect({
+		parent_loot = loot,
 		trigger_event = "TE_IMMEDIATE",
 		event_category = "EC_NONE",
 		effect_category = "BUFF",
 		description = "INCREASE_MAX_RESONANCE_20",
 		stacks = 1,
 		on_trigger = function(params)
-			print(params)
 			Content.doChangeFactorMaxLevel("factor_resonance", 20)
 		end
 	})

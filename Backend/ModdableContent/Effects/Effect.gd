@@ -92,16 +92,24 @@ enum EventCategory {
 
 
 func _init(entry: Dictionary) -> void:
-	trigger_event = Utils.parse_string_into_enum(TriggerEvent, entry.get("trigger_event", "TE_IMMEDIATE"), "[Effect] - trigger_event") as TriggerEvent
-	event_category = Utils.parse_string_into_enum(EventCategory, entry.get("event_category", "EC_NONE"), "[Effect] - event_category") as EventCategory
+	trigger_event = Utils.parse_string_into_enum(
+		TriggerEvent, entry.get("trigger_event", "TE_IMMEDIATE"), "[Effect] - trigger_event") as TriggerEvent
+	event_category = Utils.parse_string_into_enum(
+		EventCategory, entry.get("event_category", "EC_NONE"), "[Effect] - event_category") as EventCategory
 	trigger_filter = StringName(entry.get("trigger_filter", ""))
-	effect_category = Utils.parse_string_into_enum(EffectCategory, entry.get("effect_category", ""), "[Effect] - effect_category") as EffectCategory
+	effect_category = Utils.parse_string_into_enum(
+		EffectCategory, entry.get("effect_category", ""), "[Effect] - effect_category") as EffectCategory
 	stacks = int(entry.get("stacks", -1))
 	duration = float(entry.get("duration", NAN))
 	description = entry.get(
 		"description", "-".join([
-			EffectCategory.keys()[effect_category], TriggerEvent.keys()[trigger_event], EventCategory.keys()[event_category], trigger_filter, stacks, duration]))
+			EffectCategory.keys()[effect_category], TriggerEvent.keys()[trigger_event], EventCategory.keys()[event_category], trigger_filter, stacks, duration
+		]))
 	on_trigger = LuaHelper.make_callable(entry.get("on_trigger"))
+	
+	var parent : Enchantable = entry.get("parent_loot")
+	if parent is Enchantable:
+		parent.add_effect(self)
 
 
 func matches(filter: StringName, _event_category: EventCategory = EventCategory.EC_NONE) -> bool:

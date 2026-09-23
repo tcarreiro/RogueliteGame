@@ -29,6 +29,7 @@ func _setup_lua_state() -> void:
 func _register_common_state() -> void:
 	LuaBridgeRegistry.register_state(_state_name, _lua_state)
 	
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "isEnchantable", lua_is_enchantable)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorLevel", lua_get_factor_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorMaxLevel", lua_get_factor_max_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doChangeFactorLevel", lua_do_change_factor_level)
@@ -69,6 +70,7 @@ func register_addon_exclusive_states(_definition: AddonDefinition, __state_name:
 	pass
 #endregion
 
+
 #region Addon
 func register_card_exclusive_states(_definition: CardDefinition, __state_name: StringName) -> void:
 	pass
@@ -90,10 +92,15 @@ func get_state_name() -> StringName:
 
 
 #region Lua Scripts
-func lua_create_effect(config_table) -> void:
+func lua_is_enchantable(parent) -> bool:
+	return parent is Enchantable
+
+
+func lua_create_effect(config_table) -> Effect:
 	var config = LuaHelper.normalize_lua(config_table)
 	var effect := Effect.new(config)
 	GameManager.get_effect_manager().register_effect(effect)
+	return effect
 
 
 func lua_get_factor_level(factor_id: StringName):

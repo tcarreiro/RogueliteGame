@@ -68,8 +68,8 @@ func _setup_equipment_manager() -> void:
 		func(equipment: Equipment): GameLogger.info("Equipment %s equipped"%equipment.id))
 	equipment_manager.on_unequip.connect(
 		func(equipment: Equipment): GameLogger.info("Equipment %s unequipped"%equipment.id)) # TBD: ??
-	equipment_manager.connect_all_loot_run_signals() 
 	_set_run_equipment()
+	equipment_manager.connect_all_loot_run_signals() 
 
 
 func _set_run_equipment() -> void:

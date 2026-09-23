@@ -26,9 +26,9 @@
 	--EC_LE_COLLECTED
 --}
 
-function onRunStart(loot_id)
+function onRunStart(loot)
 	Content.doCreateEffect({
-		parent = loot_id,
+		parent_loot = loot,
 		trigger_event = "TE_IMMEDIATE",
 		event_category = "EC_NONE",
 		effect_category = "BUFF",

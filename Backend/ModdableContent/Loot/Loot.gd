@@ -23,7 +23,7 @@ func connect_run_end() -> void:
 
 func _on_run_started() -> void:
 	if on_run_start.is_valid():
-		on_run_start.call(id)
+		on_run_start.call(self)
 
 
 func _on_run_ended(success: bool) -> void:

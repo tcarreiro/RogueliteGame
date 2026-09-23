@@ -27,8 +27,13 @@ func _init(definition: EquipmentDefinition) -> void:
 	cost = definition.cost
 	socket_slots = definition.socket_slots
 	type = definition.type
+	stackable = definition.stackable
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip
+	on_run_start = definition.on_run_start
+	on_run_end = definition.on_run_end
+	on_collect = definition.on_collect
+	on_spawn = definition.on_spawn
 	for addon_id in definition.addon_ids:
 		equip_addon(AddonRegistry.create_addon(addon_id))
 

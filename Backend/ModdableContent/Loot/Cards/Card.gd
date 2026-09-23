@@ -1,4 +1,4 @@
-class_name Card extends Loot
+class_name Card extends Enchantable
 
 signal drawn(card: Card)
 signal played(card: Card)
@@ -18,7 +18,6 @@ enum CardFlag {
 @export var cost: int = 0
 @export var max_copies_in_active_deck: int = 3
 @export var flags: Array[CardFlag] = []
-@export var effects: Dictionary[StringName, Effect] = {}
 
 var on_drawn: Callable
 var on_played: Callable
@@ -87,5 +86,5 @@ func returns_to_deck() -> bool:
 
 
 func is_unblockable() -> bool:
-	return flags.has(CardFlag.PERMANENT)
+	return flags.has(CardFlag.UNBLOCKABLE)
 #endregion
