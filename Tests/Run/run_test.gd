@@ -228,7 +228,7 @@ func _create_effects_info() -> void:
 	
 	for effect in active_effects:
 		var effects_label := Label.new()
-		effects_label.text = effect.description
+		effects_label.text = effect.display_name
 		effects_container.add_child(effects_label)
 		#_effects[effect.id] = effects_label
 

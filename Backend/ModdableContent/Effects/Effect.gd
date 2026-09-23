@@ -80,6 +80,7 @@ enum EventCategory {
 #var on_loot_event: Callable
 
 @export var uuid: UUID = UUID.new_uuid()
+@export var display_name: StringName
 @export var description: String
 @export var trigger_event: TriggerEvent 
 @export var event_category: EventCategory
@@ -92,6 +93,7 @@ enum EventCategory {
 
 
 func _init(entry: Dictionary) -> void:
+	display_name = StringName(entry.get("display_name", "NEW_EFFECT"))
 	trigger_event = Utils.parse_string_into_enum(
 		TriggerEvent, entry.get("trigger_event", "TE_IMMEDIATE"), "[Effect] - trigger_event") as TriggerEvent
 	event_category = Utils.parse_string_into_enum(
@@ -107,7 +109,7 @@ func _init(entry: Dictionary) -> void:
 		]))
 	on_trigger = LuaHelper.make_callable(entry.get("on_trigger"))
 	
-	var parent : Enchantable = entry.get("parent_loot")
+	var parent = entry.get("parent_loot")
 	if parent is Enchantable:
 		parent.add_effect(self)
 

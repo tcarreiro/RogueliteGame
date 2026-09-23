@@ -29,6 +29,7 @@
 function onRunStart(loot)
 	Content.doCreateEffect({
 		parent_loot = loot,
+		display_name = "Echo",
 		trigger_event = "TE_IMMEDIATE",
 		event_category = "EC_NONE",
 		effect_category = "BUFF",

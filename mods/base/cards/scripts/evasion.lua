@@ -32,16 +32,17 @@ end
 
 function onPlayed(card_id)
 	print("[LUA] Playing card " .. card_id)
-	local change_max_level_table = {
+	Content.doCreateEffect({
+		parent_loot = card_id,
+		display_name = "Echo",
 		trigger_event = "TE_IMMEDIATE",
 		event_category = "EC_NONE",
 		effect_category = "BUFF",
 		description = "INCREASE_MAX_RESONANCE_20",
 		stacks = 1,
 		on_trigger = function(params)
-			Content.setFactorMaxLevel("factor_resonance", 20)
+			Content.doChangeFactorMaxLevel("factor_resonance", 20)
 		end
-	}
-	Content.doCreateEffect(change_max_level_table)
+	})
 	return true
 end

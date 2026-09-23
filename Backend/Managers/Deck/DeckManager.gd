@@ -39,7 +39,7 @@ func play(card_uuid: UUID) -> Card:
 		etheral_played_pile.append(card.uuid)
 	if card.is_permanent():
 		permanent_played_pile.append(card.uuid)
-		
+	card.play()
 	return card
 
 
