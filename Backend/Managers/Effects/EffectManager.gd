@@ -15,19 +15,11 @@ func process_effects(delta: float, _speed_multiplier: float = 1.0) -> void:
 			effect.duration -= delta * _speed_multiplier
 		if not effect.has_time_remaining() or not effect.can_fire():
 			to_remove.append(effect)
-			continue
-		_process_effect(effect)
 	for effect in to_remove:
 		active_effects.erase(effect)
 
 
-
 func register_effect(effect: Effect) -> void:
-	_process_effect(effect)
-	active_effects.append(effect)
-
-
-func _process_effect(effect: Effect) -> void:
 	match effect.trigger_event:
 		Effect.TriggerEvent.TE_IMMEDIATE:
 			effect.fire.call_deferred({})
@@ -74,4 +66,4 @@ func _process_effect(effect: Effect) -> void:
 				if effect.matches(loot.id, Effect.EventCategory.EC_LE_COLLECTED):
 					effect.fire.call_deferred({"card_id": loot.id})
 			)
-			pass
+	active_effects.append(effect)
