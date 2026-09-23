@@ -9,24 +9,28 @@ func _init() -> void:
 
 
 func process_effects(delta: float, _speed_multiplier: float = 1.0) -> void:
+	var to_remove: Array[Effect] = []
 	for effect in active_effects:
-		_process_effect(effect)
 		if effect.has_time_remaining():
 			effect.duration -= delta * _speed_multiplier
 		if not effect.has_time_remaining() or not effect.can_fire():
-			active_effects.erase(effect)
+			to_remove.append(effect)
+			continue
+		_process_effect(effect)
+	for effect in to_remove:
+		active_effects.erase(effect)
 
-
-func _process_effect(effect: Effect) -> void:
-	if not effect.trigger_event == Effect.TriggerEvent.TE_IMMEDIATE:
-		return
-	effect.fire.call({})
 
 
 func register_effect(effect: Effect) -> void:
+	_process_effect(effect)
+	active_effects.append(effect)
+
+
+func _process_effect(effect: Effect) -> void:
 	match effect.trigger_event:
 		Effect.TriggerEvent.TE_IMMEDIATE:
-			effect.fire.call({})
+			effect.fire.call_deferred({})
 		Effect.TriggerEvent.TE_RUN_EVENT:
 			if effect.event_category == Effect.EventCategory.EC_RE_START_RUN:
 				_run_manager.run_started.connect(effect.fire.call_deferred.bind({}), ConnectFlags.CONNECT_ONE_SHOT)
@@ -71,4 +75,3 @@ func register_effect(effect: Effect) -> void:
 					effect.fire.call_deferred({"card_id": loot.id})
 			)
 			pass
-	active_effects.append(effect)
