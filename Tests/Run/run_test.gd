@@ -54,7 +54,6 @@ func _ready() -> void:
 
 
 func goto_hub() -> void:
-	_clear_hub()
 	hub_container.show()
 	run_container.hide()
 	
@@ -126,15 +125,6 @@ func _on_deactivate_card(card: Card) -> void:
 		deck_updated.emit()
 
 
-func _clear_hub() -> void:
-	_gauntlets.clear()
-	for child in gauntlet_container.get_children():
-		child.queue_free()
-	_datashards.clear()
-	for child in datashards_container.get_children():
-		child.queue_free()
-
-
 func goto_run() -> void:
 	hub_container.hide()
 	run_container.show()
@@ -163,6 +153,10 @@ func _on_run_ended(_success:bool) -> void:
 
 
 func _create_gauntlets_info() -> void:
+	_gauntlets.clear()
+	for child in gauntlet_container.get_children():
+		child.queue_free()
+		
 	var available_gauntlets = GameManager.get_available_gauntlets()
 	var container_label := Label.new()
 	container_label.text = "Gauntlets"
@@ -184,6 +178,10 @@ func _on_gauntlet_selected(gauntlet_btn: Button, gauntlet: Gauntlet) -> void:
 
 
 func _create_datashards_info() -> void:
+	_datashards.clear()
+	for child in datashards_container.get_children():
+		child.queue_free()
+		
 	var unlocked_datashards = GameManager.get_unlocked_datashards()
 	var container_label := Label.new()
 	container_label.text = "Datashards"
@@ -196,7 +194,7 @@ func _create_datashards_info() -> void:
 		if not GameManager.get_equipped_gauntlet():
 			datashard_btn.disabled = true
 		datashard_btn.pressed.connect(_on_datashard_selected.bind(datashard_btn, datashard))
-		gauntlet_selected.connect(func(): datashard_btn.disabled = false)
+		gauntlet_selected.connect(func(): datashard_btn.disabled = false, ConnectFlags.CONNECT_ONE_SHOT)
 		_datashards[datashard.id] = datashard_btn
 
 
@@ -224,24 +222,18 @@ func _create_effects_info() -> void:
 		_effects[effect.id] = effects_label
 
 
-func _clear_infos() -> void:
-	_factors.clear()
-	for child in factor_container.get_children():
-		child.queue_free()
-	_events.clear()
-	for child in event_container.get_children():
-		child.queue_free()
-
-
 func _on_run_started() -> void:
 	GameManager.run_manager.run_state.event_manager.event_resolved.connect(_on_event_resolved)
 	GameManager.run_manager.run_state.event_manager.event_blocked.connect(_on_event_blocked)
-	_clear_infos()
 	_create_factor_info()
 	_create_event_info()
 
 
 func _create_factor_info() -> void:
+	_factors.clear()
+	for child in factor_container.get_children():
+		child.queue_free()
+		
 	var all_factor_ids = GameManager.get_factor_manager().get_all_factor_ids()
 	var container_label := Label.new()
 	container_label.text = "Factors"
@@ -264,6 +256,10 @@ func _create_factor_info() -> void:
 
 
 func _create_event_info() -> void:
+	_events.clear()
+	for child in event_container.get_children():
+		child.queue_free()
+	
 	var all_event_ids = GameManager.get_event_manager().get_all_event_ids()
 	var container_label := Label.new()
 	container_label.text = "Events (resolved|blocked)"
@@ -282,7 +278,6 @@ func _create_event_info() -> void:
 		container.add_child(ev_val)
 		event_container.add_child(container)
 		_events[event.id] = ev_val
-		
 
 
 func _on_run_ticked(run_state: RunState) -> void:

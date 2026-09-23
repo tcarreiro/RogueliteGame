@@ -1,6 +1,7 @@
 class_name LootManager extends Resource
 
 signal loot_changed(loot_manager: LootManager)
+signal collected(loot: Loot)
 
 # What the player has "in his bag"
 var name: StringName
@@ -19,6 +20,7 @@ func _on_collect(loot:Loot, dict:Dictionary[StringName, Array]) -> void:
 	if not dict.has(loot.id):
 		dict[loot.id] = []
 	dict[loot.id].append(loot)
+	collected.emit(self)
 
 
 func _on_remove(loot:Loot, dict:Dictionary[StringName, Array]) -> void:
@@ -29,6 +31,7 @@ func _on_remove(loot:Loot, dict:Dictionary[StringName, Array]) -> void:
 	var uuid: UUID = loot.get("uuid")
 	# TO TEST: isn't list.erase(loot) enough?
 	if uuid == null:
+		collected.emit(self)
 		list.pop_front()
 		return
 	

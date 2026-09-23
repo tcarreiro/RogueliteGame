@@ -5,7 +5,7 @@ enum EventTrigger {
 	REACTIVE
 }
 
-signal triggered(event: Event, value: int)
+signal triggered(event: Event, amount: int)
 
 var id: StringName
 var name: String
@@ -25,18 +25,18 @@ func _init(definition: EventDefinition) -> void:
 	on_trigger = definition.on_trigger
 
 
-func trigger(value: int = 1) -> void:
+func trigger(amount: int = 1) -> void:
 	GameLogger.debug("Event %s being processed."%id)
-	triggered.emit(self, value)
+	triggered.emit(self, amount)
 	if on_trigger.is_valid():
-		on_trigger.call(null, id, value)
+		on_trigger.call(null, id, amount)
 
 
-func resolve_event(value: int) -> void:
+func resolve_event(amount: int) -> void:
 	if on_resolved.is_valid():
-		on_resolved.call(null, id, value)
+		on_resolved.call(null, id, amount)
 
 
-func block_event(value: int) -> void:
+func block_event(amount: int) -> void:
 	if on_blocked.is_valid():
-		on_blocked.call(null, id, value)
+		on_blocked.call(null, id, amount)

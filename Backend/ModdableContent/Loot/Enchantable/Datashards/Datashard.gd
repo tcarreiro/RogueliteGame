@@ -17,16 +17,12 @@ func _init(definition: DatashardDefinition) -> void:
 	description = definition.description
 	tier = definition.tier
 	nature_id = definition.nature_id
-	for effect_id in definition.effect_ids:
-		add_effect(effect_id)
 	stackable = definition.stackable
 	on_obtained = definition.on_obtained
 	on_run_start = definition.on_run_start
 	on_collect = definition.on_collect
 	on_spawn = definition.on_spawn
 	on_run_end = definition.on_run_end
-	on_effect_added = definition.on_effect_added
-	on_effect_removed = definition.on_effect_removed
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip
 

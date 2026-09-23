@@ -40,8 +40,22 @@ func shuffle() -> void:
 	deck_updated.emit(self)
 
 
+func get_effects() -> Array[Effect]:
+	var effects := []
+	for card: Card in get_cards():
+		effects.append(card.effects.values())
+	return effects
+
+
 func get_cards() -> Array[Card]:
 	return cards.values()
+
+
+func get_card_by_uuid(card_uuid: UUID) -> Card:
+	var found: Array[Card] = get_cards().filter(func(c:Card): return c.uuid == card_uuid)
+	if found.is_empty():
+		return null
+	return found[0]
 
 
 func get_all_cards_uuid() -> Array[UUID]:

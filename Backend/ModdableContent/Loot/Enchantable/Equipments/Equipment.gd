@@ -29,8 +29,6 @@ func _init(definition: EquipmentDefinition) -> void:
 	type = definition.type
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip
-	for effect_id in definition.effect_ids:
-		add_effect(effect_id)
 	for addon_id in definition.addon_ids:
 		equip_addon(AddonRegistry.create_addon(addon_id))
 

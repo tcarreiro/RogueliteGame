@@ -37,6 +37,7 @@ func _register_common_state() -> void:
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "addAction", lua_add_action)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "stopAction", lua_stop_action)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "createFactorThreshold", lua_create_factor_threshold)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doCreateEffect", lua_create_effect)
 
 
 #region Factor
@@ -47,12 +48,6 @@ func register_factor_exclusive_states(_definition: FactorDefinition, __state_nam
 
 #region Event
 func register_event_exclusive_states(_definition: EventDefinition, __state_name: StringName) -> void:
-	pass
-#endregion
-
-
-#region Effect
-func register_effect_exclusive_states(_definition: EffectDefinition, __state_name: StringName) -> void:
 	pass
 #endregion
 
@@ -95,6 +90,12 @@ func get_state_name() -> StringName:
 
 
 #region Lua Scripts
+func lua_create_effect(config_table) -> void:
+	var config = LuaHelper.normalize_lua(config_table)
+	var effect := Effect.new(config)
+	GameManager.get_effect_manager().register_effect(effect)
+
+
 func lua_get_factor_level(factor_id: StringName):
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor == null:
@@ -123,7 +124,7 @@ func lua_do_change_factor_level(factor_id: StringName, new_level:int):
 func lua_do_change_factor_max_level(factor_id: StringName, new_level:int):
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor != null:
-		factor.set_max_level(new_level)
+		factor.increase_max_level(new_level)
 	GameLogger.debug("%s max level changed to %s from lua script"%[factor_id, str(factor.max_level)])
 
 
