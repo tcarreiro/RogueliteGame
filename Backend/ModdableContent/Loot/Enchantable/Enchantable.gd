@@ -1,12 +1,8 @@
 class_name Enchantable extends Loot
 
-signal effect_added(equipment: Equipment, effect: Effect)
-signal effect_removed(equipment: Equipment, effect: Effect)
+signal effect_updated(equipment: Equipment)
 
-@export var effects: Dictionary[StringName, Effect] = {}
-
-var on_effect_added: Callable
-var on_effect_removed: Callable
+@export var effects: Dictionary[UUID, Effect] = {}
 
 func _compute_max_effects_allowed() -> int:
 	return 0
@@ -20,33 +16,21 @@ func get_all_effects() -> Array[Effect]:
 	return effects.values()
 
 
-func add_effect(effect_id: StringName) -> void:
+func add_effect(effect: Effect) -> void:
 	if _compute_max_effects_allowed() - get_total_effects() <= 0:
 		GameLogger.error(
-			"[Enchantable] could't add effect %s to enchantable %s, because there is no slot available."%[effect_id, id])
+			"[Enchantable] could't add effect to enchantable %s, because there is no slot available."%[id])
 		return
-	var effect = EffectRegistry.create_effect(effect_id)
 	if not effect:
-		GameLogger.error(
-			"[Enchantable] effect %s not found."%[effect_id])
 		return
-	if effects.has(effect_id) and effect.unique:
-		return
-	effect_added.emit(self, effect)
-	if on_effect_added.is_valid():
-		on_effect_added.call(effect_id)
-	#effect.equip()
-	effects[effect_id] = effect
+	effect_updated.emit(self)
+	effects[effect.uuid] = effect
 
 
-func remove_effect(effect_id: StringName) -> void:
-	if not effects.has(effect_id):
+func remove_effect(effect: Effect) -> void:
+	if not effects.has(effect.uuid):
 		GameLogger.warn(
-			"[Enchantable] could't remove effect %s not found in equip %s."%[effect_id, id])
+			"[Enchantable] could't remove effect. Not found in equip %s."%[id])
 		return
-	var effect: Effect = effects.get(effect_id)
-	effect_removed.emit(self, effect)
-	if on_effect_removed.is_valid():
-		on_effect_removed.call(effect_id)
-	#effect.unequip()
-	effects.erase(effect_id)
+	effect_updated.emit(self)
+	effects.erase(effect.uuid)

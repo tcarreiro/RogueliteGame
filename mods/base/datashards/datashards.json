@@ -3,9 +3,9 @@
 		"id": "initial_datashard",
 		"display_name": "Initial Datashard",
 		"description": "It looks like a small condensed energy.",
-		"tier": 1,
+		"tier": 2,
 		"nature_id": "NONE",
-		"effect_ids": [],
+		"effect_ids": ["effect_echo"],
 		"script_path": "datashards/scripts/initial_datashard.lua"
 	}
 ]

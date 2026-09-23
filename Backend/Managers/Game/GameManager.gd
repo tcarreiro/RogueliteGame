@@ -42,7 +42,7 @@ func _setup_mods():
 func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
 	FactorRegistry.load_from_mods(active_mod_ids)
 	EventRegistry.load_from_mods(active_mod_ids)
-	EffectRegistry.load_from_mods(active_mod_ids)
+	#EffectRegistry.load_from_mods(active_mod_ids)
 	DatashardRegistry.load_from_mods(active_mod_ids)
 	AddonRegistry.load_from_mods(active_mod_ids)
 	EquipmentRegistry.load_from_mods(active_mod_ids)
@@ -83,8 +83,16 @@ func get_event_manager() -> EventManager:
 	return get_run_state().event_manager
 
 
+func get_effect_manager() -> EffectManager:
+	return get_run_state().effects_manager
+
+
 func get_equipment_manager() -> EquipmentManager:
 	return get_run_state().equipment_manager
+
+
+func get_run_deck_manager() -> DeckManager:
+	return get_run_state().run_deck_manager
 
 
 func get_factor(factor_id: StringName) -> Factor:

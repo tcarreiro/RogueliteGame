@@ -1,4 +1,4 @@
-class_name Card extends Loot
+class_name Card extends Enchantable
 
 signal drawn(card: Card)
 signal played(card: Card)
@@ -18,7 +18,6 @@ enum CardFlag {
 @export var cost: int = 0
 @export var max_copies_in_active_deck: int = 3
 @export var flags: Array[CardFlag] = []
-#@export var effects: Array[CardEffect] = [] # TODO: CardEffect
 
 var on_drawn: Callable
 var on_played: Callable
@@ -37,8 +36,6 @@ func _init(definition: CardDefinition) -> void:
 	for card_flag in definition.flags:
 		flags.append(
 			Utils.parse_string_into_enum(CardFlag, card_flag, "[Card] - flags") as CardFlag)
-	#for effect_id in definition.effect_ids:
-		#add_effect(effect_id)
 	stackable = definition.stackable
 	on_drawn = definition.on_drawn
 	on_played = definition.on_played
@@ -49,26 +46,30 @@ func _init(definition: CardDefinition) -> void:
 
 func draw() -> void:
 	drawn.emit(self)
-	if on_drawn.is_valid():
-		on_drawn.call()
+	if not on_drawn.is_valid():
+		return
+	on_drawn.call(id)
 
 
 func play() -> void:
 	played.emit(self)
-	if on_played.is_valid():
-		on_played.call()
+	if not on_played.is_valid():
+		return
+	on_played.call(id)
 
 
 func discard() -> void:
 	discarded.emit(self)
-	if on_discarded.is_valid():
-		on_discarded.call()
+	if not on_discarded.is_valid():
+		return
+	on_discarded.call(id)
 
 
 func destroy() -> void:
 	destroyed.emit(self)
-	if on_destroyed.is_valid():
-		on_destroyed.call()
+	if not on_destroyed.is_valid():
+		return
+	on_destroyed.call(id)
 
 
 #region Flags
@@ -85,19 +86,5 @@ func returns_to_deck() -> bool:
 
 
 func is_unblockable() -> bool:
-	return flags.has(CardFlag.PERMANENT)
+	return flags.has(CardFlag.UNBLOCKABLE)
 #endregion
-
-#func get_effects_by_trigger(trigger: Enums.EventTrigger) -> Array[CardEffect]:
-	#var result: Array[CardEffect] = []
-	#for effect in effects:
-		#if effect.trigger == trigger:
-			#result.append(effect)
-	#return result
-#
-#
-#func reset_charges() -> void:
-	#for effect in effects:
-		#effect.reset_charges()
-#
-#

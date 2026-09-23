@@ -1,5 +1,6 @@
 class_name EventManager extends Resource
 
+signal event_triggered(event_id: StringName, amount: int)
 signal event_resolved(event_id: StringName, amount: int)
 signal event_blocked(event_id: StringName, amount: int)
 
@@ -9,7 +10,6 @@ var event_queue: Dictionary[StringName, Array] = {} # Array[EventOccurrence]
 var block_queue: Dictionary[StringName, Array] = {} # Array[EventBlock]
 var queue_throttle: Dictionary[StringName, float] = {} # segundos entre processamentos, vindo de mod data
 var _queue_throttle_timers: Dictionary[StringName, float] = {} 
-var _speed_multiplier: float = 10.0
 
 func register_event(event: Event, throttle: float = 5.0) -> void:
 	if not event:
@@ -32,13 +32,14 @@ func add_block(event_id: StringName, block: EventBlock) -> void:
 
 func _on_event_triggered(event: Event, value: int) -> void:
 	event_queue[event.id].append(EventOccurrence.new(event, value))
+	event_triggered.emit(event.id, value)
 
 
-func process(delta: float) -> void:
+func process(delta: float, speed_multiplier: float = 1.0) -> void:
 	# Process timed events
 	for event in _events.values():
 		if event is TimedEvent:
-			event.process(delta, _speed_multiplier)
+			event.process(delta, speed_multiplier)
 	
 	for event_id in event_queue:
 		var queue: Array = event_queue[event_id]

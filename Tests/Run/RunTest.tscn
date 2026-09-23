@@ -149,7 +149,7 @@ size_flags_horizontal = 19
 size_flags_vertical = 17
 size_flags_stretch_ratio = 0.25
 
-[node name="RunEffectsContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/SidePanel" unique_id=1811361971]
+[node name="EffectsContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/CenterPanel/SidePanel" unique_id=1811361971]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 19

@@ -19,8 +19,6 @@ func _init(definition: AddonDefinition) -> void:
 	description = definition.description
 	tier = definition.tier
 	nature_id = definition.nature_id
-	for effect_id in definition.effect_ids:
-		add_effect(effect_id)
 	for type in definition.suits:
 		suits.append(
 			Utils.parse_string_into_enum(Equipment.EquipmentType, type, "[Addon] - suits") as Equipment.EquipmentType)
@@ -29,8 +27,6 @@ func _init(definition: AddonDefinition) -> void:
 	on_collect = definition.on_collect
 	on_spawn = definition.on_spawn
 	on_run_end = definition.on_run_end
-	on_effect_added = definition.on_effect_added
-	on_effect_removed = definition.on_effect_removed
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip
 

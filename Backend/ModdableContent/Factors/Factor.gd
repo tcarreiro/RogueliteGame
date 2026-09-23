@@ -30,6 +30,10 @@ func add_threshold(threshold: FactorThreshold) -> void:
 	thresholds.append(threshold)
 
 
+func increase_max_level(amount: int) -> void:
+	set_max_level(max_level + amount)
+
+
 func set_max_level(new_max_level: int) -> void:
 	max_level = max(new_max_level, 0)
 	level_changed.emit(self)
@@ -39,10 +43,6 @@ func set_max_level(new_max_level: int) -> void:
 
 func increase_level(amount: int) -> void:
 	set_level(current_level + amount)
-
-
-func decrease_level(amount: int) -> void:
-	set_level(current_level - amount)
 
 
 func set_level(level: int, check_thresholds: bool = true) -> void:

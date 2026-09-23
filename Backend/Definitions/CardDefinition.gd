@@ -16,7 +16,6 @@ enum CardFlag {
 @export var cost: int = 0
 @export var max_copies_in_active_deck: int = 3
 @export var flags: Array[StringName] = []
-#@export var effects: Array[CardEffect] = [] # TODO: CardEffect
 
 var on_run_start: Callable
 var on_run_end: Callable
