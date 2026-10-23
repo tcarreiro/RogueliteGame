@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://c543h4udmpgpc"]
+
+[ext_resource type="Script" uid="uid://c34lvys7sdxry" path="res://addons/lua-modder/UI/Styles/Components/Premade/Grid/Grid.gd" id="1_je1vm"]
+[ext_resource type="Script" uid="uid://cl5vfww5rfkm4" path="res://addons/lua-modder/UI/Styles/Components/Classes/LuaGridBox.gd" id="2_kkt7j"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h0j6j"]
+
+[node name="Grid" type="BoxContainer" unique_id=270868245]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_je1vm")
+metadata/_edit_use_anchors_ = true
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=104701820]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Background" type="PanelContainer" parent="Margin" unique_id=1773208487]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_h0j6j")
+
+[node name="Padding" type="MarginContainer" parent="Margin/Background" unique_id=1124177761]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Items" type="GridContainer" parent="Margin/Background/Padding" unique_id=1918885026]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_kkt7j")

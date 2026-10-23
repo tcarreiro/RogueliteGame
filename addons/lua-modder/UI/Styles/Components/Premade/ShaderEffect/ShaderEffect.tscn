@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://comtpa2djorgk"]
+
+[ext_resource type="Script" uid="uid://dswli55on45yt" path="res://addons/lua-modder/UI/Styles/Components/Premade/ShaderEffect/ShaderEffect.gd" id="1_1b6mp"]
+
+[node name="ShaderEffect" type="Control" unique_id=856096835]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_1b6mp")
+
+[node name="Copy" type="BackBufferCopy" parent="." unique_id=1213889666]
+unique_name_in_owner = true
+
+[node name="Rect" type="ColorRect" parent="." unique_id=846408953]
+unique_name_in_owner = true
+layout_mode = 0

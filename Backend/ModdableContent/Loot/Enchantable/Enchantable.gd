@@ -23,8 +23,8 @@ func add_effect(effect: Effect) -> void:
 		return
 	if not effect:
 		return
-	effect_updated.emit(self)
 	effects[effect.uuid] = effect
+	effect_updated.emit(self)
 
 
 func remove_effect(effect: Effect) -> void:
@@ -32,5 +32,5 @@ func remove_effect(effect: Effect) -> void:
 		GameLogger.warn(
 			"[Enchantable] could't remove effect. Not found in equip %s."%[id])
 		return
-	effect_updated.emit(self)
 	effects.erase(effect.uuid)
+	effect_updated.emit(self)

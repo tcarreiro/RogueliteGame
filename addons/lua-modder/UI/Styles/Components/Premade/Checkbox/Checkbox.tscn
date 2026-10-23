@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://wxkk6fcpv0h2"]
+
+[ext_resource type="Script" uid="uid://dnr4g71k6n8ab" path="res://addons/lua-modder/UI/Styles/Components/Premade/Checkbox/Checkbox.gd" id="1_b62pl"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_d0sib"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yc3xh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h0j6j"]
+
+[node name="Checkbox" type="BoxContainer" unique_id=270868245]
+offset_right = 82.0
+offset_bottom = 31.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("1_b62pl")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=104701820]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Background" type="PanelContainer" parent="Margin" unique_id=1773208487]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_d0sib")
+
+[node name="Padding" type="MarginContainer" parent="Margin/Background" unique_id=1124177761]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Row" type="HBoxContainer" parent="Margin/Background/Padding" unique_id=1593563003]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Box" type="PanelContainer" parent="Margin/Background/Padding/Row" unique_id=1669146497]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxEmpty_yc3xh")
+
+[node name="Inset" type="MarginContainer" parent="Margin/Background/Padding/Row/Box" unique_id=111084980]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Mark" type="PanelContainer" parent="Margin/Background/Padding/Row/Box/Inset" unique_id=2047685878]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_h0j6j")
+
+[node name="Label" type="Label" parent="Margin/Background/Padding/Row" unique_id=173862717]
+unique_name_in_owner = true
+layout_mode = 2
+vertical_alignment = 1

@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://canm20vafpd3n"]
+
+[ext_resource type="Script" uid="uid://dmuwe380pgbef" path="res://addons/lua-modder/UI/Styles/Components/Premade/Input/Input.gd" id="1_wctvn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k2rla"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k2rla"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xnklt"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vl6mo"]
+
+[node name="Input" type="BoxContainer" unique_id=270868245]
+offset_right = 82.0
+offset_bottom = 31.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("1_wctvn")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=104701820]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Background" type="PanelContainer" parent="Margin" unique_id=1773208487]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k2rla")
+
+[node name="Padding" type="MarginContainer" parent="Margin/Background" unique_id=1124177761]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Margin/Background/Padding" unique_id=327396241]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="IconLeft" type="TextureRect" parent="Margin/Background/Padding/HBoxContainer" unique_id=274217001]
+unique_name_in_owner = true
+propagate_maximum_size = true
+layout_mode = 2
+expand_mode = 2
+
+[node name="InputWrapper" type="BoxContainer" parent="Margin/Background/Padding/HBoxContainer" unique_id=347351335]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 40)
+layout_mode = 2
+size_flags_horizontal = 19
+size_flags_vertical = 17
+
+[node name="Control" type="Control" parent="Margin/Background/Padding/HBoxContainer/InputWrapper" unique_id=29350086]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="Margin/Background/Padding/HBoxContainer/InputWrapper/Control" unique_id=977826309]
+unique_name_in_owner = true
+propagate_maximum_size = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1.0
+offset_right = 1.0
+offset_bottom = 13.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+mouse_filter = 1
+theme_override_font_sizes/font_size = 9
+clip_text = true
+
+[node name="Input" type="LineEdit" parent="Margin/Background/Padding/HBoxContainer/InputWrapper/Control" unique_id=1603835229]
+unique_name_in_owner = true
+propagate_maximum_size = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -26.0
+offset_right = 2.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxEmpty_k2rla")
+theme_override_styles/read_only = SubResource("StyleBoxEmpty_xnklt")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_vl6mo")
+
+[node name="IconRight" type="TextureRect" parent="Margin/Background/Padding/HBoxContainer" unique_id=1125953684]
+unique_name_in_owner = true
+propagate_maximum_size = true
+layout_mode = 2
+expand_mode = 2

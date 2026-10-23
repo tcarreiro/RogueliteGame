@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://bas054rqb1qrl"]
+
+[ext_resource type="Script" uid="uid://quhcq782lhsg" path="res://addons/lua-modder/UI/Styles/Components/Premade/Sprite/Sprite.gd" id="1_234s8"]
+
+[node name="Sprite" type="TextureRect" unique_id=1613092966]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_234s8")

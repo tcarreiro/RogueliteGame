@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://b63qpvhhyte5"]
+
+[ext_resource type="Script" uid="uid://bspsj7f8qcc7d" path="res://addons/lua-modder/UI/Styles/Components/Classes/LuaFlowBox.gd" id="1_81cju"]
+[ext_resource type="Script" uid="uid://c5d1ctqpc1tyo" path="res://addons/lua-modder/UI/Styles/Components/Premade/Scroll/Scroll.gd" id="1_ct2wa"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uix52"]
+
+[node name="Scroll" type="ScrollContainer" unique_id=944039594]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/scroll_hint_vertical_color = Color(0, 0, 0, 1)
+theme_override_colors/scroll_hint_horizontal_color = Color(0, 0, 0, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uix52")
+scroll_hint_mode = 1
+script = ExtResource("1_ct2wa")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=2073382227]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Items" type="BoxContainer" parent="Margin" unique_id=340262186]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("1_81cju")
+metadata/_custom_type_script = "uid://bspsj7f8qcc7d"

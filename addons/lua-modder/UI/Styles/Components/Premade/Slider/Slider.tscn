@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://dtghe23uj65ut"]
+
+[ext_resource type="Script" uid="uid://bfe4qf00txrdf" path="res://addons/lua-modder/UI/Styles/Components/Premade/Slider/Slider.gd" id="1_hcl7g"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_d0sib"]
+
+[node name="Slider" type="BoxContainer" unique_id=270868245]
+offset_right = 82.0
+offset_bottom = 31.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("1_hcl7g")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=104701820]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Background" type="PanelContainer" parent="Margin" unique_id=1773208487]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_d0sib")
+
+[node name="Padding" type="MarginContainer" parent="Margin/Background" unique_id=1124177761]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Row" type="HBoxContainer" parent="Margin/Background/Padding" unique_id=1593563003]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Margin/Background/Padding/Row" unique_id=173862717]
+unique_name_in_owner = true
+layout_mode = 2
+vertical_alignment = 1
+
+[node name="Rail" type="Control" parent="Margin/Background/Padding/Row" unique_id=1406507509]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="Track" type="PanelContainer" parent="Margin/Background/Padding/Row/Rail" unique_id=1337552219]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Fill" type="PanelContainer" parent="Margin/Background/Padding/Row/Rail" unique_id=1423073517]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Thumb" type="PanelContainer" parent="Margin/Background/Padding/Row/Rail" unique_id=1471822606]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 77.0
+offset_top = -15.0
+offset_right = 77.0
+offset_bottom = 16.0
+
+[node name="ValueLabel" type="Label" parent="Margin/Background/Padding/Row" unique_id=235340832]
+unique_name_in_owner = true
+layout_mode = 2

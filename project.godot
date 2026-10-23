@@ -25,9 +25,10 @@ DatashardRegistry="*uid://c5cryitvv21i7"
 EquipmentRegistry="*uid://kissld841vf7"
 CardRegistry="*uid://b763l6ax1847l"
 SceneMap="*uid://bfxewhtnqx4by"
-GdssRuntime="*res://addons/gdss/runtime.gd"
-LuaBridgeRegistry="*res://addons/lua-modder/lua_bridge_registry.gd"
+LuaBridgeRegistry="*res://addons/lua-modder/LuaBridgeRegistry.gd"
 GameLogger="*uid://cubsfekvkib58"
+ComponentRegistry="*res://addons/lua-modder/UI/Registries/component_registry.gd"
+LuaUi="*res://addons/lua-modder/UI/LuaUi.gd"
 
 [display]
 
@@ -40,7 +41,7 @@ project/assembly_name="RogueliteGame"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdss/plugin.cfg", "res://addons/lua-gdextension/plugin.cfg", "res://addons/lua-modder/plugin.cfg")
+enabled=PackedStringArray("res://addons/lua-gdextension/plugin.cfg", "res://addons/lua-modder/plugin.cfg")
 
 [file_customization]
 

@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://qwc2a3af7np1"]
+
+[ext_resource type="Script" uid="uid://5xoffpvyfdg7" path="res://addons/lua-modder/UI/Styles/Components/Premade/ParticleEmitter/ParticleEmitter.gd" id="1_d2pj4"]
+
+[node name="ParticleEmitter" type="Control" unique_id=980741917]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_d2pj4")
+
+[node name="Particles" type="CPUParticles2D" parent="." unique_id=169319143]
+unique_name_in_owner = true

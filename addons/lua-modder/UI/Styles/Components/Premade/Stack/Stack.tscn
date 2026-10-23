@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://drshul4x3q63p"]
+
+[ext_resource type="Script" uid="uid://d0v5fk8gmvud4" path="res://addons/lua-modder/UI/Styles/Components/Premade/Stack/Stack.gd" id="1_4o532"]
+[ext_resource type="Script" uid="uid://qlxtfsxtx83g" path="res://addons/lua-modder/UI/Styles/Components/Classes/LuaStackBox.gd" id="2_g6vwg"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h0j6j"]
+
+[node name="Stack" type="BoxContainer" unique_id=270868245]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_4o532")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=104701820]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Background" type="PanelContainer" parent="Margin" unique_id=1773208487]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_h0j6j")
+
+[node name="Padding" type="MarginContainer" parent="Margin/Background" unique_id=1124177761]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Items" type="MarginContainer" parent="Margin/Background/Padding" unique_id=1870831960]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_g6vwg")

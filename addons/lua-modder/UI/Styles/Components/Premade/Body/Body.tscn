@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://c36k3q5jgjgfo"]
+
+[ext_resource type="Script" uid="uid://d3d02iy87b8ji" path="res://addons/lua-modder/UI/Styles/Components/Premade/Body/Body.gd" id="1_853n7"]
+[ext_resource type="Script" uid="uid://bspsj7f8qcc7d" path="res://addons/lua-modder/UI/Styles/Components/Classes/LuaFlowBox.gd" id="2_x4o8t"]
+
+[node name="Body" type="Control" unique_id=267961683]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 8.0
+offset_bottom = 8.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("1_853n7")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1944378267]
+
+[node name="Body" type="BoxContainer" parent="CanvasLayer" unique_id=1574376233]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_x4o8t")

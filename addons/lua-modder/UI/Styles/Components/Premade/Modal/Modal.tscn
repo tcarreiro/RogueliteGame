@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://cf4hc7io7cnld"]
+
+[ext_resource type="Script" uid="uid://bcuhu6r0pfyeh" path="res://addons/lua-modder/UI/Styles/Components/Premade/Modal/Modal.gd" id="1_auyo0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n8kn8"]
+
+[node name="Modal" type="Control" unique_id=267961683]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 8.0
+offset_bottom = 8.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("1_auyo0")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1944378267]
+
+[node name="Backdrop" type="PanelContainer" parent="CanvasLayer" unique_id=1190541009]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_n8kn8")
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/Backdrop" unique_id=2132948271]
+layout_mode = 2
+
+[node name="ModalContent" type="MarginContainer" parent="CanvasLayer/Backdrop/CenterContainer" unique_id=234841655]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Background" type="PanelContainer" parent="CanvasLayer/Backdrop/CenterContainer/ModalContent" unique_id=91654620]
+unique_name_in_owner = true
+layout_mode = 2
