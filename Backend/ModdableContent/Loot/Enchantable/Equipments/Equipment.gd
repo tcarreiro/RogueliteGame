@@ -27,7 +27,7 @@ func _init(definition: EquipmentDefinition) -> void:
 	cost = definition.cost
 	socket_slots = definition.socket_slots
 	type = definition.type
-	stackable = definition.stackable
+	max_stack = definition.max_stack
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip
 	on_run_start = definition.on_run_start

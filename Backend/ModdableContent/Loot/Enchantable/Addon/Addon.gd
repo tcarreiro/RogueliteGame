@@ -22,7 +22,7 @@ func _init(definition: AddonDefinition) -> void:
 	for type in definition.suits:
 		suits.append(
 			Utils.parse_string_into_enum(Equipment.EquipmentType, type, "[Addon] - suits") as Equipment.EquipmentType)
-	stackable = definition.stackable
+	max_stack = definition.max_stack
 	on_run_start = definition.on_run_start
 	on_collect = definition.on_collect
 	on_spawn = definition.on_spawn

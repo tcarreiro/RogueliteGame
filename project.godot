@@ -46,6 +46,7 @@ enabled=PackedStringArray("res://addons/lua-gdextension/plugin.cfg", "res://addo
 [file_customization]
 
 folder_colors={
+"res://Backend/DTOs/": "pink",
 "res://Backend/Definitions/": "yellow",
 "res://Backend/Managers/": "green",
 "res://Backend/ModdableContent/": "blue",

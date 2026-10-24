@@ -10,7 +10,9 @@ class_name RunState extends Resource
 #@export var artifact_collected: bool = false
 @export var event_manager: EventManager
 @export var factor_manager: FactorManager
-@export var equipment_manager: EquipmentManager
+#@export var equipment_manager: EquipmentManager
+@export var equipment_container: ItemContainer
+@export var item_container: ItemContainer = ItemContainer.new()
 @export var run_loot_manager: LootManager
 @export var run_deck_manager: DeckManager
 @export var effects_manager: EffectManager
@@ -63,17 +65,22 @@ func _setup_factor_manager() -> void:
 
 
 func _setup_equipment_manager() -> void:
-	equipment_manager = EquipmentManager.new()
-	equipment_manager.on_equip.connect(
-		func(equipment: Equipment): GameLogger.info("Equipment %s equipped"%equipment.id))
-	equipment_manager.on_unequip.connect(
-		func(equipment: Equipment): GameLogger.info("Equipment %s unequipped"%equipment.id)) # TBD: ??
+	#equipment_manager = EquipmentManager.new()
+	#equipment_manager.on_equip.connect(
+		#func(equipment: Equipment): GameLogger.info("Equipment %s equipped"%equipment.id))
+	#equipment_manager.on_unequip.connect(
+		#func(equipment: Equipment): GameLogger.info("Equipment %s unequipped"%equipment.id)) # TBD: ??
+	var tag_query := TagQuery.create([&"kind.equipment"])
+	equipment_container = ItemContainer.new(tag_query)
 	_set_run_equipment()
-	equipment_manager.connect_all_loot_run_signals() 
+	#equipment_manager.connect_all_loot_run_signals() 
 
 
 func _set_run_equipment() -> void:
-	equipment_manager.equip(_gauntlet)
+	equipment_container.add(_gauntlet)
+	_gauntlet.connect_run_start()
+	_gauntlet.connect_run_end()
+	#equipment_manager.equip(_gauntlet)
 
 
 func _setup_loot_manager() -> void:

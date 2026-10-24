@@ -5,7 +5,7 @@ class_name DatashardDefinition extends Resource
 @export var description: String
 @export var tier: int = 1
 @export var nature_id: StringName
-@export var stackable: bool
+@export var max_stack: int
 
 var on_run_start: Callable
 var on_collect: Callable
@@ -22,7 +22,7 @@ func _init(entry: Dictionary):
 	description = str(entry.get("description", id))
 	tier = int(entry.get("tier", 1))
 	nature_id = str(entry.get("nature_id", id))
-	stackable = bool(entry.get("stackable", true))
+	max_stack = 1#int(entry.get("max_stack", 1)) # TBD: all datashard are non-stackable
 
 
 func connect_callables(state: LuaState) -> void:

@@ -7,7 +7,7 @@ class_name AddonDefinition extends Resource
 @export var nature_id: StringName
 @export var suits: Array[StringName] = []
 @export var effect_ids: Array[StringName] = []
-@export var stackable: bool
+@export var max_stack: int
 
 var on_run_start: Callable
 var on_collect: Callable
@@ -26,7 +26,7 @@ func _init(entry: Dictionary):
 	nature_id = str(entry.get("nature_id", id))
 	effect_ids.append_array(entry.get("effect_ids", []))
 	suits.append_array(entry.get("suits", []))
-	stackable = bool(entry.get("stackable", true))
+	max_stack = int(entry.get("max_stack", 0))
 
 
 func connect_callables(state: LuaState) -> void:

@@ -29,7 +29,7 @@ static func parse_string_into_enum(enum_dict: Dictionary, raw: String, context: 
 	if enum_dict.has(key):
 		return enum_dict[key]
 
-	GameLogger.error("[%s] invalid value '%s'. Fallback %s as default." % [context, raw, enum_dict.keys()[0]])
+	GameLogger.warn("[%s] invalid value '%s'. Fallback %s as default." % [context, raw, enum_dict.keys()[0]])
 	return 0
 
 

@@ -5,7 +5,8 @@ class_name GameState extends Resource
 @export var total_play_time: float = 0.0
 
 # TBD: create "active_loot" if decide to allow players to bring itens to run
-@export var persistent_loot: LootManager
+#@export var persistent_loot: LootManager
+@export var persistent_inventory: ItemContainer = ItemContainer.new()
 @export var card_collection: CardPile
 @export var active_cards: CardPile
 #@export var deck_collection: DeckData
@@ -35,9 +36,13 @@ func _init() -> void:
 
 
 func _setup_initial_inventory() -> void:
-	persistent_loot = LootManager.new("persistent_loot")
+	#persistent_loot = LootManager.new("persistent_loot")
 	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
-	persistent_loot.collect(gauntlet)
+	var iron_gauntlet = EquipmentRegistry.create_equipment("gauntlet_iron") as Gauntlet
+	#persistent_loot.collect(gauntlet)
+	persistent_inventory.add(gauntlet)
+	persistent_inventory.add(iron_gauntlet)
+	print(persistent_inventory.content.size())
 
 
 func _setup_initial_datashard() -> void:
@@ -73,8 +78,9 @@ func get_active_datashard() -> Datashard:
 	return unlocked_datashards.get(active_datashard_id)
 
 
-func get_available_gauntlets() -> Array[Gauntlet]:
-	return persistent_loot.get_available_gauntlets()
+func get_available_gauntlets() -> Array[Loot]:
+	#return persistent_loot.get_available_gauntlets()
+	return persistent_inventory.get_all_with_tag(&"kind.gauntlet")
 
 
 func choose_gauntlet(gauntlet: Gauntlet) -> void:

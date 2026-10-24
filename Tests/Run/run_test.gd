@@ -172,8 +172,7 @@ func _create_gauntlets_info() -> void:
 	var container_label := Label.new()
 	container_label.text = "Gauntlets"
 	gauntlet_container.add_child(container_label)
-	
-	for gauntlet in available_gauntlets:
+	for gauntlet: Gauntlet in available_gauntlets:
 		var gauntlet_btn := Button.new()
 		gauntlet_btn.text = gauntlet.display_name
 		gauntlet_container.add_child(gauntlet_btn)
@@ -183,6 +182,7 @@ func _create_gauntlets_info() -> void:
 
 func _on_gauntlet_selected(gauntlet_btn: Button, gauntlet: Gauntlet) -> void:
 	GameManager.equip_gauntlet(gauntlet)
+
 	_selected_gauntlet_btn = gauntlet_btn
 	gauntlet_selected.emit()
 	selected_gauntlet.text = gauntlet.display_name
