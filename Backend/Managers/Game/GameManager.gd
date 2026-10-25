@@ -86,10 +86,6 @@ func get_effect_manager() -> EffectManager:
 	return get_run_state().effects_manager
 
 
-#func get_equipment_manager() -> EquipmentManager:
-	#return get_run_state().equipment_manager
-
-
 func get_equipment_container() -> ItemContainer:
 	return get_run_state().equipment_container
 
@@ -122,8 +118,8 @@ func get_active_datashard() -> Datashard:
 	return game_state.get_active_datashard()
 
 
-func get_unlocked_datashards() -> Array[Datashard]:
-	return game_state.unlocked_datashards.values()
+func get_unlocked_datashards() -> Array[Loot]:
+	return game_state.get_unlocked_datashards()
 
 
 func get_available_gauntlets() -> Array[Loot]:

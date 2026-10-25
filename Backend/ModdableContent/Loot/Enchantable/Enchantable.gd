@@ -34,6 +34,3 @@ func remove_effect(effect: Effect) -> void:
 		return
 	effects.erase(effect.uuid)
 	effect_updated.emit(self)
-
-func can_stack() -> bool:
-	return max_stack > 1 and effects.is_empty()

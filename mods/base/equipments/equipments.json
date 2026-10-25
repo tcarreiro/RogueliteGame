@@ -12,7 +12,22 @@
 		"addon_ids": [
 			"echo_chip"
 		],
-		"max_active_deck_size":10,
+		"max_active_deck_size":8,
 		"script_path": "equipments/scripts/gauntlet_bronze.lua"
+	},
+	{
+		"id": "gauntlet_iron",
+		"display_name": "Iron Gauntlet",
+		"description": "A magical gauntlet. Has its charm.",
+		"tier": 2,
+		"nature_id": "NONE",
+		"cost": 0.0,
+		"socket_slots": 1,
+		"type": "GAUNTLET",
+		"effect_ids": [],
+		"addon_ids": [
+		],
+		"max_active_deck_size":10,
+		"script_path": "equipments/scripts/gauntlet_iron.lua"
 	}
 ]

@@ -10,10 +10,9 @@ class_name RunState extends Resource
 #@export var artifact_collected: bool = false
 @export var event_manager: EventManager
 @export var factor_manager: FactorManager
-#@export var equipment_manager: EquipmentManager
 @export var equipment_container: ItemContainer
-@export var item_container: ItemContainer = ItemContainer.new()
-@export var run_loot_manager: LootManager
+@export var run_item_container: ItemContainer
+@export var artifact_container: ItemContainer
 @export var run_deck_manager: DeckManager
 @export var effects_manager: EffectManager
 
@@ -33,8 +32,9 @@ func setup_managers() -> void:
 	_datashard = _gauntlet.datashard
 	_setup_event_manager()
 	_setup_factor_manager()
-	_setup_equipment_manager()
-	_setup_loot_manager()
+	_setup_equipment_container()
+	_setup_run_loot_container()
+	_setup_artifact_container()
 	_setup_deck_manager()
 	_setup_effects_manager()
 
@@ -64,28 +64,27 @@ func _setup_factor_manager() -> void:
 		factor_manager.register_factor(factor)
 
 
-func _setup_equipment_manager() -> void:
-	#equipment_manager = EquipmentManager.new()
-	#equipment_manager.on_equip.connect(
-		#func(equipment: Equipment): GameLogger.info("Equipment %s equipped"%equipment.id))
-	#equipment_manager.on_unequip.connect(
-		#func(equipment: Equipment): GameLogger.info("Equipment %s unequipped"%equipment.id)) # TBD: ??
+func _setup_equipment_container() -> void:
 	var tag_query := TagQuery.create([&"kind.equipment"])
 	equipment_container = ItemContainer.new(tag_query)
 	_set_run_equipment()
-	#equipment_manager.connect_all_loot_run_signals() 
 
 
 func _set_run_equipment() -> void:
 	equipment_container.add(_gauntlet)
 	_gauntlet.connect_run_start()
 	_gauntlet.connect_run_end()
-	#equipment_manager.equip(_gauntlet)
 
 
-func _setup_loot_manager() -> void:
-	# TBD: Run inventory always starts empty?
-	run_loot_manager = LootManager.new("run_loot")
+func _setup_run_loot_container() -> void:
+	 #TBD: Run inventory always starts empty?
+	var tag_query := TagQuery.create([], [], [&"kind.card", &"kind.artifact"]) # collected cards will go to deck, collected artifacts will go to artifact container
+	run_item_container = ItemContainer.new(tag_query)
+
+
+func _setup_artifact_container() -> void:
+	var tag_query := TagQuery.create([], [&"kind.artifact"])
+	artifact_container = ItemContainer.new(tag_query, 1)
 
 
 func _setup_deck_manager() -> void:

@@ -1,14 +1,11 @@
 class_name ItemContainer extends Resource
-## Holds ItemStacks. A unique item is just a stack of quantity 1.
-## Every mutation is validated first (can_*), applied, and then announced:
-## signals are emitted only after the container is consistent, once per operation.
+## Holds ItemStacks. Each stack holds every real instance of one species (same id).
 
 const Fail := ItemContainerOpResult.FailReason
 
-## `quantity` is what actually moved (a partial add reports only what entered).
-signal item_added(loot: Loot, quantity: int)
-signal item_removed(loot: Loot, quantity: int)
-## For the UI: stacks created or whose quantity changed, and stacks that disappeared.
+signal items_added(loots: Array[Loot])
+signal items_removed(loots: Array[Loot])
+## For the UI: stacks created or whose contents changed, and stacks that disappeared.
 signal stacks_changed(updated: Array[ItemStack], removed: Array[ItemStack])
 signal operation_rejected(operation: StringName, result: ItemContainerOpResult)
 
@@ -23,78 +20,89 @@ signal operation_rejected(operation: StringName, result: ItemContainerOpResult)
 @export var content: Array[ItemStack] = []
 
 
-# Defaults are required: Godot calls _init() with no arguments when loading a .tres
+## Where a batch would go. Built without touching the container, so can_add_all()
+## and add_all() can never disagree.
+class AddPlan:
+	var result: ItemContainerOpResult
+	var placed: Array[Loot] = []
+	var not_placed: Array[Loot] = []
+	var existing_stacks: Array[ItemStack] = []  # parallel to existing_loots
+	var existing_loots: Array[Loot] = []
+	var new_stacks: Array[ItemStack] = []
+
+
 func _init(p_accept: TagQuery = null, p_capacity_slots: int = 0) -> void:
 	accept = p_accept
 	capacity_slots = p_capacity_slots
 
 
-#region Queries (never change anything)
-func can_add(loot: Loot, quantity: int = 1) -> ItemContainerOpResult:
-	print("A")
-	if loot == null:
-		print("B")
-		return ItemContainerOpResult.fail(quantity, Fail.NOT_FOUND)
-	if quantity <= 0:
-		print("C")
-		return ItemContainerOpResult.fail(quantity, Fail.QTY_INVALID)
-	if not loot.can_stack():
-		if quantity != 1:
-			print("D")
-			return ItemContainerOpResult.fail(quantity, Fail.QTY_INVALID)
-		if not _matching_stacks(loot).is_empty():
-			print("E")
-			return ItemContainerOpResult.fail(quantity, Fail.DUPLICATE)
-	if accept != null:
-		var tag_result := accept.query_tags(loot.get_tag_set())
-		if tag_result != TagQuery.TagResult.OK:
-			print("F")
-			return ItemContainerOpResult.fail(quantity, _tag_result_to_fail_reason(tag_result))
-	var fit := _how_many_fit(loot, quantity)
-	if fit <= 0:
-		print("G")
-		return ItemContainerOpResult.fail(quantity, Fail.FULL)
-	if fit < quantity:
-		print("H")
-		return ItemContainerOpResult.partial(fit, quantity - fit)
-	return ItemContainerOpResult.complete(quantity)
+#region Queries
+func can_add(loot: Loot) -> ItemContainerOpResult:
+	return can_add_all(_as_list(loot))
 
 
-func can_remove(loot: Loot, quantity: int = 1) -> ItemContainerOpResult:
-	if loot == null:
-		return ItemContainerOpResult.fail(quantity, Fail.NOT_FOUND)
+## Rule violations (null, duplicate instance, tags) fail the WHOLE batch.
+## Running out of room is different: the batch is partial, and `payload` holds the
+## instances that did not enter.
+func can_add_all(loots: Array[Loot]) -> ItemContainerOpResult:
+	return _evaluate_add(loots).result
+
+
+func can_remove(loot: Loot) -> ItemContainerOpResult:
+	if _find_stack_of(loot) == null:
+		return ItemContainerOpResult.fail(1, Fail.NOT_FOUND)
+	return ItemContainerOpResult.complete(1)
+
+
+func can_remove_by_id(loot_id: StringName, quantity: int = 1) -> ItemContainerOpResult:
 	if quantity <= 0:
 		return ItemContainerOpResult.fail(quantity, Fail.QTY_INVALID)
-	if not loot.can_stack() and quantity != 1:
-		return ItemContainerOpResult.fail(quantity, Fail.QTY_INVALID)
-	var matching := _matching_stacks(loot)
-	if matching.is_empty():
+	var total := get_quantity(loot_id)
+	if total == 0:
 		return ItemContainerOpResult.fail(quantity, Fail.NOT_FOUND)
-	var available := 0
-	for stack in matching:
-		available += stack.quantity
-	if available < quantity:
+	if total < quantity:
 		return ItemContainerOpResult.fail(quantity, Fail.NOT_ENOUGH)
 	return ItemContainerOpResult.complete(quantity)
 
 
-## Unique item: this exact instance. Stackable: any stack of the same id.
+## This exact instance.
 func contains(loot: Loot) -> bool:
-	return not _matching_stacks(loot).is_empty()
+	return _find_stack_of(loot) != null
 
 
 func get_all_with_tag(tag: StringName) -> Array[Loot]:
-	var matching_stacks: Array[ItemStack] = content.filter(func(s: ItemStack): return s.loot.has_tag(tag))
-	return matching_stacks.map(func(s: ItemStack): return s.loot)
+	var found_loot := []
+	for item_stack: ItemStack in content:
+		for item: Loot in item_stack.items:
+			if item.has_tag(tag):
+				found_loot.append(item)
+	return found_loot
 
 
-## Units of an id, summed over all its stacks.
+## Number of instances of an id, over all its stacks.
 func get_quantity(loot_id: StringName) -> int:
 	var total := 0
 	for stack in content:
-		if stack.loot.id == loot_id:
+		if stack.get_loot_id() == loot_id:
 			total += stack.quantity
 	return total
+
+
+## Every instance of an id, in stack order.
+func find_by_id(loot_id: StringName) -> Array[Loot]:
+	var found: Array[Loot] = []
+	for stack in content:
+		if stack.get_loot_id() == loot_id:
+			found.append_array(stack.items)
+	return found
+
+
+## Every instance in the container, flattened.
+func get_all_loot() -> Array[Loot]:
+	var all_loot: Array[Loot] = []
+	for stack in content:
+		all_loot.append_array(stack.items)
+	return all_loot
 
 
 func used_slots() -> int:
@@ -108,115 +116,162 @@ func get_all() -> Array[ItemStack]:
 
 
 #region Mutations
-## Complete, partial or fail.
-func add(loot: Loot, quantity: int = 1) -> ItemContainerOpResult:
-	var result := can_add(loot, quantity)
-	if not result.ok:
-		return _reject(&"add", result)
+func add(loot: Loot) -> ItemContainerOpResult:
+	return add_all(_as_list(loot))
 
-	var to_place := result.moved_quantity
-	var remaining := to_place
+
+func add_all(loots: Array[Loot]) -> ItemContainerOpResult:
+	var plan := _evaluate_add(loots)
+	if not plan.result.ok:
+		return _reject(&"add", plan.result)
+
 	var updated: Array[ItemStack] = []
-
-	# 1) fill existing compatible stacks, in list order
-	if loot.can_stack():
-		for stack in content:
-			if remaining <= 0:
-				break
-			if not stack.accepts(loot):
-				continue
-			var moved := mini(stack.get_free_space(), remaining)
-			if moved <= 0:
-				continue
-			stack.quantity += moved
-			remaining -= moved
+	for i in plan.existing_loots.size():
+		var stack := plan.existing_stacks[i]
+		stack.add_item(plan.existing_loots[i])
+		if not updated.has(stack):
 			updated.append(stack)
-
-	# 2) the rest goes into new stacks of up to max_stack units (0 = all in one)
-	var per_stack := loot.get_max_stack()
-	while remaining > 0:
-		var chunk := remaining if per_stack == 0 else mini(per_stack, remaining)
-		var new_stack := ItemStack.new(loot, chunk)
-		
-		content.append(new_stack)
-		updated.append(new_stack)
-		remaining -= chunk
-
-	item_added.emit(loot, to_place)
-	stacks_changed.emit(updated, [] as Array[ItemStack])
-	return result
+	for stack in plan.new_stacks:
+		content.append(stack)
+		updated.append(stack)
+	var removed: Array[ItemStack] = []
+	items_added.emit(plan.placed)
+	stacks_changed.emit(updated, removed)
+	return plan.result
 
 
-## All or nothing: asking for more than exists fails with NOT_ENOUGH.
-## Takes from the last stack to the first. `payload` is the stored Loot; for a stackable
-## it is the shared prototype (see ItemStack), so do not modify it.
-func remove(loot: Loot, quantity: int = 1) -> ItemContainerOpResult:
-	var check := can_remove(loot, quantity)
-	if not check.ok:
-		return _reject(&"remove", check)
-
-	var matching := _matching_stacks(loot)
-	var stored_loot: Loot = matching[0].loot
-	var remaining := quantity
+## Removes this exact instance. `payload` is the instance.
+func remove(loot: Loot) -> ItemContainerOpResult:
+	var stack := _find_stack_of(loot)
+	if stack == null:
+		return _reject(&"remove", ItemContainerOpResult.fail(1, Fail.NOT_FOUND))
+	stack.remove_item(loot)
 	var updated: Array[ItemStack] = []
 	var removed: Array[ItemStack] = []
-
-	for i in range(matching.size() - 1, -1, -1):
-		if remaining <= 0:
-			break
-		var stack := matching[i]
-		var taken := mini(stack.quantity, remaining)
-		stack.quantity -= taken
-		remaining -= taken
-		if stack.quantity == 0:
-			content.erase(stack)
-			removed.append(stack)
-		else:
-			updated.append(stack)
-
-	item_removed.emit(stored_loot, quantity)
+	if stack.is_empty():
+		content.erase(stack)
+		removed.append(stack)
+	else:
+		updated.append(stack)
+	var removed_loots: Array[Loot] = [loot]
+	items_removed.emit(removed_loots)
 	stacks_changed.emit(updated, removed)
-	return ItemContainerOpResult.complete(quantity, stored_loot)
+	return ItemContainerOpResult.complete(1, loot)
+
+
+## Consumes `quantity` instances of an id (recipes, costs). All or nothing.
+## Takes from the last stack to the first, last instance first. `payload` is the
+## Array[Loot] that was removed.
+func remove_by_id(loot_id: StringName, quantity: int = 1) -> ItemContainerOpResult:
+	var check := can_remove_by_id(loot_id, quantity)
+	if not check.ok:
+		return _reject(&"remove_by_id", check)
+
+	var removed_loots: Array[Loot] = []
+	var updated: Array[ItemStack] = []
+	var removed: Array[ItemStack] = []
+	var remaining := quantity
+	var i := content.size() - 1
+	while i >= 0 and remaining > 0:
+		var stack := content[i]
+		if stack.get_loot_id() == loot_id:
+			while remaining > 0 and not stack.is_empty():
+				removed_loots.append(stack.pop_item())
+				remaining -= 1
+			if stack.is_empty():
+				content.remove_at(i)
+				removed.append(stack)
+			else:
+				updated.append(stack)
+		i -= 1
+
+	items_removed.emit(removed_loots)
+	stacks_changed.emit(updated, removed)
+	return ItemContainerOpResult.complete(quantity, removed_loots)
 #endregion
 
 
 #region Internal
-## Unique item: the entry holding this exact instance. Stackable: every stack of the same id.
-func _matching_stacks(loot: Loot) -> Array[ItemStack]:
-	var matching: Array[ItemStack] = []
+func _as_list(loot: Loot) -> Array[Loot]:
+	return [loot]
+
+
+func _find_stack_of(loot: Loot) -> ItemStack:
 	if loot == null:
-		return matching
+		return null
 	for stack in content:
+		if stack.contains(loot):
+			return stack
+	return null
+
+
+func _evaluate_add(loots: Array[Loot]) -> AddPlan:
+	var plan := AddPlan.new()
+	var requested := loots.size()
+	if requested == 0:
+		plan.result = ItemContainerOpResult.fail(0, Fail.QTY_INVALID)
+		return plan
+
+	# 1) rule violations: nothing moves
+	var seen := {}
+	for loot in loots:
+		if loot == null:
+			plan.result = ItemContainerOpResult.fail(requested, Fail.NOT_FOUND)
+			return plan
+		if seen.has(loot) or _find_stack_of(loot) != null:
+			plan.result = ItemContainerOpResult.fail(requested, Fail.DUPLICATE)
+			return plan
+		seen[loot] = true
+		if accept != null:
+			var tag_result := accept.query_tags(loot.get_tag_set())
+			if tag_result != TagQuery.TagResult.OK:
+				plan.result = ItemContainerOpResult.fail(requested, _tag_result_to_fail_reason(tag_result))
+				return plan
+
+	# 2) placement, in order: existing stacks, then stacks created by this batch,
+	#    then a new slot if there is capacity for one
+	var extra := {}  # existing ItemStack -> instances already planned into it
+	for loot in loots:
+		var target: ItemStack = null
+		var target_is_new := false
 		if loot.can_stack():
-			if stack.accepts(loot):
-				matching.append(stack)
-		elif stack.loot == loot:
-			matching.append(stack)
-	return matching
-
-
-func _how_many_fit(loot: Loot, quantity: int) -> int:
-	if capacity_slots == 0:
-		return quantity
-	var room := 0
-	if loot.can_stack():
-		for stack in content:
-			if stack.accepts(loot):
-				room += stack.get_free_space()
-				if room >= quantity:
-					return quantity
-	var free_slots := maxi(capacity_slots - content.size(), 0)
-	if free_slots == 0:
-		return mini(quantity, room)
-	var per_slot := loot.get_max_stack()
-	if per_slot == 0:
-		return quantity  # a new unlimited stack takes everything
-	return mini(quantity, room + free_slots * per_slot)
+			for stack in content:
+				if stack.accepts(loot) and stack.get_free_space() - int(extra.get(stack, 0)) > 0:
+					target = stack
+					break
+			if target == null:
+				for stack in plan.new_stacks:
+					if stack.accepts(loot) and stack.get_free_space() > 0:
+						target = stack
+						target_is_new = true
+						break
+		if target == null:
+			if capacity_slots != 0 and content.size() + plan.new_stacks.size() >= capacity_slots:
+				plan.not_placed.append(loot)
+				continue
+			target = ItemStack.new()
+			plan.new_stacks.append(target)
+			target_is_new = true
+		if target_is_new:
+			target.add_item(loot)
+		else:
+			extra[target] = int(extra.get(target, 0)) + 1
+			plan.existing_stacks.append(target)
+			plan.existing_loots.append(loot)
+		plan.placed.append(loot)
+	if plan.placed.is_empty():
+		plan.result = ItemContainerOpResult.fail(requested, Fail.FULL)
+	elif plan.not_placed.is_empty():
+		plan.result = ItemContainerOpResult.complete(plan.placed.size())
+	else:
+		plan.result = ItemContainerOpResult.partial(
+			plan.placed.size(), plan.not_placed.size(), plan.not_placed)
+	
+	return plan
 
 
 func _reject(operation: StringName, result: ItemContainerOpResult) -> ItemContainerOpResult:
 	operation_rejected.emit(operation, result)
-	GameLogger.warn("operationg %s rejected"%[operation])
 	return result
 
 

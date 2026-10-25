@@ -23,7 +23,7 @@ var _datashards: Dictionary[StringName, Button] = {}
 var _selected_datashard_btn: Button
 
 @onready var effects_container: VBoxContainer = %EffectsContainer
-var _effects: Dictionary[StringName, Label] = {}
+var _effects: Dictionary[UUID, Label] = {}
 
 @onready var cards_container: GridContainer = %CardsContainer
 var _cards: Dictionary[UUID, CheckButton] = {}
@@ -68,7 +68,7 @@ func goto_hub() -> void:
 	selected_datashard.text = text
 	
 	selected_gauntlet.show()
-	text = ""
+	text = GameManager.get_equipped_gauntlet().display_name
 	if _selected_gauntlet_btn:
 		text = _selected_gauntlet_btn.text
 	selected_gauntlet.text = text
@@ -230,7 +230,7 @@ func _create_effects_info() -> void:
 		var effects_label := Label.new()
 		effects_label.text = effect.display_name
 		effects_container.add_child(effects_label)
-		#_effects[effect.id] = effects_label
+		_effects[effect.uuid] = effects_label
 
 
 func _on_run_started() -> void:

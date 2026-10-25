@@ -20,4 +20,5 @@ func equip_datashard(_datashard: Datashard) -> void:
 		datashard.unequip()
 	datashard = _datashard
 	datashard.equip()
+	GameLogger.info("[Gauntlet] '%s' equipped."%[datashard.display_name])
 	datashard_equipped.emit(self, datashard)

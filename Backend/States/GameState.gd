@@ -5,8 +5,7 @@ class_name GameState extends Resource
 @export var total_play_time: float = 0.0
 
 # TBD: create "active_loot" if decide to allow players to bring itens to run
-#@export var persistent_loot: LootManager
-@export var persistent_inventory: ItemContainer = ItemContainer.new()
+@export var persistent_inventory: ItemContainer
 @export var card_collection: CardPile
 @export var active_cards: CardPile
 #@export var deck_collection: DeckData
@@ -20,7 +19,6 @@ class_name GameState extends Resource
 #}
 
 @export var active_datashard_id: StringName = ""
-@export var unlocked_datashards: Dictionary[StringName, Datashard] = {}
 @export var active_equipments: Dictionary[StringName, Equipment] = {}
 
 #@export var upgrades: Dictionary = {}
@@ -36,32 +34,35 @@ func _init() -> void:
 
 
 func _setup_initial_inventory() -> void:
-	#persistent_loot = LootManager.new("persistent_loot")
+	var tag_query := TagQuery.create([], [], [&"kind.cards"])
+	persistent_inventory = ItemContainer.new(tag_query)
 	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
 	var iron_gauntlet = EquipmentRegistry.create_equipment("gauntlet_iron") as Gauntlet
-	#persistent_loot.collect(gauntlet)
 	persistent_inventory.add(gauntlet)
 	persistent_inventory.add(iron_gauntlet)
-	print(persistent_inventory.content.size())
 
 
 func _setup_initial_datashard() -> void:
 	var shard = DatashardRegistry.create_datashard("initial_datashard") as Datashard
-	unlocked_datashards[shard.id] = shard
+	persistent_inventory.add(shard)
 
 
 func _setup_initial_equipment() -> void:
-	#var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
-	#active_equipments[gauntlet.id] = gauntlet
-	pass
+	var gauntlet := persistent_inventory.find_by_id("gauntlet_bronze")[0] as Gauntlet
+	choose_gauntlet(gauntlet)
 
 
-func choose_datashard(_datashard_name: String) -> void:
+func get_unlocked_datashards() -> Array[Loot]:
+	return persistent_inventory.get_all_with_tag(&"kind.datashard")
+
+
+func choose_datashard(_datashard_id: String) -> void:
 	var gauntlet := get_equipped_gauntlet()
 	if not gauntlet:
 		return
-	if unlocked_datashards.has(_datashard_name):
-		active_datashard_id = _datashard_name
+	var found_datashard_index := get_unlocked_datashards().find_custom(func(ds: Datashard): return ds.id == _datashard_id)
+	if found_datashard_index > -1:
+		active_datashard_id = _datashard_id
 		gauntlet.equip_datashard(get_active_datashard())
 
 
@@ -75,18 +76,22 @@ func get_equipped_gauntlet() -> Gauntlet:
 func get_active_datashard() -> Datashard:
 	if active_datashard_id == "":
 		return null
-	return unlocked_datashards.get(active_datashard_id)
+	var active_datashard_index := get_unlocked_datashards().find_custom(func(ds: Datashard): return ds.id == active_datashard_id)
+	return get_unlocked_datashards().get(active_datashard_index)
 
 
 func get_available_gauntlets() -> Array[Loot]:
-	#return persistent_loot.get_available_gauntlets()
 	return persistent_inventory.get_all_with_tag(&"kind.gauntlet")
 
 
 func choose_gauntlet(gauntlet: Gauntlet) -> void:
+	if get_equipped_gauntlet() and get_equipped_gauntlet().id == gauntlet.id:
+		return
 	if get_available_gauntlets().find_custom(func(g: Gauntlet): return g.uuid == gauntlet.uuid) == -1:
 		GameLogger.error("[GameState] you don't own this gauntlet.")
 		return
+	GameLogger.info("[GameState] '%s' equipped."%[gauntlet.display_name])
+	active_equipments.clear()
 	active_equipments[gauntlet.id] = gauntlet
 
 

@@ -8,9 +8,7 @@ signal spawned(loot: Loot)
 @export var description: String
 @export var max_stack: int:
 	set(v):
-		if v < 0:
-			v = 0
-		max_stack = v
+		max_stack = maxi(v, 0)
 ## Content tags that come from the mod's JSON ("herb", "potion"...).
 @export var extra_tags: Array[StringName] = []
 
@@ -24,7 +22,6 @@ static var _kind_tags_by_script: Dictionary = {}
 
 var _tag_cache: Array[StringName] = []
 var _tag_cache_valid: bool = false
-
 
 func connect_run_start() -> void:
 	Utils.ensure_connected(GameManager.run_manager.run_started, _on_run_started, ConnectFlags.CONNECT_ONE_SHOT)
@@ -59,7 +56,7 @@ func collect() -> void:
 ## Can this item merge with another equal one into a stack? Subclasses with
 ## per-instance state (e.g. Enchantable with effects) must narrow this.
 func can_stack() -> bool:
-	return max_stack > 1
+	return max_stack != 1
 
 
 func get_max_stack() -> int:
