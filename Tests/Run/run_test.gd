@@ -186,6 +186,7 @@ func _on_gauntlet_selected(gauntlet_btn: Button, gauntlet: Gauntlet) -> void:
 	_selected_gauntlet_btn = gauntlet_btn
 	gauntlet_selected.emit()
 	selected_gauntlet.text = gauntlet.display_name
+	selected_datashard.text = gauntlet.datashard.display_name if gauntlet.datashard else &""
 
 
 func _create_datashards_info() -> void:

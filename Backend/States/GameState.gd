@@ -6,10 +6,7 @@ class_name GameState extends Resource
 
 # TBD: create "active_loot" if decide to allow players to bring itens to run
 @export var persistent_inventory: ItemContainer
-@export var card_collection: CardPile
 @export var active_cards: CardPile
-#@export var deck_collection: DeckData
-#@export var active_deck: DeckData
 
 #@export var essences: Dictionary = {
 	#Enums.Nature.CORE: 0,
@@ -34,8 +31,7 @@ func _init() -> void:
 
 
 func _setup_initial_inventory() -> void:
-	var tag_query := TagQuery.create([], [], [&"kind.cards"])
-	persistent_inventory = ItemContainer.new(tag_query)
+	persistent_inventory = ItemContainer.new()
 	var gauntlet = EquipmentRegistry.create_equipment("gauntlet_bronze") as Gauntlet
 	var iron_gauntlet = EquipmentRegistry.create_equipment("gauntlet_iron") as Gauntlet
 	persistent_inventory.add(gauntlet)
@@ -106,16 +102,12 @@ func get_active_effects() -> Array[Effect]:
 	return all_effects
 
 
-func get_permanent_deck() -> Array[Card]:
-	return card_collection.get_cards()
-
-
 func get_active_deck() -> Array[Card]:
 	return active_cards.get_cards()
 
 
 func activate_card(card: Card) -> bool:
-	if not card_collection.get_all_cards_uuid().has(card.uuid):
+	if get_available_cards().find(card) == -1:
 		return false
 	return active_cards.add_card(card)
 
@@ -130,34 +122,19 @@ func get_active_card_pile() -> CardPile:
 	return active_cards
 
 
+func get_available_cards() -> Array[Card]:
+	var available_cards: Array[Card] = []
+	for card in persistent_inventory.get_all_with_tag(&"kind.card"):
+		available_cards.append(card as Card)
+	return available_cards
+
+
 func _setup_initial_deck() -> void:
 	var _cards: Array[Card] = []
-	_cards.append(CardRegistry.create_card("card_evasion"))
-	_cards.append(CardRegistry.create_card("card_evasion"))
-	_cards.append(CardRegistry.create_card("card_evasion"))
-	card_collection = CardPile.new("PermanentDeck", _cards)
+	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
+	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
+	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
 	active_cards = CardPile.new("ActiveDeck", [])
-	#func _init(_deck_id:StringName, _cards: Array[Card], _max_deck_size: int = 0, _max_card_copies_validation: bool = false) -> void:
-	#var cards: Array[CardData] = []
-	#var treasure_hunter := CardDatabase.get_card("card_treasure_hunter")
-	#var essence_seeker := CardDatabase.get_card("card_essence_seeker")
-	#var evasion := CardDatabase.get_card("card_evasion")
-	#var resonance_ward := CardDatabase.get_card("card_resonance_ward")
-	#
-	#if resonance_ward:
-		#cards.append(CardDatabase.create_card("card_resonance_ward"))
-		#cards.append(CardDatabase.create_card("card_resonance_ward"))
-	#if treasure_hunter:
-		#cards.append(CardDatabase.create_card("card_treasure_hunter"))
-	#if essence_seeker:
-		#cards.append(CardDatabase.create_card("card_essence_seeker"))
-		#cards.append(CardDatabase.create_card("card_essence_seeker"))
-	#if evasion:
-		#cards.append(CardDatabase.create_card("card_evasion"))
-	#
-	## TODO: Handles decks max size
-	#deck_collection = DeckData.new("PlayerPermanentDeck", cards, 40)
-	#active_deck = DeckData.new("PlayerActiveDeck", [], 10, true)
 
 
 func pause() -> void:

@@ -131,7 +131,7 @@ func get_active_effects() -> Array[Effect]:
 
 
 func get_permanent_deck() -> Array[Card]:
-	return game_state.get_permanent_deck()
+	return game_state.get_available_cards()
 
 
 func get_active_deck() -> Array[Card]:

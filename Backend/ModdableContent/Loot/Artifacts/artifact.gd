@@ -1,9 +1,9 @@
 class_name Artifact extends Loot
 
-var uuid: UUID = UUID.new_uuid()
-var tier: int = 1
-var nature_id: StringName
-var value: int = 1
+@export var uuid: UUID = UUID.new_uuid()
+@export var tier: int = 1
+@export var nature_id: StringName
+@export var value: int = 1
 
 #func _init(definition: ArtifactDefinition) -> void:
 	#id = definition.id
