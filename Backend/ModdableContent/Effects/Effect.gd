@@ -42,6 +42,7 @@ enum EventCategory {
 @export var effect_category: EffectCategory
 @export var stacks: int = -1 # -1 means infinite
 @export var duration: float = NAN # NAN means doesn't expire
+@export var unique: bool = false
 
 @export var on_trigger: Callable
 
@@ -57,9 +58,10 @@ func _init(entry: Dictionary) -> void:
 		EffectCategory, entry.get("effect_category", ""), "[Effect] - effect_category") as EffectCategory
 	stacks = int(entry.get("stacks", -1))
 	duration = float(entry.get("duration", NAN))
+	unique = bool(entry.get("unique", false))
 	description = entry.get(
 		"description", "-".join([
-			EffectCategory.keys()[effect_category], TriggerEvent.keys()[trigger_event], EventCategory.keys()[event_category], trigger_filter, stacks, duration
+			EffectCategory.keys()[effect_category], TriggerEvent.keys()[trigger_event], EventCategory.keys()[event_category], trigger_filter, str(stacks), str(duration)
 		]))
 	on_trigger = LuaHelper.make_callable(entry.get("on_trigger"))
 	

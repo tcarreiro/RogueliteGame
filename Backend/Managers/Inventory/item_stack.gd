@@ -1,19 +1,41 @@
 class_name ItemStack extends Resource
-## One slot of an ItemContainer: every real Loot instance of the same species (same id).
-## Each instance keeps its own state (effects, durability...)
+## One slot of an ItemContainer: every real Loot instance of the same species (same id)
+## when Loot has 'uuid'.
+## Each instance keeps its own state (effects, durability...), like a collapsible stack
+## in Project Zomboid. `quantity` is simply how many instances there are.
+## If Loot doesn't have 'uuid', saves only one instance and keep track of quantity in
+## common_quantity
 ## Only the owning ItemContainer should call add_item / remove_item / pop_item.
 
 ## Returned by get_free_space() when the stack has no limit.
 const UNLIMITED: int = 1 << 30
 
+## For non-unique Loot (no UUID), saves only one instance at items[0]
 @export var items: Array[Loot] = []
+## Used only for non-unique Loot (no UUID)
+@export var common_quantity: int = 0
+@export var _unique: bool = false
+
 var quantity: int:
 	get:
-		return items.size()
+		return items.size() if _unique else common_quantity
 
 
+# Defaults are required: Godot calls _init() with no arguments when loading a .tres
 func _init(p_items: Array[Loot] = []) -> void:
-	items = p_items.duplicate()
+	if not p_items.is_empty():
+		if "uuid" in p_items[0]:
+			items = p_items.duplicate()
+			common_quantity = 0
+			_unique = true
+		else:
+			items = [p_items[0].duplicate()]
+			common_quantity = p_items.size()
+			_unique = false
+
+
+static func has_identity(p_loot: Loot) -> bool:
+	return "uuid" in p_loot
 
 
 func is_empty() -> bool:
@@ -39,7 +61,7 @@ func get_free_space() -> int:
 	var limit := get_max_stack()
 	if limit == 0:
 		return UNLIMITED
-	return maxi(limit - items.size(), 0)
+	return maxi(limit - quantity, 0)
 
 
 func is_full() -> bool:
@@ -49,25 +71,74 @@ func is_full() -> bool:
 ## Can `p_loot` join this stack? Same id, and both stackable.
 ## Differences in state (effects, durability) do NOT matter.
 func accepts(p_loot: Loot) -> bool:
-	return p_loot != null and not items.is_empty() and p_loot.can_stack() \
-		and items[0].can_stack() and p_loot.id == items[0].id
+	if p_loot == null or items.is_empty():
+		return false
+	if p_loot.id != items[0].id:
+		return false
+	if _unique != has_identity(p_loot):
+		return false
+	if _unique:
+		return true
+	return p_loot.can_stack() and items[0].can_stack()
 
 
 func contains(p_loot: Loot) -> bool:
-	return items.has(p_loot)
+	return find_index_of(p_loot) != -1
+
+
+func find_index_of(p_loot: Loot) -> int:
+	if p_loot == null:
+		return -1
+	if _unique:
+		return items.find(p_loot)
+	return items.find_custom(func(l: Loot): return l.id == p_loot.id)
 
 
 func add_item(p_loot: Loot) -> void:
-	items.append(p_loot)
+	if p_loot == null:
+		return
+	if items.is_empty():
+		items.append(p_loot)
+		_unique = has_identity(p_loot)
+		if not _unique:
+			common_quantity = 1
+		return
+	if not accepts(p_loot) or is_full():
+		return
+	# Unique items preserve their instances.
+	if _unique:
+		items.append(p_loot)
+		return
+	# Common items share one representative instance.
+	common_quantity += 1
 
 
 func remove_item(p_loot: Loot) -> bool:
-	var index := items.find(p_loot)
+	if p_loot == null or items.is_empty():
+		return false
+	var index := find_index_of(p_loot)
 	if index == -1:
 		return false
-	items.remove_at(index)
+	if _unique:
+		items.remove_at(index)
+		return true
+	common_quantity -= 1
+	if common_quantity == 0:
+		items.clear()
 	return true
 
 
 func pop_item() -> Loot:
-	return null if items.is_empty() else items.pop_back()
+	if items.is_empty():
+		return null
+	if not _unique:
+		common_quantity -= 1
+		var dupe:= items[0].duplicate()
+		if common_quantity == 0:
+			items.clear()
+		return dupe
+	return items.pop_back()
+
+
+func is_unique() -> bool:
+	return _unique

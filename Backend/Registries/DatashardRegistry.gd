@@ -28,12 +28,12 @@ func _load_from_mod(mod_id: StringName) -> void:
 	var metadata := _mod_manager.get_metadata(mod_id)
 	if not metadata:
 		return
-	var factors_json_path := metadata.folder_path.path_join("%s/%s"%[DATASHARD_DIR, DATASHARDS_JSON_REGISTRY])
+	var datashard_json_path := metadata.folder_path.path_join("%s/%s"%[DATASHARD_DIR, DATASHARDS_JSON_REGISTRY])
 	
-	if not FileAccess.file_exists(factors_json_path):
+	if not FileAccess.file_exists(datashard_json_path):
 		return
 	
-	var entries := Utils.read_json_array(factors_json_path)
+	var entries := Utils.read_json_array(datashard_json_path)
 	if entries.is_empty():
 		return
 	
@@ -77,14 +77,14 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		GameLogger.error("[DatashardRegistry] Datashard with no 'id' or 'script_path' at '%s'"%[mod_id])
 		return null
 	
-	var factor_id := StringName(entry["id"])
-	if _definitions.has(factor_id):
-		GameLogger.warn("[DatashardRegistry] Datashard '%s' already defined."%[factor_id])
+	var datashard_id := StringName(entry["id"])
+	if _definitions.has(datashard_id):
+		GameLogger.warn("[DatashardRegistry] Datashard '%s' already defined."%[datashard_id])
 		return null
 	
 	var script_path := mod_base_path.path_join(str(entry["script_path"]))
 	if not FileAccess.file_exists(script_path):
-		GameLogger.warn("[DatashardRegistry] Script not fount for factor '%s' at '%s'"%[factor_id, script_path])
+		GameLogger.warn("[DatashardRegistry] Script not fount for datashard '%s' at '%s'"%[datashard_id, script_path])
 		return null
 	
 	var result = state.do_file(script_path)

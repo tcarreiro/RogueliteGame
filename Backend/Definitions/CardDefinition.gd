@@ -35,7 +35,7 @@ func _init(entry: Dictionary):
 	tier = int(entry.get("tier", 1))
 	nature_id = str(entry.get("nature_id", id))
 	cost = int(entry.get("cost", 1))
-	max_copies_in_active_deck = int(entry.get("max_copies_in_active_deck", 1))
+	max_copies_in_active_deck = int(entry.get("max_copies_in_active_deck", 3))
 	flags.append_array(entry.get("flags", []))
 
 

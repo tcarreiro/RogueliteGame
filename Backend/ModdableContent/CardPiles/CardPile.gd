@@ -43,7 +43,7 @@ func shuffle() -> void:
 func get_effects() -> Array[Effect]:
 	var effects := []
 	for card: Card in get_cards():
-		effects.append(card.effects.values())
+		effects.append_array(card.effects.values())
 	return effects
 
 
@@ -84,13 +84,13 @@ func pop_front() -> Card:
 
 
 func add_card(card: Card) -> bool:
+	if not card:
+		GameLogger.error(
+			"[CardPile] Card not found.")
+		return false
 	if max_deck_size > 0 and get_deck_size() >= max_deck_size:
 		GameLogger.error(
 			"[CardPile] could't add card %s to deck %s, because there is no slot available."%[card.id, id])
-		return false
-	if not card:
-		GameLogger.error(
-			"[CardPile] Card %s not found."%[card.uuid])
 		return false
 	deck_updated.emit(self)
 	#card.equip()

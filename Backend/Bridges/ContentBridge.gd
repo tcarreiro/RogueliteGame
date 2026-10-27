@@ -137,7 +137,7 @@ func lua_do_change_factor_max_level(factor_id: StringName, new_level:int):
 
 func lua_do_trigger_event(event_id: StringName, value: int = 1):
 	#GameManager.run_manager.event_manager.trigger_by_id(StringName(event_id), int(value))
-	GameLogger.debug("%s trigerred from lua script with value %d"%[event_id, str(value)])
+	GameLogger.debug("%s trigerred from lua script with value %s"%[event_id, str(value)])
 	
 
 func lua_add_action(callback, time, ...args) -> int:

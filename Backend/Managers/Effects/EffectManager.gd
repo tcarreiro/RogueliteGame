@@ -62,8 +62,9 @@ func register_effect(effect: Effect) -> void:
 			# TODO
 			pass
 		Effect.TriggerEvent.TE_LOOT_EVENT:
-			_run_manager.run_state.run_loot_manager.collected.connect(func(loot):
-				if effect.matches(loot.id, Effect.EventCategory.EC_LE_COLLECTED):
-					effect.fire.call_deferred({"card_id": loot.id})
+			_run_manager.run_state.run_item_container.items_added.connect(func(loots):
+				for loot in loots:
+					if effect.matches(loot.id, Effect.EventCategory.EC_LE_COLLECTED):
+						effect.fire.call_deferred({"card_id": loot.id})
 			)
 	active_effects.append(effect)

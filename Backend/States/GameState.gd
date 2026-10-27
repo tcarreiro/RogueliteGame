@@ -5,8 +5,6 @@ class_name GameState extends Resource
 @export var total_play_time: float = 0.0
 
 # TBD: create "active_loot" if decide to allow players to bring itens to run
-@export var persistent_inventory: ItemContainer
-@export var active_cards: CardPile
 
 #@export var essences: Dictionary = {
 	#Enums.Nature.CORE: 0,
@@ -15,8 +13,11 @@ class_name GameState extends Resource
 	#Enums.Nature.VEIL: 0,
 #}
 
+@export var persistent_inventory: ItemContainer
+# Selection for run
 @export var active_datashard_id: StringName = ""
 @export var active_equipments: Dictionary[StringName, Equipment] = {}
+@export var active_cards: CardPile
 
 #@export var upgrades: Dictionary = {}
 #@export var loaded_maps: Dictionary = {}  # String (scene_id) -> RoomManager | scene_id is the resource path
@@ -73,6 +74,8 @@ func get_active_datashard() -> Datashard:
 	if active_datashard_id == "":
 		return null
 	var active_datashard_index := get_unlocked_datashards().find_custom(func(ds: Datashard): return ds.id == active_datashard_id)
+	if active_datashard_index == -1:
+		return null
 	return get_unlocked_datashards().get(active_datashard_index)
 
 

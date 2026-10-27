@@ -13,6 +13,9 @@ enum FailReason {
 	DUPLICATE,    # same unique instance added twice
 	NOT_ENOUGH,   # asked to remove more than exists
 	LOCKED,
+	SAME_CONTAINER,  # move/transfer with the same origin and destination
+	SLOT_INVALID,    # stack index out of range, or a slot used against itself
+	STACK_MISMATCH,  # merge of stacks that are not the same stackable species
 }
 
 ## Did (or, for can_* methods, would) any quantity be transferred?
@@ -76,6 +79,6 @@ func get_fail_reason_name() -> String:
 
 func _to_string() -> String:
 	if ok:
-		return "ItemContainerOpResult(ok moved=%d remained=%d)" % [moved_quantity, remained_quantity]
-	return "ItemContainerOpResult(fail %s remained=%d)" % [get_fail_reason_name(), remained_quantity]
+		return "OpResult(ok moved=%d remained=%d)" % [moved_quantity, remained_quantity]
+	return "OpResult(fail %s remained=%d)" % [get_fail_reason_name(), remained_quantity]
 #endregion

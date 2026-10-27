@@ -28,12 +28,12 @@ func _load_from_mod(mod_id: StringName) -> void:
 	var metadata := _mod_manager.get_metadata(mod_id)
 	if not metadata:
 		return
-	var factors_json_path := metadata.folder_path.path_join("%s/%s"%[ADDON_DIR, ADDONS_JSON_REGISTRY])
+	var addons_json_path := metadata.folder_path.path_join("%s/%s"%[ADDON_DIR, ADDONS_JSON_REGISTRY])
 	
-	if not FileAccess.file_exists(factors_json_path):
+	if not FileAccess.file_exists(addons_json_path):
 		return
 	
-	var entries := Utils.read_json_array(factors_json_path)
+	var entries := Utils.read_json_array(addons_json_path)
 	if entries.is_empty():
 		return
 	
@@ -77,14 +77,14 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		GameLogger.error("[AddonRegistry] Addon with no 'id' or 'script_path' at '%s'"%[mod_id])
 		return null
 	
-	var factor_id := StringName(entry["id"])
-	if _definitions.has(factor_id):
-		GameLogger.warn("[AddonRegistry] Addon '%s' already defined."%[factor_id])
+	var addon_id := StringName(entry["id"])
+	if _definitions.has(addon_id):
+		GameLogger.warn("[AddonRegistry] Addon '%s' already defined."%[addon_id])
 		return null
 	
 	var script_path := mod_base_path.path_join(str(entry["script_path"]))
 	if not FileAccess.file_exists(script_path):
-		GameLogger.warn("[AddonRegistry] Script not fount for factor '%s' at '%s'"%[factor_id, script_path])
+		GameLogger.warn("[AddonRegistry] Script not fount for addon '%s' at '%s'"%[addon_id, script_path])
 		return null
 	
 	var result = state.do_file(script_path)
