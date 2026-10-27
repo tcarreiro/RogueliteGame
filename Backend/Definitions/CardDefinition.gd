@@ -10,7 +10,7 @@ enum CardFlag {
 @export var id: StringName
 @export var display_name: StringName
 @export var description: String
-@export var stackable: bool
+@export var max_stack: int
 @export var tier: int = 1
 @export var nature_id: StringName
 @export var cost: int = 0
@@ -31,11 +31,11 @@ func _init(entry: Dictionary):
 	id = StringName(entry["id"])
 	display_name = str(entry.get("display_name", id))
 	description = str(entry.get("description", id))
-	stackable = bool(entry.get("stackable", true))
+	max_stack = int(entry.get("max_stack", 0))
 	tier = int(entry.get("tier", 1))
 	nature_id = str(entry.get("nature_id", id))
 	cost = int(entry.get("cost", 1))
-	max_copies_in_active_deck = int(entry.get("max_copies_in_active_deck", 1))
+	max_copies_in_active_deck = int(entry.get("max_copies_in_active_deck", 3))
 	flags.append_array(entry.get("flags", []))
 
 

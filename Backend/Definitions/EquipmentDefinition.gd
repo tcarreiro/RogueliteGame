@@ -9,7 +9,7 @@ class_name EquipmentDefinition extends Resource
 @export var socket_slots: int
 @export var type: Equipment.EquipmentType
 @export var addon_ids: Array[StringName] = []
-@export var stackable: bool
+@export var max_stack: int
 
 var on_equip: Callable
 var on_unequip: Callable
@@ -35,6 +35,7 @@ func _init(entry: Dictionary):
 	addon_ids.append_array(entry.get("addon_ids", []))
 	max_hand_deck_size = int(entry.get("max_hand_deck_size", 5))
 	max_active_deck_size = int(entry.get("max_active_deck_size", 10))
+	max_stack = 1#int(entry.get("max_stack", 1)) # TBD: all equipments are non-stackable
 
 
 func connect_callables(state: LuaState) -> void:

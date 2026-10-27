@@ -41,11 +41,12 @@ project/assembly_name="RogueliteGame"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/lua-gdextension/plugin.cfg", "res://addons/lua-modder/plugin.cfg")
+enabled=PackedStringArray("res://addons/gut/plugin.cfg", "res://addons/lua-gdextension/plugin.cfg", "res://addons/lua-modder/plugin.cfg")
 
 [file_customization]
 
 folder_colors={
+"res://Backend/DTOs/": "pink",
 "res://Backend/Definitions/": "yellow",
 "res://Backend/Managers/": "green",
 "res://Backend/ModdableContent/": "blue",

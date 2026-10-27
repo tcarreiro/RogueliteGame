@@ -3,7 +3,6 @@
 		"id": "card_evasion",
 		"display_name": "Evasion",
 		"description": "+2 Resonance blocks",
-		"stackable": true,
 		"tier": 1,
 		"nature_id": "NONE",
 		"cost": 5,

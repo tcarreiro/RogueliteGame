@@ -17,7 +17,7 @@ func _init(definition: DatashardDefinition) -> void:
 	description = definition.description
 	tier = definition.tier
 	nature_id = definition.nature_id
-	stackable = definition.stackable
+	max_stack = definition.max_stack
 	on_obtained = definition.on_obtained
 	on_run_start = definition.on_run_start
 	on_collect = definition.on_collect

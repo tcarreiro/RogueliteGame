@@ -36,7 +36,7 @@ func _init(definition: CardDefinition) -> void:
 	for card_flag in definition.flags:
 		flags.append(
 			Utils.parse_string_into_enum(CardFlag, card_flag, "[Card] - flags") as CardFlag)
-	stackable = definition.stackable
+	max_stack = definition.max_stack
 	on_drawn = definition.on_drawn
 	on_played = definition.on_played
 	on_discarded = definition.on_discarded

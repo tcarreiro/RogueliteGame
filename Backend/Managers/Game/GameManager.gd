@@ -86,8 +86,8 @@ func get_effect_manager() -> EffectManager:
 	return get_run_state().effects_manager
 
 
-func get_equipment_manager() -> EquipmentManager:
-	return get_run_state().equipment_manager
+func get_equipment_container() -> ItemContainer:
+	return get_run_state().equipment_container
 
 
 func get_run_deck_manager() -> DeckManager:
@@ -118,11 +118,11 @@ func get_active_datashard() -> Datashard:
 	return game_state.get_active_datashard()
 
 
-func get_unlocked_datashards() -> Array[Datashard]:
-	return game_state.unlocked_datashards.values()
+func get_unlocked_datashards() -> Array[Loot]:
+	return game_state.get_unlocked_datashards()
 
 
-func get_available_gauntlets() -> Array[Gauntlet]:
+func get_available_gauntlets() -> Array[Loot]:
 	return game_state.get_available_gauntlets()
 
 
@@ -131,7 +131,7 @@ func get_active_effects() -> Array[Effect]:
 
 
 func get_permanent_deck() -> Array[Card]:
-	return game_state.get_permanent_deck()
+	return game_state.get_available_cards()
 
 
 func get_active_deck() -> Array[Card]:
