@@ -29,7 +29,7 @@ func _init(_seed: int = 0) -> void:
 
 func setup_managers() -> void:
 	_gauntlet = GameManager.get_equipped_gauntlet()
-	_datashard = _gauntlet.datashard
+	_datashard = _gauntlet.get_equipped_datashard()
 	_setup_event_manager()
 	_setup_factor_manager()
 	_setup_equipment_container()

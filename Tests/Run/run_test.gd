@@ -45,9 +45,14 @@ func _ready() -> void:
 	GameManager.run_manager.run_started.connect(_on_run_started)
 	GameManager.run_manager.run_ended.connect(_on_run_ended)
 	run_btn.pressed.connect(_run_btn)
-	datashard_selected.connect(func(): run_btn.disabled = false)
-	datashard_selected.connect(_create_effects_info)
-	gauntlet_selected.connect(_create_effects_info)
+	datashard_selected.connect(func():
+		run_btn.disabled = false
+		_create_effects_info()
+	)
+	gauntlet_selected.connect(func():
+		run_btn.disabled = GameManager.get_active_datashard() == null
+		_create_effects_info()
+	)
 	deck_updated.connect(_create_cards_container)
 	deck_updated.connect(_create_selected_cards_container)
 	goto_hub()
@@ -63,14 +68,13 @@ func goto_hub() -> void:
 	
 	selected_datashard.show()
 	var text = ""
-	if _selected_datashard_btn:
-		text = _selected_datashard_btn.text
+	if GameManager.get_active_datashard():
+		text = GameManager.get_active_datashard().display_name
 	selected_datashard.text = text
 	
 	selected_gauntlet.show()
-	text = GameManager.get_equipped_gauntlet().display_name
-	if _selected_gauntlet_btn:
-		text = _selected_gauntlet_btn.text
+	if GameManager.get_equipped_gauntlet():
+		text = GameManager.get_equipped_gauntlet().display_name
 	selected_gauntlet.text = text
 	
 	run_btn.disabled = GameManager.get_active_datashard() == null
@@ -186,7 +190,7 @@ func _on_gauntlet_selected(gauntlet_btn: Button, gauntlet: Gauntlet) -> void:
 	_selected_gauntlet_btn = gauntlet_btn
 	gauntlet_selected.emit()
 	selected_gauntlet.text = gauntlet.display_name
-	selected_datashard.text = gauntlet.datashard.display_name if gauntlet.datashard else &""
+	selected_datashard.text = gauntlet.get_equipped_datashard().display_name if gauntlet.get_equipped_datashard() else &""
 
 
 func _create_datashards_info() -> void:
@@ -211,7 +215,7 @@ func _create_datashards_info() -> void:
 
 
 func _on_datashard_selected(datashard_btn: Button, datashard: Datashard) -> void:
-	GameManager.equip_datashard(datashard.id)
+	GameManager.equip_datashard(datashard)
 	datashard_selected.emit()
 	_selected_datashard_btn = datashard_btn
 	selected_datashard.text = datashard.display_name

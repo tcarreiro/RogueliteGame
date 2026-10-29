@@ -13,6 +13,8 @@ var on_obtained: Callable
 var on_equip: Callable
 var on_unequip: Callable
 
+var _equipped_at: Gauntlet = null
+
 func _init(definition: DatashardDefinition) -> void:
 	id = definition.id
 	display_name = definition.display_name
@@ -39,13 +41,23 @@ func obtain()-> void:
 		on_obtained.call(self)
 
 
-func equip()-> void:
+func equip(gauntlet: Gauntlet)-> void:
 	equipped.emit(self)
+	if _equipped_at and _equipped_at != gauntlet:
+		unequip()
+	_equipped_at = gauntlet
 	if on_equip.is_valid():
 		on_equip.call(self)
 
 
 func unequip()-> void:
 	unequipped.emit(self)
+	if _equipped_at:
+		_equipped_at.unequip_datashard()
+	_equipped_at = null
 	if on_unequip.is_valid():
 		on_unequip.call(self)
+
+
+func get_gauntlet_equipped() -> Gauntlet:
+	return _equipped_at
