@@ -12,6 +12,8 @@ enum CardFlag {
 	UNBLOCKABLE,
 }
 
+const KIND_CARD := StringName(KIND_PREFIX+"card")
+
 @export var uuid: UUID = UUID.new_uuid()
 @export var tier: int = 1
 @export var nature_id: StringName

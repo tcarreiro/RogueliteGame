@@ -1,5 +1,12 @@
 extends GutTest
 
+func _add_herbs(container: ItemContainer, count: int) -> void:
+	var loots: Array[Loot] = []
+	for i in count:
+		loots.append(MockTestUtils.create_loot(&"herb", 20))
+	assert_true(container.add_all(loots).ok)
+
+
 #region Initialization and queries
 func test_empty_container_has_no_items_or_slots_used() -> void:
 	var container := ItemContainer.new()
@@ -16,7 +23,7 @@ func test_container_accepts_anything_without_tag_query() -> void:
 	assert_true(container.can_add(MockTestUtils.create_loot()).ok)
 
 
-func test_get_quantity_counts_instances_across_stacks() -> void:
+func test_get_quantity_counts_instances_inside_stack() -> void:
 	var container := ItemContainer.new()
 	var herb_a := MockTestUtils.create_loot()
 	var herb_b := MockTestUtils.create_loot()
@@ -322,7 +329,6 @@ func test_add_all_to_existing_common_stack_emits_once() -> void:
 func test_add_unique_item_preserves_instance_and_emits_signals() -> void:
 	var container := ItemContainer.new()
 	var item := MockTestUtils.create_unique_loot(&"sword")
-	item.uuid = UUID.new_uuid()
 
 	var added_calls: Array = []
 	var changed_calls: Array = []
@@ -350,7 +356,6 @@ func test_add_all_unique_items_preserves_instances_and_emits_once() -> void:
 
 	for i in 3:
 		var item := MockTestUtils.create_unique_loot(&"sword")
-		item.uuid = UUID.new_uuid()
 		items.append(item)
 
 	var added_calls: Array = []
@@ -378,13 +383,11 @@ func test_add_all_unique_items_preserves_instances_and_emits_once() -> void:
 		assert_same(stored_stack.items[0], items[i])
 
 
-func test_add_unique_items_creates_separate_stacks() -> void:
+func test_add_unique_items_creates_separate_stacks_if_max_stacks_equals_one() -> void:
 	var container := ItemContainer.new()
 
 	var first := MockTestUtils.create_unique_loot(&"sword")
-	first.uuid = UUID.new_uuid()
 	var second := MockTestUtils.create_unique_loot(&"sword")
-	second.uuid = UUID.new_uuid()
 
 	assert_true(container.add(first).ok)
 	var result := container.add(second)
@@ -399,7 +402,6 @@ func test_add_unique_items_creates_separate_stacks() -> void:
 func test_rejected_add_all_duplicate_unique_instance_preserves_container() -> void:
 	var container := ItemContainer.new()
 	var item := MockTestUtils.create_unique_loot(&"sword")
-	item.uuid = UUID.new_uuid()
 
 	var added_calls: Array = []
 	var changed_calls: Array = []
@@ -635,19 +637,50 @@ func test_remove_by_id_emits_one_signal_with_all_removed_units() -> void:
 		changed_calls.append({"updated": updated.duplicate(), "removed": gone.duplicate()})
 	)
 
+	var representative := container.find_by_id(&"herb")[0]
 	var result := container.remove_by_id(&"herb", 3)
 
 	assert_true(result.ok)
 	assert_eq(result.moved_quantity, 3)
 	assert_eq(removed_calls.size(), 1)
 	assert_eq(removed_calls[0].size(), 3)
-	assert_eq(removed_calls[0][0], loots[0])
-	assert_eq(removed_calls[0][1], loots[0])
-	assert_eq(removed_calls[0][2], loots[0])
-	assert_eq(changed_calls.size(), 1)
-	assert_eq(changed_calls[0]["updated"].size(), 1)
-	assert_eq(changed_calls[0]["removed"].size(), 0)
-	assert_eq(container.get_quantity(&"herb"), 2)
+	assert_eq(removed_calls[0][0], representative)
+	assert_eq(removed_calls[0][1], representative)
+	assert_eq(removed_calls[0][2], representative)
+
+
+func test_remove_by_id_takes_from_the_last_stack_first() -> void:
+	var container := ItemContainer.new()
+	_add_herbs(container, 25)
+
+	assert_true(container.remove_by_id(&"herb", 3).ok)
+
+	assert_eq(container._content[0].quantity, 20)
+	assert_eq(container._content[1].quantity, 2)
+
+
+func test_remove_non_representative_common_instance_by_id() -> void:
+	var container := ItemContainer.new()
+	var first := MockTestUtils.create_loot(&"herb")
+	var second := MockTestUtils.create_loot(&"herb")
+	assert_true(container.add(first).ok)
+	assert_true(container.add(second).ok)
+
+	var result := container.remove(second)
+
+	assert_true(result.ok)
+	assert_eq(container.get_quantity(&"herb"), 1)
+
+
+func test_remove_all_units_of_species_spread_over_two_stacks() -> void:
+	var container := ItemContainer.new()
+	_add_herbs(container, 25)
+
+	var result := container.remove_all(container.get_all_loot())
+
+	assert_true(result.ok)
+	assert_eq(container.used_slots(), 0)
+
 #endregion
 
 
@@ -740,6 +773,31 @@ func test_swap_common_stacks_between_containers_preserves_quantities() -> void:
 	assert_eq(second.get_quantity(&"potion"), 0)
 	assert_eq(first.used_slots(), 1)
 	assert_eq(second.used_slots(), 1)
+
+
+func test_swap_stacks_allows_common_species_already_in_destination() -> void:
+	var a := ItemContainer.new()
+	var b := ItemContainer.new()
+	var herbs_a: Array[Loot] = []
+	var herbs_b: Array[Loot] = []
+	var potions_b: Array[Loot] = []
+	for i in 3:
+		herbs_a.append(MockTestUtils.create_loot(&"herb", 20))
+	for i in 5:
+		herbs_b.append(MockTestUtils.create_loot(&"herb", 20))
+	for i in 2:
+		potions_b.append(MockTestUtils.create_loot(&"potion", 20))
+	assert_true(a.add_all(herbs_a).ok)
+	assert_true(b.add_all(herbs_b).ok)
+	assert_true(b.add_all(potions_b).ok)
+
+	var result := ItemContainer.swap_stacks(a, 0, b, 1)
+
+	assert_true(result.ok)
+	assert_eq(a.get_quantity(&"potion"), 2)
+	assert_eq(a.get_quantity(&"herb"), 0)
+	assert_eq(b.get_quantity(&"herb"), 8)
+	assert_eq(b.used_slots(), 2)
 
 
 func test_swap_common_stacks_rejected_by_tags_preserves_both_containers() -> void:
@@ -961,6 +1019,20 @@ func test_swap_common_stacks_emits_stacks_changed_once_per_container() -> void:
 
 
 #region Merging Stacks
+func test_merge_stacks_rejects_unstackable_unique_loot_as_mismatch() -> void:
+	var container := ItemContainer.new()
+	var a := MockTestUtils.create_unique_loot(&"sword", 1)
+	var b := MockTestUtils.create_unique_loot(&"sword", 1)
+	var loots: Array[Loot] = [a, b]
+	assert_true(container.add_all(loots).ok)
+	assert_eq(container.used_slots(), 2)
+
+	var result := ItemContainer.merge_stacks(container, 0, container, 1)
+
+	assert_false(result.ok)
+	assert_eq(result.fail_reason, ItemContainerOpResult.FailReason.STACK_MISMATCH)
+
+
 func test_merge_stacks_moves_all_items_and_removes_source_stack() -> void:
 	var source := ItemContainer.new()
 	var target := ItemContainer.new()
@@ -1285,7 +1357,7 @@ func test_merge_common_stacks_inside_same_container_emits_only_stacks_changed() 
 #endregion
 
 
-#region Transfer Stacks
+#region Transfer
 func test_transfer_multiple_items_from_common_stack() -> void:
 	var source := ItemContainer.new()
 	var target := ItemContainer.new()
@@ -1425,6 +1497,19 @@ func test_rejected_merge_emits_only_operation_rejected() -> void:
 
 	assert_eq(source_rejected.size(), 1)
 	assert_eq(source_rejected[0]["operation"], &"merge")
+
+
+func test_transfer_all_moves_common_species_spread_over_two_stacks() -> void:
+	var source := ItemContainer.new()
+	var target := ItemContainer.new()
+	_add_herbs(source, 25)
+	assert_eq(source.used_slots(), 2)
+
+	var result := ItemContainer.transfer_all(source, target)
+
+	assert_true(result.ok)
+	assert_eq(source.used_slots(), 0)
+	assert_eq(target.get_quantity(&"herb"), 25)
 
 #endregion
 
@@ -1597,7 +1682,7 @@ func test_rejected_remove_missing_instance_preserves_container() -> void:
 	assert_eq(order_calls.size(), 0)
 
 
-func test_rejected_remove_all_duplicate_reference_preserves_container() -> void:
+func test_rejected_remove_all_more_common_units_than_stack_has_preserves_container() -> void:
 	var container := ItemContainer.new()
 	var herb := MockTestUtils.create_loot(&"herb")
 	assert_true(container.add(herb).ok)
@@ -1618,13 +1703,43 @@ func test_rejected_remove_all_duplicate_reference_preserves_container() -> void:
 	var result := container.remove_all(loots)
 
 	assert_false(result.ok)
-	assert_eq(result.fail_reason, ItemContainerOpResult.FailReason.DUPLICATE)
+	assert_eq(result.fail_reason, ItemContainerOpResult.FailReason.NOT_ENOUGH)
 	assert_eq(container.get_quantity(&"herb"), 1)
 	assert_eq(removed_calls.size(), 0)
 	assert_eq(changed_calls.size(), 0)
 	assert_eq(order_calls.size(), 0)
 	assert_eq(rejected_calls.size(), 1)
 	assert_eq(rejected_calls[0]["operation"], &"remove")
+
+
+func test_remove_all_with_repeated_common_reference_removes_that_many_units() -> void:
+	var container := ItemContainer.new()
+	var loots: Array[Loot] = []
+	for i in 3:
+		loots.append(MockTestUtils.create_loot(&"herb"))
+	assert_true(container.add_all(loots).ok)
+	var herb := container.find_by_id(&"herb")[0]
+
+	var batch: Array[Loot] = [herb, herb]
+	var result := container.remove_all(batch)
+
+	assert_true(result.ok)
+	assert_eq(result.moved_quantity, 2)
+	assert_eq(container.get_quantity(&"herb"), 1)
+
+
+func test_remove_all_rejects_same_unique_instance_twice() -> void:
+	var container := ItemContainer.new()
+	var sword := MockTestUtils.create_unique_loot(&"sword")
+	assert_true(container.add(sword).ok)
+
+	var batch: Array[Loot] = [sword, sword]
+	var result := container.remove_all(batch)
+
+	assert_false(result.ok)
+	assert_eq(result.fail_reason, ItemContainerOpResult.FailReason.DUPLICATE)
+	assert_true(container.contains(sword))
+	assert_eq(container.get_quantity(&"sword"), 1)
 
 
 func test_rejected_remove_by_id_insufficient_quantity_preserves_container() -> void:
@@ -1823,17 +1938,84 @@ func test_split_rejected_when_destination_is_full() -> void:
 	var source := ItemContainer.new()
 	var destination := ItemContainer.new(null, 1)
 	var herb := MockTestUtils.create_loot(&"herb")
-	var sword := MockTestUtils.create_loot(&"sword")
+	var potion := MockTestUtils.create_loot(&"potion")
 
 	source.add_all([herb, herb, herb])
-	destination.add(sword)
+	destination.add(potion)
 
 	var stack: ItemStack = source._content[0]
 	var result := source.split(stack, 1, destination)
 
 	assert_false(result.ok)
 	assert_eq(source.get_quantity(&"herb"), 3)
-	assert_eq(destination.get_quantity(&"sword"), 1)
+	assert_eq(destination.get_quantity(&"potion"), 1)
 	assert_eq(destination.get_quantity(&"herb"), 0)
+
+
+func test_split_to_other_container_reduces_the_stack_being_split() -> void:
+	var source := ItemContainer.new()
+	var target := ItemContainer.new()
+	_add_herbs(source, 25)
+
+	var result := source.split(source._content[0], 3, target)
+
+	assert_true(result.ok)
+	assert_eq(source._content[0].quantity, 17)
+	assert_eq(source._content[1].quantity, 5)
+	assert_eq(target.get_quantity(&"herb"), 3)
+
+
+func test_split_unique_stack_in_same_container_moves_last_instances() -> void:
+	var container := ItemContainer.new()
+	var items: Array[Loot] = []
+	for i in 4:
+		items.append(MockTestUtils.create_unique_loot(&"sword", 4))
+	assert_true(container.add_all(items).ok)
+	assert_eq(container.used_slots(), 1)
+
+	var result := container.split(container._content[0], 1, container)
+
+	assert_true(result.ok)
+	assert_eq(container.used_slots(), 2)
+	assert_eq(container._content[0].quantity, 3)
+	assert_same(container._content[1].items[0], items[3])
+
+
+func test_split_in_same_container_emits_only_stacks_changed() -> void:
+	var container := ItemContainer.new()
+	var loots: Array[Loot] = []
+	for i in 4:
+		loots.append(MockTestUtils.create_loot(&"herb"))
+	assert_true(container.add_all(loots).ok)
+
+	var added: Array = []
+	var removed: Array = []
+	var changed: Array = []
+	container.items_added.connect(func(l): added.append(l))
+	container.items_removed.connect(func(l): removed.append(l))
+	container.stacks_changed.connect(func(u, r): changed.append({"updated": u, "removed": r}))
+
+	assert_true(container.split(container._content[0], 1, container).ok)
+
+	assert_eq(added.size(), 0)
+	assert_eq(removed.size(), 0)
+	assert_eq(changed.size(), 1)
+	assert_eq(changed[0]["updated"].size(), 2)
+	assert_eq(changed[0]["removed"].size(), 0)
+
+
+func test_split_in_same_container_rejected_when_no_free_slot() -> void:
+	var container := ItemContainer.new(null, 1)
+	var loots: Array[Loot] = []
+	for i in 3:
+		loots.append(MockTestUtils.create_loot(&"herb"))
+	assert_true(container.add_all(loots).ok)
+
+	var result := container.split(container._content[0], 1, container)
+
+	assert_false(result.ok)
+	assert_eq(result.fail_reason, ItemContainerOpResult.FailReason.FULL)
+	assert_eq(container.used_slots(), 1)
+	assert_eq(container.get_quantity(&"herb"), 3)
 
 #endregion

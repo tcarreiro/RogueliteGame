@@ -2,6 +2,8 @@ class_name Enchantable extends Loot
 
 signal effect_updated(equipment: Equipment)
 
+const KIND_ENCHANTABLE := StringName(KIND_PREFIX+"enchantable")
+
 @export var effects: Dictionary[UUID, Effect] = {}
 
 func _compute_max_effects_allowed() -> int:

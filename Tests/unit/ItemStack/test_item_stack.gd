@@ -251,6 +251,66 @@ func test_remove_last_common_loot_empties_stack() -> void:
 	assert_eq(stack.quantity, 0)
 
 
+func test_unique_stack_rejects_unstackable_loot_of_same_id() -> void:
+	var first := MockTestUtils.create_unique_loot(&"sword", 1)
+	var second := MockTestUtils.create_unique_loot(&"sword", 1)
+	var loots: Array[Loot] = [first]
+	var stack := ItemStack.new(loots)
+
+	assert_false(stack.accepts(second))
+
+
+func test_unique_stack_accepts_stackable_loot_of_same_id() -> void:
+	var first := MockTestUtils.create_unique_loot(&"sword", 3)
+	var second := MockTestUtils.create_unique_loot(&"sword", 3)
+	var loots: Array[Loot] = [first]
+	var stack := ItemStack.new(loots)
+
+	assert_true(stack.accepts(second))
+
+
+func test_get_last_units_unique_returns_last_instances_in_order() -> void:
+	var a := MockTestUtils.create_unique_loot(&"sword", 5)
+	var b := MockTestUtils.create_unique_loot(&"sword", 5)
+	var c := MockTestUtils.create_unique_loot(&"sword", 5)
+	var loots: Array[Loot] = [a, b, c]
+	var stack := ItemStack.new(loots)
+
+	var last := stack.get_last_units(2)
+
+	assert_eq(last.size(), 2)
+	assert_same(last[0], b)
+	assert_same(last[1], c)
+	assert_eq(stack.get_first_units(1)[0], a)
+	assert_eq(stack.get_all_units().size(), 3)
+
+
+func test_get_last_units_common_returns_representative_once_per_unit() -> void:
+	var loots: Array[Loot] = []
+	for i in 4:
+		loots.append(MockTestUtils.create_loot(&"herb", 10))
+	var stack := ItemStack.new(loots)
+
+	var last := stack.get_last_units(3)
+
+	assert_eq(last.size(), 3)
+	for unit in last:
+		assert_same(unit, stack.get_sample())
+	assert_eq(stack.quantity, 4)
+
+
+func test_get_units_clamps_to_the_stack() -> void:
+	var loots: Array[Loot] = []
+	for i in 3:
+		loots.append(MockTestUtils.create_loot(&"herb", 10))
+	var stack := ItemStack.new(loots)
+
+	assert_eq(stack.get_last_units(10).size(), 3)
+	assert_eq(stack.get_last_units(0).size(), 0)
+	assert_eq(stack.get_last_units(-2).size(), 0)
+	assert_eq(ItemStack.new().get_all_units().size(), 0)
+
+
 func test_remove_missing_common_loot_returns_false() -> void:
 	var stack := ItemStack.new([MockTestUtils.create_loot(&"herb")])
 

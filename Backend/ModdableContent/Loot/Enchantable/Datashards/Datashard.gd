@@ -4,6 +4,8 @@ signal obtained(datashard:Datashard)
 signal equipped(datashard:Datashard)
 signal unequipped(datashard:Datashard)
 
+const KIND_DATASHARD := StringName(KIND_PREFIX+"datashard")
+
 @export var tier: int = 1
 @export var nature_id: StringName
 

@@ -1,4 +1,4 @@
-class_name CardPile extends Resource
+class_name CardPile2 extends Resource
 
 ######
 ## ANY ORGANIZED COLLECTION OF CARDS THAT CAN BE MANIPULATED

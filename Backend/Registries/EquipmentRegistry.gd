@@ -1,4 +1,3 @@
-#EquipmentRegistry
 extends Node
 
 const CONTEXT_NAME := &"equipment"
@@ -69,8 +68,8 @@ func create_equipment(id: StringName) -> Equipment:
 	var definition := get_definition(id)
 	if not definition:
 		return null
-	match definition.type:
-		Equipment.EquipmentType.GAUNTLET:
+	match definition.kind:
+		Gauntlet.KIND_GAUNTLET:
 			return Gauntlet.new(definition)
 	return null
 

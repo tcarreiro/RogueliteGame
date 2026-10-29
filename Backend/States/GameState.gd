@@ -64,7 +64,7 @@ func choose_datashard(_datashard_id: String) -> void:
 
 
 func get_equipped_gauntlet() -> Gauntlet:
-	var index = active_equipments.values().find_custom(func(eq: Equipment): return eq.type == Equipment.EquipmentType.GAUNTLET)
+	var index = active_equipments.values().find_custom(func(eq: Equipment): return eq is Gauntlet)
 	if index == -1:
 		return null
 	return active_equipments.values().get(index)
@@ -100,7 +100,7 @@ func get_active_effects() -> Array[Effect]:
 		all_effects.append_array(a_eq.get_all_effects())
 		if a_eq is Gauntlet and a_eq.datashard:
 			all_effects.append_array(a_eq.datashard.get_all_effects())
-		for addon: Addon in a_eq.addons.values():
+		for addon: Addon in a_eq.get_all_addons():
 			all_effects.append_array(addon.get_all_effects())
 	return all_effects
 
