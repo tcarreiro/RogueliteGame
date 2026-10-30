@@ -68,8 +68,42 @@ func is_full() -> bool:
 	return get_free_space() == 0
 
 
-## Can `p_loot` join this stack? Same id, and both stackable.
+## The units at positions [p_start, p_start + p_count) of the stack, as a flat list.
+## Unique: the real instances, in order. Common: the representative repeated once per unit.
+## The range is clamped to the stack, so asking for more than it has just returns what exists.
+func get_units(p_start: int, p_count: int) -> Array[Loot]:
+	var units: Array[Loot] = []
+	var first := clampi(p_start, 0, quantity)
+	var last := clampi(p_start + p_count, first, quantity)
+	if _unique:
+		for i in range(first, last):
+			units.append(items[i])
+	else:
+		for i in range(last - first):
+			units.append(items[0])
+	return units
+
+
+## Every unit of the stack. Unique: each instance. Common: the representative once per unit.
+func get_all_units() -> Array[Loot]:
+	return get_units(0, quantity)
+
+
+## The first `p_count` units, in stack order.
+func get_first_units(p_count: int) -> Array[Loot]:
+	return get_units(0, p_count)
+
+
+## The last `p_count` units, in stack order (the ones that leave first in a split or merge).
+func get_last_units(p_count: int) -> Array[Loot]:
+	var count := clampi(p_count, 0, quantity)
+	return get_units(quantity - count, count)
+
+
+## Can `p_loot` join this stack?
+## Same id, the same kind (unique with unique, common with common), and both stackable.
 ## Differences in state (effects, durability) do NOT matter.
+## Whether the stack still has room is a separate question: see get_free_space().
 func accepts(p_loot: Loot) -> bool:
 	if p_loot == null or items.is_empty():
 		return false
@@ -77,8 +111,6 @@ func accepts(p_loot: Loot) -> bool:
 		return false
 	if _unique != has_identity(p_loot):
 		return false
-	if _unique:
-		return true
 	return p_loot.can_stack() and items[0].can_stack()
 
 

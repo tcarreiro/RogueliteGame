@@ -1,4 +1,3 @@
-#GameManager
 extends Node
 
 const ALLOW_SAVE_ON_RUN = false
@@ -102,8 +101,8 @@ func get_event(event_id: StringName) -> Event:
 	return get_event_manager().get_event(event_id)
 
 
-func equip_datashard(datashard_id) -> void:
-	game_state.choose_datashard(datashard_id)
+func equip_datashard(datashard: Datashard) -> void:
+	game_state.choose_datashard(datashard)
 
 
 func equip_gauntlet(gauntlet: Gauntlet) -> void:

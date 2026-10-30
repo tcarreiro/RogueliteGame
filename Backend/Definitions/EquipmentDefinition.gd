@@ -7,7 +7,7 @@ class_name EquipmentDefinition extends Resource
 @export var nature_id: StringName
 @export var cost: float
 @export var socket_slots: int
-@export var type: Equipment.EquipmentType
+@export var kind: StringName
 @export var addon_ids: Array[StringName] = []
 @export var max_stack: int
 
@@ -30,8 +30,7 @@ func _init(entry: Dictionary):
 	nature_id = str(entry.get("nature_id", id))
 	cost = float(entry.get("cost", 0.0))
 	socket_slots = int(entry.get("socket_slots", 0))
-	type = Utils.parse_string_into_enum(
-		Equipment.EquipmentType, str(entry.get("type", "GAUNTLET")), "[EquipmentDefinition - type]") as Equipment.EquipmentType
+	kind = StringName(Loot.KIND_PREFIX+entry.get("kind", "gauntlet"))
 	addon_ids.append_array(entry.get("addon_ids", []))
 	max_hand_deck_size = int(entry.get("max_hand_deck_size", 5))
 	max_active_deck_size = int(entry.get("max_active_deck_size", 10))

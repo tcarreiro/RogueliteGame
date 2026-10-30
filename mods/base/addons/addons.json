@@ -5,7 +5,7 @@
 		"description": "A small chip infused with flux",
 		"tier": 2,
 		"nature_id": "NONE",
-		"suits": ["GAUNTLET"],
+		"suits": ["kind.gauntlet"],
 		"effect_ids": ["effect_echo"],
 		"script_path": "addons/scripts/echo_chip.lua"
 	}

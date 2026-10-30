@@ -15,7 +15,6 @@ class_name GameState extends Resource
 
 @export var persistent_inventory: ItemContainer
 # Selection for run
-@export var active_datashard_id: StringName = ""
 @export var active_equipments: Dictionary[StringName, Equipment] = {}
 @export var active_cards: CardPile
 
@@ -50,43 +49,40 @@ func _setup_initial_equipment() -> void:
 
 
 func get_unlocked_datashards() -> Array[Loot]:
-	return persistent_inventory.get_all_with_tag(&"kind.datashard")
+	return persistent_inventory.get_all_with_tag(Datashard.KIND_DATASHARD)
 
 
-func choose_datashard(_datashard_id: String) -> void:
+func choose_datashard(_datashard: Datashard) -> void:
 	var gauntlet := get_equipped_gauntlet()
 	if not gauntlet:
 		return
-	var found_datashard_index := get_unlocked_datashards().find_custom(func(ds: Datashard): return ds.id == _datashard_id)
+	var found_datashard_index := get_unlocked_datashards().find(_datashard)
 	if found_datashard_index > -1:
-		active_datashard_id = _datashard_id
-		gauntlet.equip_datashard(get_active_datashard())
+		gauntlet.equip_datashard(_datashard)
 
 
 func get_equipped_gauntlet() -> Gauntlet:
-	var index = active_equipments.values().find_custom(func(eq: Equipment): return eq.type == Equipment.EquipmentType.GAUNTLET)
+	var index = active_equipments.values().find_custom(func(eq: Equipment): return eq is Gauntlet)
 	if index == -1:
 		return null
 	return active_equipments.values().get(index)
 
 
 func get_active_datashard() -> Datashard:
-	if active_datashard_id == "":
+	if not get_equipped_gauntlet():
 		return null
-	var active_datashard_index := get_unlocked_datashards().find_custom(func(ds: Datashard): return ds.id == active_datashard_id)
-	if active_datashard_index == -1:
-		return null
-	return get_unlocked_datashards().get(active_datashard_index)
+	return get_equipped_gauntlet().get_equipped_datashard()
 
 
 func get_available_gauntlets() -> Array[Loot]:
-	return persistent_inventory.get_all_with_tag(&"kind.gauntlet")
+	return persistent_inventory.get_all_with_tag(Gauntlet.KIND_GAUNTLET)
 
 
 func choose_gauntlet(gauntlet: Gauntlet) -> void:
-	if get_equipped_gauntlet() and get_equipped_gauntlet().id == gauntlet.id:
+	var equipped_gauntlet := get_equipped_gauntlet()
+	if equipped_gauntlet and equipped_gauntlet.id == gauntlet.id:
 		return
-	if get_available_gauntlets().find_custom(func(g: Gauntlet): return g.uuid == gauntlet.uuid) == -1:
+	if get_available_gauntlets().find(gauntlet) == -1:
 		GameLogger.error("[GameState] you don't own this gauntlet.")
 		return
 	GameLogger.info("[GameState] '%s' equipped."%[gauntlet.display_name])
@@ -98,9 +94,9 @@ func get_active_effects() -> Array[Effect]:
 	var all_effects: Array[Effect] = []
 	for a_eq: Equipment in active_equipments.values():
 		all_effects.append_array(a_eq.get_all_effects())
-		if a_eq is Gauntlet and a_eq.datashard:
-			all_effects.append_array(a_eq.datashard.get_all_effects())
-		for addon: Addon in a_eq.addons.values():
+		if a_eq is Gauntlet and a_eq.get_equipped_datashard():
+			all_effects.append_array(a_eq.get_equipped_datashard().get_all_effects())
+		for addon: Addon in a_eq.get_all_addons():
 			all_effects.append_array(addon.get_all_effects())
 	return all_effects
 
@@ -127,7 +123,7 @@ func get_active_card_pile() -> CardPile:
 
 func get_available_cards() -> Array[Card]:
 	var available_cards: Array[Card] = []
-	for card in persistent_inventory.get_all_with_tag(&"kind.card"):
+	for card in persistent_inventory.get_all_with_tag(Card.KIND_CARD):
 		available_cards.append(card as Card)
 	return available_cards
 

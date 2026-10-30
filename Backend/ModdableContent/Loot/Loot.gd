@@ -3,6 +3,9 @@ class_name Loot extends Resource
 signal collected(loot: Loot)
 signal spawned(loot: Loot)
 
+const KIND_PREFIX := &"kind."
+const KIND_LOOT := StringName(KIND_PREFIX+"loot")
+
 @export var id: StringName
 @export var display_name: StringName
 @export var description: String
@@ -97,7 +100,8 @@ func get_kind_tags() -> Array[StringName]:
 	while current != null:
 		var global_name := current.get_global_name()
 		if not global_name.is_empty():
-			kind_tags.append(StringName("kind." + String(global_name).to_snake_case()))
+			#kind_tags.append(StringName("kind." + String(global_name).to_snake_case()))
+			kind_tags.append(StringName(get("KIND_"+String(global_name).to_snake_case().to_upper())))
 		current = current.get_base_script()
 	_kind_tags_by_script[script] = kind_tags
 	return kind_tags

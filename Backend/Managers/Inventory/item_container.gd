@@ -75,18 +75,11 @@ func can_remove(loot: Loot) -> ItemContainerOpResult:
 
 
 ## Removal has no "partial": every instance is here, or nothing is removed.
+## Unique loot is matched by instance (the same instance twice = DUPLICATE).
+## Common loot is matched by id: repeating a reference means "one more unit",
+## and asking for more units than the stack has is NOT_ENOUGH.
 func can_remove_all(loots: Array[Loot]) -> ItemContainerOpResult:
-	var requested := loots.size()
-	if requested == 0:
-		return ItemContainerOpResult.fail(0, Fail.QTY_INVALID)
-	var seen := {}
-	for loot in loots:
-		if loot == null or _find_stack_of(loot) == null:
-			return ItemContainerOpResult.fail(requested, Fail.NOT_FOUND)
-		if seen.has(loot):
-			return ItemContainerOpResult.fail(requested, Fail.DUPLICATE)
-		seen[loot] = true
-	return ItemContainerOpResult.complete(requested)
+	return _validate_move_removal(loots)
 
 
 func can_remove_by_id(loot_id: StringName, quantity: int = 1) -> ItemContainerOpResult:
@@ -111,14 +104,7 @@ func can_split(stack: ItemStack, quantity: int, destination: ItemContainer) -> I
 	if quantity <= 0 or quantity >= stack.quantity:
 		return ItemContainerOpResult.fail(quantity, Fail.QTY_INVALID)
 
-	var loots: Array[Loot] = []
-	if stack.is_unique():
-		for i in range(stack.quantity - quantity, stack.quantity):
-			loots.append(stack.items[i])
-	else:
-		for i in quantity:
-			loots.append(stack.get_sample())
-
+	var loots := stack.get_last_units(quantity)
 	if destination == self:
 		if capacity_slots != 0 and _content.size() >= capacity_slots:
 			return ItemContainerOpResult.fail(quantity, Fail.FULL)
@@ -175,12 +161,16 @@ func find_by_id(loot_id: StringName) -> Array[Loot]:
 func get_all_loot() -> Array[Loot]:
 	var all_loot: Array[Loot] = []
 	for stack in _content:
-		if stack.is_unique():
-			all_loot.append_array(stack.items)
-		else:
-			for i in stack.quantity:
-				all_loot.append(stack.get_sample())
+		all_loot.append_array(stack.get_all_units())
 	return all_loot
+
+
+func get_capacity() -> int:
+	return capacity_slots
+
+
+func get_free_slots() -> int:
+	return capacity_slots - used_slots()
 
 
 func used_slots() -> int:
@@ -421,14 +411,7 @@ func split(stack: ItemStack, quantity: int, destination: ItemContainer) -> ItemC
 	if not check.ok:
 		return _reject(&"split", check)
 
-	var loots: Array[Loot] = []
-	if stack.is_unique():
-		for i in range(stack.quantity - quantity, stack.quantity):
-			loots.append(stack.items[i])
-	else:
-		for i in quantity:
-			loots.append(stack.get_sample())
-
+	var loots := stack.get_last_units(quantity)
 	if destination == self:
 		var new_stack: ItemStack
 		if stack.is_unique():
@@ -448,7 +431,7 @@ func split(stack: ItemStack, quantity: int, destination: ItemContainer) -> ItemC
 		var moved: Array[Loot] = loots.duplicate()
 		return ItemContainerOpResult.complete(quantity, moved)
 
-	var removed_result := _remove_for_move(loots)
+	var removed_result := _remove_for_move(loots, stack)
 	if not removed_result.ok:
 		return removed_result
 
@@ -553,18 +536,22 @@ func _is_valid_index(index: int) -> bool:
 ## Is any of these instances already here, outside of `leaving_stack`?
 func _has_other_copy_of(loots: Array[Loot], leaving_stack: ItemStack) -> bool:
 	for loot in loots:
+		if not ItemStack.has_identity(loot):
+			continue
 		var found := _find_stack_of(loot)
 		if found != null and found != leaving_stack:
 			return true
 	return false
 
 
+## Unique: the stack holding that exact instance. Common: the LAST stack of that species
+## that still has units (the same end that _pick_from_end takes from).
 func _find_stack_of(loot: Loot) -> ItemStack:
 	if loot == null:
 		return null
-	for stack in _content:
-		if stack.contains(loot):
-			return stack
+	for i in range(_content.size() - 1, -1, -1):
+		if _content[i].contains(loot):
+			return _content[i]
 	return null
 
 
@@ -598,47 +585,37 @@ func _validate_move_removal(loots: Array[Loot]) -> ItemContainerOpResult:
 	if requested == 0:
 		return ItemContainerOpResult.fail(0, Fail.QTY_INVALID)
 
-	var seen: Dictionary = {}
-	var counts: Dictionary = {}
+	var seen: Dictionary = {}           # unique: each instance only once
+	var common_counts: Dictionary = {}  # common: units asked per id
 
 	for loot in loots:
-		if loot == null:
+		if loot == null or _find_stack_of(loot) == null:
 			return ItemContainerOpResult.fail(requested, Fail.NOT_FOUND)
 
-		var stack := _find_stack_of(loot)
-		if stack == null:
-			return ItemContainerOpResult.fail(requested, Fail.NOT_FOUND)
-
-		if stack.is_unique():
+		if ItemStack.has_identity(loot):
 			if seen.has(loot):
 				return ItemContainerOpResult.fail(requested, Fail.DUPLICATE)
 			seen[loot] = true
-		elif loot != stack.get_sample():
-			return ItemContainerOpResult.fail(requested, Fail.NOT_FOUND)
+		else:
+			common_counts[loot.id] = int(common_counts.get(loot.id, 0)) + 1
 
-		counts[stack] = int(counts.get(stack, 0)) + 1
-
-	for stack: ItemStack in counts:
-		if counts[stack] > stack.quantity:
+	for loot_id in common_counts:
+		if common_counts[loot_id] > get_quantity(loot_id):
 			return ItemContainerOpResult.fail(requested, Fail.NOT_ENOUGH)
 
 	return ItemContainerOpResult.complete(requested)
 
 
-func _remove_for_move(loots: Array[Loot]) -> ItemContainerOpResult:
-	var grouped: Dictionary = {}
-
-	for loot in loots:
-		var stack := _find_stack_of(loot)
-		if not grouped.has(stack):
-			grouped[stack] = []
-		grouped[stack].append(loot)
-
+## `from_stack`: take the units from that stack (split). Without it, each instance is
+## looked up when it is removed, so a species spread over several stacks drains
+## from the last one to the first.
+func _remove_for_move(loots: Array[Loot], from_stack: ItemStack = null) -> ItemContainerOpResult:
 	var affected: Array[ItemStack] = []
-	for stack: ItemStack in grouped:
-		for loot: Loot in grouped[stack]:
-			stack.remove_item(loot)
-		affected.append(stack)
+	for loot in loots:
+		var stack := from_stack if from_stack != null else _find_stack_of(loot)
+		stack.remove_item(loot)
+		if not affected.has(stack):
+			affected.append(stack)
 
 	var updated: Array[ItemStack] = []
 	var removed: Array[ItemStack] = []
@@ -656,15 +633,7 @@ func _remove_for_move(loots: Array[Loot]) -> ItemContainerOpResult:
 
 
 static func _get_logical_loots(stack: ItemStack) -> Array[Loot]:
-	var loots: Array[Loot] = []
-
-	if stack.is_unique():
-		loots.append_array(stack.items)
-	else:
-		for i in stack.quantity:
-			loots.append(stack.get_sample())
-
-	return loots
+	return stack.get_all_units()
 
 
 static func _evaluate_merge(from: ItemContainer, from_index: int, to: ItemContainer, to_index: int) -> MergePlan:
@@ -691,19 +660,13 @@ static func _evaluate_merge(from: ItemContainer, from_index: int, to: ItemContai
 		return plan
 
 	var count := mini(requested, room)
-	if plan.stack_from.is_unique():
-		for i in range(requested - count, requested):
-			plan.moved.append(plan.stack_from.items[i])
-	else:
-		for i in range(count):
-			plan.moved.append(plan.stack_from.get_sample())
+	plan.moved = plan.stack_from.get_last_units(count)
 
 	## Different containers
 	if from != to:
 		var reason := to._tag_fail_reason_for_all(plan.moved)
 		if reason != Fail.NONE:
 			plan.result = ItemContainerOpResult.fail(requested, reason)
-			print(reason)
 			return plan
 		if plan.stack_from.is_unique():
 			for loot in plan.moved:
@@ -714,13 +677,7 @@ static func _evaluate_merge(from: ItemContainer, from_index: int, to: ItemContai
 	if count == requested:
 		plan.result = ItemContainerOpResult.complete(count)
 	else:
-		var stayed: Array[Loot] = []
-		if plan.stack_from.is_unique():
-			for i in range(requested - count):
-				stayed.append(plan.stack_from.items[i])
-		else:
-			for i in range(requested - count):
-				stayed.append(plan.stack_from.get_sample())
+		var stayed := plan.stack_from.get_first_units(requested - count)
 		plan.result = ItemContainerOpResult.partial(count, requested - count, stayed)
 	return plan
 
@@ -764,8 +721,7 @@ func _evaluate_add(loots: Array[Loot]) -> AddPlan:
 		if loot == null:
 			plan.result = ItemContainerOpResult.fail(requested, Fail.NOT_FOUND)
 			return plan
-		var is_unique = "uuid" in loot
-		if is_unique:
+		if ItemStack.has_identity(loot):
 			if seen.has(loot) or _find_stack_of(loot) != null:
 				plan.result = ItemContainerOpResult.fail(requested, Fail.DUPLICATE)
 				return plan
@@ -822,7 +778,6 @@ func _reject(operation: StringName, result: ItemContainerOpResult) -> ItemContai
 	return result
 
 
-## TagQuery does not know ItemContainerOpResult; this container knows both and translates.
 func _tag_fail_reason(loot: Loot) -> ItemContainerOpResult.FailReason:
 	if accept == null:
 		return Fail.NONE

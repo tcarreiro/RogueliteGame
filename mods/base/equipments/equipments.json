@@ -3,14 +3,13 @@
 		"id": "gauntlet_bronze",
 		"display_name": "Bronze Gauntlet",
 		"description": "A magical gauntlet. It doesn't seem to be holding up pretty well",
-		"tier": 2,
+		"tier": 0,
 		"nature_id": "NONE",
 		"cost": 0.0,
 		"socket_slots": 1,
-		"type": "GAUNTLET",
+		"kind": "gauntlet",
 		"effect_ids": [],
 		"addon_ids": [
-			"echo_chip"
 		],
 		"max_active_deck_size":8,
 		"script_path": "equipments/scripts/gauntlet_bronze.lua"
@@ -19,13 +18,14 @@
 		"id": "gauntlet_iron",
 		"display_name": "Iron Gauntlet",
 		"description": "A magical gauntlet. Has its charm.",
-		"tier": 2,
+		"tier": 1,
 		"nature_id": "NONE",
 		"cost": 0.0,
 		"socket_slots": 1,
-		"type": "GAUNTLET",
+		"kind": "gauntlet",
 		"effect_ids": [],
 		"addon_ids": [
+			"echo_chip"
 		],
 		"max_active_deck_size":10,
 		"script_path": "equipments/scripts/gauntlet_iron.lua"
