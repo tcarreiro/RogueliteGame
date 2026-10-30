@@ -12,6 +12,7 @@ function onCreation(player, factor_id)
 end
 
 function onOverflow(player, factor_id)
-	local amount = -Content.getFactorLevel(factor_id)
-	Content.doChangeFactorLevel(factor_id, amount)
+	--do something bad
+	--local amount = -Content.getFactorLevel(factor_id)
+	--Content.doChangeFactorLevel(factor_id, amount)
 end

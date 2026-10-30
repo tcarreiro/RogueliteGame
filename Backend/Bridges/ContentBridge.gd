@@ -34,6 +34,15 @@ func _register_common_state() -> void:
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorMaxLevel", lua_get_factor_max_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doChangeFactorLevel", lua_do_change_factor_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doChangeFactorMaxLevel", lua_do_change_factor_max_level)
+	
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getMaxHandSize", lua_max_hand_size)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getCurrentHandSize", lua_get_current_hand_size)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "addCardToHand", lua_add_card_to_hand)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "hasAvailableCardsToDraw", lua_has_available_cards_to_draw)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "addFactorBlock", lua_add_factor_block)
+	
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "addEventBlock", lua_add_event_block)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "removeEventBlock", lua_remove_block_event)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doTriggerEvent", lua_do_trigger_event)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "addAction", lua_add_action)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "stopAction", lua_stop_action)
@@ -135,8 +144,55 @@ func lua_do_change_factor_max_level(factor_id: StringName, new_level:int):
 	GameLogger.debug("%s max level changed to %s from lua script"%[factor_id, str(factor.max_level)])
 
 
+func lua_max_hand_size() -> int:
+	GameLogger.debug("querying max hand size from lua script")
+	return GameManager.get_equipped_gauntlet().max_hand_deck_size
+
+
+func lua_get_current_hand_size() -> int:
+	GameLogger.debug("querying current hand size from lua script")
+	return GameManager.get_run_state().run_deck_manager.hand_pile.get_deck_size()
+
+
+func lua_add_card_to_hand(amount: int) -> Array[Card]:
+	GameLogger.debug("adding card to hand from lua script")
+	return GameManager.get_run_state().run_deck_manager.draw(amount)
+
+
+func lua_has_available_cards_to_draw() -> int:
+	GameLogger.debug("querying available cards on draw pile from lua script")
+	return 1 if GameManager.get_run_state().run_deck_manager.draw_pile.get_deck_size() > 0 else 0
+
+
+func lua_add_factor_block(factor_id: StringName, amount:int):
+	var factor: Factor = GameManager.get_factor(StringName(factor_id))
+	if factor == null:
+		GameLogger.error("Factor %s not found"%factor_id)
+		return
+	factor.add_block(amount)
+	GameLogger.debug("%s blocks addedd to factor %s from lua script"%[amount, factor_id])
+
+
+func lua_add_event_block(event_id: StringName, mode: String, amount:int):
+	var event: Event = GameManager.get_event(StringName(event_id))
+	if not event:
+		GameLogger.warn("Event '%s' not found"%[event_id])
+		return
+	var block_mode := Utils.parse_string_into_enum(EventBlock.Mode, mode, "") as EventBlock.Mode
+	var event_block := EventBlock.new(block_mode, amount)
+	GameManager.get_event_manager().add_block(event_id, event_block)
+	GameLogger.debug("%s event blocks of mode %s added to %s from lua script"%[event_block.amount, EventBlock.Mode.keys()[block_mode], event_id])
+
+
+func lua_remove_block_event(event_id: StringName, amount:int):
+	var factor: Factor = GameManager.get_factor(StringName(event_id))
+	if factor != null:
+		factor.increase_max_level(amount)
+	GameLogger.debug("%s max level changed to %s from lua script"%[event_id, str(factor.max_level)])
+
+
 func lua_do_trigger_event(event_id: StringName, value: int = 1):
-	#GameManager.run_manager.event_manager.trigger_by_id(StringName(event_id), int(value))
+	GameManager.get_event_manager().get_event(event_id).trigger(value)
 	GameLogger.debug("%s trigerred from lua script with value %s"%[event_id, str(value)])
 	
 

@@ -1,9 +1,9 @@
 class_name EventBlock extends RefCounted
 
 enum Mode {
-	EVENTS,
-	VALUE,
-	NEXT_EVENT_VALUE
+	EVENTS, # Blocks next {amount} whole events. Regardless of events' ticks.
+	VALUE, # # Blocks next {amount} ticks, whether the same or different events.
+	NEXT_EVENT_VALUE # Blocks next {amount} ticks exclusively from the next event
 }
 
 var mode: Mode

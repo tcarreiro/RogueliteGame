@@ -27,7 +27,9 @@
 --}
 
 function onRunStart(loot)
+	-- TODO: is recreating (and adding) a new effect each run start
 	Content.doCreateEffect({
+		display_name = "Echo Veil",
 		parent_loot = loot,
 		trigger_event = "TE_IMMEDIATE",
 		event_category = "EC_NONE",

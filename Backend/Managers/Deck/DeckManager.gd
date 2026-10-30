@@ -43,9 +43,15 @@ func play(card_uuid: UUID) -> Card:
 	return card
 
 
+func _can_draw() -> bool:
+	return not ((hand_pile.get_deck_size() >= hand_pile.max_deck_size) or (draw_pile.get_deck_size() <= 0))
+
+
 func draw(count: int = 1) -> Array[Card]:
 	var drawn: Array[Card] = []
 	for i in range(count):
+		if not _can_draw():
+			return drawn
 		var card := draw_pile.pop_front()
 		if not card:
 			continue
