@@ -1,4 +1,4 @@
-class_name CardPile2 extends Resource
+class_name CardPile extends Resource
 
 ######
 ## ANY ORGANIZED COLLECTION OF CARDS THAT CAN BE MANIPULATED
@@ -90,7 +90,7 @@ func add_card(card: Card) -> bool:
 		return false
 	if max_deck_size > 0 and get_deck_size() >= max_deck_size:
 		GameLogger.error(
-			"[CardPile] could't add card %s to deck %s, because there is no slot available."%[card.id, id])
+			"[CardPile] couldn't add card %s to deck %s, because there is no slot available."%[card.id, id])
 		return false
 	deck_updated.emit(self)
 	#card.equip()
@@ -101,7 +101,7 @@ func add_card(card: Card) -> bool:
 func remove_card(card: Card) -> bool:
 	if not cards.has(card.uuid):
 		GameLogger.warn(
-			"[CardPile] could't remove card %s not found in deck %s."%[card.uuid, id])
+			"[CardPile] couldn't remove card %s not found in deck %s."%[card.uuid, id])
 		return false
 	deck_updated.emit(self)
 	#card.unequip()

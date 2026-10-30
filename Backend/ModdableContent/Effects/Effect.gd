@@ -16,21 +16,21 @@ enum TriggerEvent {
 
 enum EventCategory {
 	EC_NONE,
-	EC_RE_START_RUN,
+	EC_RE_START_RUN, # RE -> Run Event
 	EC_RE_END_RUN,
 	EC_RE_TRIGGERED,
 	EC_RE_RESOLVED,
 	EC_RE_BLOCKED,
-	EC_CE_DRAWN,
+	EC_CE_DRAWN, # CE -> Card Event
 	EC_CE_PLAYED,
 	EC_CE_DISCARDED,
-	EC_FE_OVERFLOW,
+	EC_FE_OVERFLOW, # FE -> Factor Event
 	EC_FE_LEVEL_CHANGED,
 	EC_FE_THRESHOLD_REACHED,
-	EC_PE_SPOTTED,
+	EC_PE_SPOTTED, # PE -> Player Event
 	EC_PE_DEATH,
 	EC_PE_HIT,
-	EC_LE_COLLECTED
+	EC_LE_COLLECTED # LE -> Loot Event
 }
 
 @export var uuid: UUID = UUID.new_uuid()

@@ -19,9 +19,12 @@ func get_all_effects() -> Array[Effect]:
 
 
 func add_effect(effect: Effect) -> void:
+	print("Tryng to add effect %s to %s"%[effect.display_name, display_name])
+	print(_compute_max_effects_allowed() )
+	print(get_total_effects())
 	if _compute_max_effects_allowed() - get_total_effects() <= 0:
 		GameLogger.error(
-			"[Enchantable] could't add effect to enchantable %s, because there is no slot available."%[id])
+			"[Enchantable] couldn't add effect to enchantable %s, because there is no slot available."%[id])
 		return
 	if not effect:
 		return
@@ -32,7 +35,7 @@ func add_effect(effect: Effect) -> void:
 func remove_effect(effect: Effect) -> void:
 	if not effects.has(effect.uuid):
 		GameLogger.warn(
-			"[Enchantable] could't remove effect. Not found in equip %s."%[id])
+			"[Enchantable] couldn't remove effect. Not found in equip %s."%[id])
 		return
 	effects.erase(effect.uuid)
 	effect_updated.emit(self)

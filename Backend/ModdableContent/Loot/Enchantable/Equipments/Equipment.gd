@@ -58,7 +58,7 @@ func unequip() -> void:
 #region Addons
 func equip_addon(addon: Addon) -> void:
 	if get_available_slots() <= 0:
-		GameLogger.error("[%s] could't equip addon, because there is no slot available."%[kind])
+		GameLogger.error("[%s] couldn't equip addon, because there is no slot available."%[kind])
 		return
 	if sockets.contains(addon) or addon.is_equipped:
 		GameLogger.error("[%s] this addon is already equipped."%[kind])

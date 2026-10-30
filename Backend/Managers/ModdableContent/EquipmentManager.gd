@@ -82,7 +82,7 @@ func equip(equipment: Equipment) -> void:
 		return
 	if _get_number_of_slots_by_type(equipment.type) <= _get_number_of_type_equipped(equipment.type):
 		GameLogger.error(
-			"[%s] could't equip equipment, because there is no slot available."%[Equipment.EquipmentType.keys()[equipment.type]])
+			"[%s] couldn't equip equipment, because there is no slot available."%[Equipment.EquipmentType.keys()[equipment.type]])
 		return
 	on_equip.emit(equipment)
 	_equipments[equipment.type].list.append(equipment)

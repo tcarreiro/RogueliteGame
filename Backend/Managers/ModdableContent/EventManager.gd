@@ -46,7 +46,6 @@ func process(delta: float, speed_multiplier: float = 1.0) -> void:
 		if queue.is_empty():
 			_queue_throttle_timers[event_id] = 0.0
 			continue
-		
 		_queue_throttle_timers[event_id] += delta
 		var throttle: float = queue_throttle.get(event_id, 5.0)
 		if _queue_throttle_timers[event_id] >= throttle:

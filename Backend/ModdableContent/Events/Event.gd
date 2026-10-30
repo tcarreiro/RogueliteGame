@@ -39,4 +39,4 @@ func resolve_event(amount: int) -> void:
 
 func block_event(amount: int) -> void:
 	if on_blocked.is_valid():
-		on_blocked.call(null, id, amount)
+		on_blocked.call(id, amount)

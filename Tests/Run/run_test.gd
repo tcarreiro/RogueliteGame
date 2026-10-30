@@ -138,17 +138,18 @@ func goto_run() -> void:
 	datashards_container.hide()
 	
 	run_btn.text = "End Run"
-	
-	var cards := GameManager.get_run_deck_manager().draw(1)
-	for card in cards:
-		var btn := Button.new()
-		btn.text = card.display_name
-		btn.pressed.connect(func():
-			var played_card := GameManager.get_run_deck_manager().play(card.uuid)
-			if played_card:
-				btn.queue_free()
-		)
-		run_container.add_child(btn)
+	GameManager.get_run_deck_manager().card_drawn.connect(_on_card_drawn)
+
+
+func _on_card_drawn(card: Card) -> void:
+	var btn := Button.new()
+	btn.text = card.display_name
+	btn.pressed.connect(func():
+		var played_card := GameManager.get_run_deck_manager().play(card.uuid)
+		if played_card:
+			btn.queue_free()
+	)
+	run_container.add_child(btn)
 
 
 func _run_btn() -> void:
@@ -263,12 +264,14 @@ func _create_factor_info() -> void:
 		var fac_label := Label.new()
 		fac_label.text = factor.display_name
 		var fac_val := Label.new()
-		fac_val.text = "%s/%s"%[factor.current_level, factor.max_level]
+		fac_val.text = "%s/%s (%s)"%[factor.current_level, factor.max_level, factor.blocks]
 		container.add_child(fac_label)
 		container.add_child(fac_val)
 		factor_container.add_child(container)
 		_factors[factor.id] = fac_val
 		factor.level_changed.connect(_on_factor_changed)
+		factor.factor_block_added.connect(_on_factor_changed)
+		factor.factor_blocked.connect(_on_factor_changed)
 
 
 func _create_event_info() -> void:
@@ -301,17 +304,17 @@ func _on_run_ticked(run_state: RunState) -> void:
 
 
 func _on_factor_changed(factor: Factor) -> void:
-	_factors[factor.id].text = "%s/%s"%[factor.current_level, factor.max_level]
+	_factors[factor.id].text = "%s/%s (%s)"%[factor.current_level, factor.max_level, factor.blocks]
 
 
 func _on_event_blocked(event_id: StringName, amount: int) -> void:
 	var values = _split_events(event_id)
-	_events[event_id].text = "%s|%s" % [values[0], int(values[1] + amount)]
+	_events[event_id].text = "%s|%s" % [int(values[0]), (int(values[1]) + amount)]
 
 
 func _on_event_resolved(event_id: StringName, amount: int) -> void:
 	var values = _split_events(event_id)
-	_events[event_id].text = "%s|%s" % [int(values[0]) + amount, values[1]]
+	_events[event_id].text = "%s|%s" % [int(values[0]) + amount, int(values[1])]
 
 
 func _split_events(event_id: StringName) -> Array:

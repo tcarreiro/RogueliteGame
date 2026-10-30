@@ -3,6 +3,6 @@ function onResolvedEvent(player, event_id, amount)
 	Content.doChangeFactorLevel(affected_factor_id, amount)
 end
 
-function onBlockedEvent(player, event_id)
-	print(event_id .. " blocked")
+function onBlockedEvent(event_id, amount)
+	print(amount .. " of " .. event_id .. " blocked")
 end

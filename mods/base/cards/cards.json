@@ -9,6 +9,6 @@
 		"max_copies_in_active_deck": "5",
 		"flags": [],
 		"effect_ids": [],
-		"script_path": "cards/scripts/evasion.lua"
+		"script_path": "cards/scripts/card_evasion.lua"
 	}
 ]
