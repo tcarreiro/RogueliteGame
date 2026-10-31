@@ -33,6 +33,9 @@ func _setup_lua_state() -> void:
 func _register_common_state() -> void:
 	LuaBridgeRegistry.register_state(_state_name, _lua_state)
 	
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "pause", lua_pause)
+	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "resume", lua_resume)
+	
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "isEnchantable", lua_is_enchantable)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorLevel", lua_get_factor_level)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorMaxLevel", lua_get_factor_max_level)
@@ -111,6 +114,14 @@ func get_state_name() -> StringName:
 
 
 #region Lua Scripts
+func lua_pause() -> void:
+	GameManager.game_state.pause()
+
+
+func lua_resume() -> void:
+	GameManager.game_state.resume()
+
+
 func lua_is_enchantable(parent) -> bool:
 	return parent is Enchantable
 

@@ -47,6 +47,9 @@ func detach() -> void:
 
 func _register_actions() -> void:
 	LuaUi.state.globals[NAMESPACE] = null
+	LuaBridgeRegistry.lua_register(STATE_NAME, NAMESPACE, "pause", lua_pause)
+	LuaBridgeRegistry.lua_register(STATE_NAME, NAMESPACE, "resume", lua_resume)
+	
 	LuaBridgeRegistry.lua_register(STATE_NAME, NAMESPACE, "selectGauntlet", lua_select_gauntlet)
 	LuaBridgeRegistry.lua_register(STATE_NAME, NAMESPACE, "selectDatashard", lua_select_datashard)
 	LuaBridgeRegistry.lua_register(STATE_NAME, NAMESPACE, "toggleCard", lua_toggle_card)
@@ -56,7 +59,15 @@ func _register_actions() -> void:
 #endregion
 
 
-#region Lua -> jogo (todas validam a fase e resolvem o id aqui dentro)
+#region Lua -> jogo
+func lua_pause() -> void:
+	GameManager.game_state.pause()
+
+
+func lua_resume() -> void:
+	GameManager.game_state.resume()
+
+
 func lua_select_gauntlet(id: Variant) -> bool:
 	if GameManager.run_manager.is_run_active():
 		return false

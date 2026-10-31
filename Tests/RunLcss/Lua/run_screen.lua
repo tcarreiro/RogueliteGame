@@ -4,7 +4,8 @@
 --           Game.playCard(uuid), Game.toggleRun()              (Lua -> Game, ids only)
 
 local function confirm(title, message, action)
-  UI.mount(ConfirmDialog{ title = title, message = message, on_confirm = action })
+	Game.pause()
+	UI.mount(ConfirmDialog{ title = title, message = message, on_confirm = action })
 end
 
 local function section_title(text)
@@ -100,13 +101,13 @@ UI.defineComponent("RunScreen", {
 				Div{ id = "hub-header", class = "panel", display = "flex", flex_grow = 0.4, gap = 32, visible = in_hub, children = {
 					Div{ id = "gauntlet-options", gap = 6, children = {
 						section_title("Gauntlets"),
-						Scroll{ flex_grow = 1, padding_right = 10, children = {
+						Scroll{ class = "pr-2", flex_grow = 1, children = {
 							choice_list(gauntlet_options, Game.selectGauntlet),
 						} },
 					} },
 					Div{ id = "datashard-options", gap = 6, children = {
 						section_title("Datashards"),
-						Scroll{ flex_grow = 1, padding_right = 10, children = {
+						Scroll{ class = "pr-2", flex_grow = 1, children = {
 							choice_list(datashard_options, Game.selectDatashard),
 						} },
 					} },

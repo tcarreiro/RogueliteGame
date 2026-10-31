@@ -19,7 +19,6 @@ class_name RunState extends Resource
 var _datashard: Datashard
 var _gauntlet: Gauntlet
 
-
 func _init(_seed: int = 0) -> void:
 	run_seed = _seed
 	if _seed == 0:
@@ -41,13 +40,6 @@ func setup_managers() -> void:
 
 func _setup_effects_manager() -> void:
 	effects_manager = EffectManager.new()
-	_datashard.connect_run_start()
-	_gauntlet.connect_run_start()
-	for addon in _gauntlet.get_all_addons():
-		addon.connect_run_start()
-		addon.connect_run_end()
-	_gauntlet.connect_run_end()
-	_datashard.connect_run_end()
 	for effect: Effect in GameManager.get_active_effects():
 		effects_manager.register_effect(effect)
 
@@ -67,7 +59,7 @@ func _setup_factor_manager() -> void:
 
 
 func _setup_equipment_container() -> void:
-	var tag_query := TagQuery.create([&"kind.equipment"])
+	var tag_query := TagQuery.create([Equipment.KIND_EQUIPMENT])
 	equipment_container = ItemContainer.new(tag_query)
 	_set_run_equipment()
 
@@ -76,16 +68,21 @@ func _set_run_equipment() -> void:
 	equipment_container.add(_gauntlet)
 	_gauntlet.connect_run_start()
 	_gauntlet.connect_run_end()
+	for addon in _gauntlet.get_all_addons():
+		addon.connect_run_start()
+		addon.connect_run_end()
+	_datashard.connect_run_start()
+	_datashard.connect_run_end()
 
 
 func _setup_run_loot_container() -> void:
-	 #TBD: Run inventory always starts empty?
-	var tag_query := TagQuery.create([], [], [&"kind.card", &"kind.artifact"]) # collected cards will go to deck, collected artifacts will go to artifact container
+	#TBD: Run inventory always starts empty?
+	var tag_query := TagQuery.create([], [], [Card.KIND_CARD, Artifact.KIND_ARTIFACT]) # collected cards will go to deck, collected artifacts will go to artifact container
 	run_item_container = ItemContainer.new(tag_query)
 
 
 func _setup_artifact_container() -> void:
-	var tag_query := TagQuery.create([], [&"kind.artifact"])
+	var tag_query := TagQuery.create([], [Artifact.KIND_ARTIFACT])
 	artifact_container = ItemContainer.new(tag_query, 1)
 
 

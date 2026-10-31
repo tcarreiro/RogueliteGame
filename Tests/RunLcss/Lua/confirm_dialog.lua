@@ -2,11 +2,13 @@ UI.defineComponent("ConfirmDialog", {
   props = { title = "string", message = "string" },
   events = { "confirm", "cancel" },
   render = function(p)
+
 	local function finish(handler)
-	  return function()
-		UI.callMethod("confirm_dialog", "close")
-		if handler then handler() end
-	  end
+		return function()
+			Game.resume()
+			UI.callMethod("confirm_dialog", "close")
+			if handler then handler() end
+		end
 	end
 	
 	return Modal{
