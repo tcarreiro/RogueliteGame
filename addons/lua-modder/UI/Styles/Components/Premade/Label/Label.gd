@@ -25,6 +25,8 @@ func _ready() -> void:
 func _apply_prop(key: String, value: Variant) -> void:
 	if not value:
 		return
+	if not _is_ready and value == ComponentRegistry.get_prop_def(_schema, key).get("default"):
+		return
 	match StringName(key):
 		PropertyDefinition.TEXT:
 			_label.text = str(value)

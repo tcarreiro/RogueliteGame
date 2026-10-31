@@ -20,6 +20,8 @@ func process_effects(delta: float, _speed_multiplier: float = 1.0) -> void:
 
 
 func register_effect(effect: Effect) -> void:
+	#effect.created() #TODO
+	GameManager.run_manager.run_ended.connect(func(_s): effect.reset_stacks())
 	match effect.trigger_event:
 		Effect.TriggerEvent.TE_IMMEDIATE:
 			effect.fire.call_deferred({})

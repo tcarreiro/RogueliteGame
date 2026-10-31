@@ -23,7 +23,11 @@ func _setup() -> LuaState:
 
 func _setup_lua_state() -> void:
 	_lua_state = LuaState.new()
-	_lua_state.open_libraries()
+	_lua_state.open_libraries(LuaState.LUA_BASE | LuaState.LUA_TABLE | LuaState.LUA_STRING
+	| LuaState.LUA_MATH | LuaState.LUA_UTF8 | LuaState.LUA_COROUTINE
+	| LuaState.GODOT_VARIANT | LuaState.GODOT_UTILITY_FUNCTIONS | LuaState.GODOT_ENUMS)
+	_lua_state.globals["dofile"] = null
+	_lua_state.globals["loadfile"] = null
 
 
 func _register_common_state() -> void:
@@ -81,6 +85,12 @@ func register_addon_exclusive_states(_definition: AddonDefinition, __state_name:
 
 
 #region Addon
+func register_effect_exclusive_states(_definition: EffectDefinition, __state_name: StringName) -> void:
+	pass
+#endregion
+
+
+#region Card
 func register_card_exclusive_states(_definition: CardDefinition, __state_name: StringName) -> void:
 	pass
 #endregion
@@ -105,14 +115,27 @@ func lua_is_enchantable(parent) -> bool:
 	return parent is Enchantable
 
 
-func lua_create_effect(config_table) -> Effect:
-	var config = LuaHelper.normalize_lua(config_table)
-	var effect := Effect.new(config)
-	GameManager.get_effect_manager().register_effect(effect)
-	return effect
+func lua_create_effect(_config_table) -> StringName:
+	#if not GameManager.run_manager.is_run_active():
+		#return &""
+	#var config = LuaHelper.normalize_lua(config_table)
+	#var effect_definition := EffectDefinition.new(config)
+	#EffectRegistry.register(effect_definition)
+	#GameManager.get_effect_manager().register_effect(EffectRegistry.create_effect(effect_definition.id))
+	#return effect_definition.id
+	return &""
 
 
-func lua_get_factor_level(factor_id: StringName):
+func lua_add_effect(_effect_id):
+	# TODO: a way to query uuid loot and add effects
+	#if parent is Enchantable:
+		#parent.add_effect(self)
+	pass
+
+
+func lua_get_factor_level(factor_id: StringName) -> int:
+	if not GameManager.run_manager.is_run_active():
+		return 0
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor == null:
 		GameLogger.error("Factor '%s' not found"%[factor_id])
@@ -120,7 +143,9 @@ func lua_get_factor_level(factor_id: StringName):
 	return factor.current_level
 
 
-func lua_get_factor_max_level(factor_id: StringName):
+func lua_get_factor_max_level(factor_id: StringName) -> int:
+	if not GameManager.run_manager.is_run_active():
+		return 0
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor == null:
 		GameLogger.error("Factor '%s' not found"%[factor_id])
@@ -129,6 +154,8 @@ func lua_get_factor_max_level(factor_id: StringName):
 
 
 func lua_do_change_factor_level(factor_id: StringName, new_level:int):
+	if not GameManager.run_manager.is_run_active():
+		return
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor == null:
 		GameLogger.error("Factor %s not found"%factor_id)
@@ -139,32 +166,44 @@ func lua_do_change_factor_level(factor_id: StringName, new_level:int):
 
 func lua_do_change_factor_max_level(factor_id: StringName, new_level:int):
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
-	if factor != null:
-		factor.increase_max_level(new_level)
+	if factor == null:
+		GameLogger.error("Factor %s not found"%factor_id)
+		return
+	factor.increase_max_level(new_level)
 	GameLogger.debug("%s max level changed to %s from lua script"%[factor_id, str(factor.max_level)])
 
 
 func lua_max_hand_size() -> int:
+	if not GameManager.run_manager.is_run_active():
+		return 0
 	GameLogger.debug("querying max hand size from lua script")
 	return GameManager.get_equipped_gauntlet().max_hand_deck_size
 
 
 func lua_get_current_hand_size() -> int:
+	if not GameManager.run_manager.is_run_active():
+		return 0
 	GameLogger.debug("querying current hand size from lua script")
 	return GameManager.get_run_state().run_deck_manager.hand_pile.get_deck_size()
 
 
-func lua_add_card_to_hand(amount: int) -> Array[Card]:
+func lua_add_card_to_hand(amount: int) -> Array[UUID]:
+	if not GameManager.run_manager.is_run_active():
+		return []
 	GameLogger.debug("adding card to hand from lua script")
-	return GameManager.get_run_state().run_deck_manager.draw(amount)
+	return GameManager.get_run_state().run_deck_manager.draw(amount).map(func(c: Card): return c.uuid)
 
 
 func lua_has_available_cards_to_draw() -> int:
+	if not GameManager.run_manager.is_run_active():
+		return 0
 	GameLogger.debug("querying available cards on draw pile from lua script")
 	return 1 if GameManager.get_run_state().run_deck_manager.draw_pile.get_deck_size() > 0 else 0
 
 
 func lua_add_factor_block(factor_id: StringName, amount:int):
+	if not GameManager.run_manager.is_run_active():
+		return
 	var factor: Factor = GameManager.get_factor(StringName(factor_id))
 	if factor == null:
 		GameLogger.error("Factor %s not found"%factor_id)
@@ -174,6 +213,8 @@ func lua_add_factor_block(factor_id: StringName, amount:int):
 
 
 func lua_add_event_block(event_id: StringName, mode: String, amount:int):
+	if not GameManager.run_manager.is_run_active():
+		return
 	var event: Event = GameManager.get_event(StringName(event_id))
 	if not event:
 		GameLogger.warn("Event '%s' not found"%[event_id])
@@ -184,14 +225,22 @@ func lua_add_event_block(event_id: StringName, mode: String, amount:int):
 	GameLogger.debug("%s event blocks of mode %s added to %s from lua script"%[event_block.amount, EventBlock.Mode.keys()[block_mode], event_id])
 
 
-func lua_remove_block_event(event_id: StringName, amount:int):
-	var factor: Factor = GameManager.get_factor(StringName(event_id))
-	if factor != null:
-		factor.increase_max_level(amount)
-	GameLogger.debug("%s max level changed to %s from lua script"%[event_id, str(factor.max_level)])
+func lua_remove_block_event(event_id: StringName, mode: String, amount:int):
+	if not GameManager.run_manager.is_run_active():
+		return
+	var event: Event = GameManager.get_event(StringName(event_id))
+	if not event:
+		GameLogger.warn("Event '%s' not found"%[event_id])
+		return
+	var block_mode := Utils.parse_string_into_enum(EventBlock.Mode, mode, "") as EventBlock.Mode
+	var event_block := EventBlock.new(block_mode, amount)
+	GameManager.get_event_manager().remove_block(event_id, event_block)
+	GameLogger.debug("%s event blocks of mode %s added to %s from lua script"%[event_block.amount, EventBlock.Mode.keys()[block_mode], event_id])
 
 
 func lua_do_trigger_event(event_id: StringName, value: int = 1):
+	if not GameManager.run_manager.is_run_active():
+		return
 	GameManager.get_event_manager().get_event(event_id).trigger(value)
 	GameLogger.debug("%s trigerred from lua script with value %s"%[event_id, str(value)])
 	

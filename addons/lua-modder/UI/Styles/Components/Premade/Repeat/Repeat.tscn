@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/lua-modder/UI/Styles/Components/Premade/Repeat/Repeat.gd" id="1_2h76v"]
+[ext_resource type="Script" path="res://addons/lua-modder/UI/Styles/Components/Classes/LuaFlowBox.gd" id="2_xeydh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h0j6j"]
+
+[node name="Repeat" type="BoxContainer" unique_id=270868245]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_2h76v")
+metadata/_edit_use_anchors_ = true
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=104701820]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Background" type="PanelContainer" parent="Margin" unique_id=1773208487]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_h0j6j")
+
+[node name="Padding" type="MarginContainer" parent="Margin/Background" unique_id=1124177761]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Items" type="BoxContainer" parent="Margin/Background/Padding" unique_id=1861146002]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_xeydh")
+metadata/_custom_type_script = "uid://bspsj7f8qcc7d"

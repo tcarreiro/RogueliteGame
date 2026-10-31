@@ -45,6 +45,7 @@ func erase(v: Variant) -> void:
 
 
 func insert(position: int, v: Variant) -> void:
+	value.insert(position, v)
 	reactive_changed.emit(self)
 
 

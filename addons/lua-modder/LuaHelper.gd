@@ -1,5 +1,7 @@
 class_name LuaHelper extends RefCounted
 
+static var error_hook: Callable = Callable()
+
 static func call_by_name(lua_state: LuaState, function_name: String, args: Array = []):
 	var fn = lua_state.globals[function_name]
 	if not (fn is LuaFunction):
@@ -14,7 +16,14 @@ static func call_by_name(lua_state: LuaState, function_name: String, args: Array
 	return result
 
 
-static func make_callable(value) -> Callable:
+static func report_error(context: String, error: LuaError) -> void:
+	var where := context if context != "" else "função Lua"
+	push_error("[Lua] %s: %s" % [where, error.message])
+	if error_hook.is_valid():
+		error_hook.call(where, str(error.message))
+
+
+static func make_callable(value, context := "") -> Callable:
 	if value is Callable:
 		return value
 
@@ -22,11 +31,12 @@ static func make_callable(value) -> Callable:
 		return func(...args):
 			var r = value.invoke.callv(args)
 			if r is LuaError:
-				push_error("[LuaHelper] erro ao chamar função Lua: %s" % r)
+				report_error(context, r)
 				return null
 			return r
-	
-	#push_warning("[LuaHelper] Unexpected callback value: %s" % typeof(value)) # TODO: error msgs on init
+
+	if value != null:
+		push_warning("[LuaHelper] %s: lua function expected. Instead, %s" % [context if context != "" else "callback", type_string(typeof(value))])
 	return Callable()
 
 

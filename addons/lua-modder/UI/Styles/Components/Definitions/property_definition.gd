@@ -68,7 +68,7 @@ const PADDING_BOTTOM := &"padding_bottom"
 const COLUMNS := &"columns"
 const COLUMN_GAP := &"column_gap"
 const ROW_GAP := &"row_gap"
-const FILL_CELLS := &"fill_cells"   # FILL já é um valor ('fill'), por isso o nome
+const FILL_CELLS := &"fill_cells"
 
 const DISPLAY := &"display"
 const ALIGN_ITEMS := &"align_items"

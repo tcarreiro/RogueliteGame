@@ -22,6 +22,7 @@ FactorRegistry="*uid://44emqs5n2hpy"
 EventRegistry="*uid://dmvxbgsci0dd7"
 AddonRegistry="*uid://b8n37th7ya3ib"
 DatashardRegistry="*uid://c5cryitvv21i7"
+EffectRegistry="*uid://xd1njqdfnupu"
 EquipmentRegistry="*uid://kissld841vf7"
 CardRegistry="*uid://b763l6ax1847l"
 SceneMap="*uid://bfxewhtnqx4by"
@@ -32,6 +33,8 @@ LuaUi="*res://addons/lua-modder/UI/LuaUi.gd"
 
 [display]
 
+window/size/viewport_width=1920
+window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 

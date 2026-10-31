@@ -3,10 +3,15 @@
 		"id": "echo_chip",
 		"display_name": "Echo Chip",
 		"description": "A small chip infused with flux",
-		"tier": 2,
+		"tier": 5,
 		"nature_id": "NONE",
 		"suits": ["kind.gauntlet"],
-		"effect_ids": ["effect_echo"],
+		"effect_ids": [
+			"effect_echo_veil",
+			"effect_echo_veil",
+			"effect_echo_veil",
+			"effect_echo_veil"
+		],
 		"script_path": "addons/scripts/echo_chip.lua"
 	}
 ]

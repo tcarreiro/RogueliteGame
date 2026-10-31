@@ -35,6 +35,7 @@ func _init(definition: EquipmentDefinition) -> void:
 	sockets = ItemContainer.new(tag_query, definition.socket_slots)
 	for addon_id in definition.addon_ids:
 		equip_addon(AddonRegistry.create_addon(addon_id))
+	
 
 
 func get_unique_id() -> StringName:
@@ -108,7 +109,7 @@ func get_all_effects_ids_from_addons() -> Array[StringName]:
 	var all_ids: Array[StringName] = []
 	for addon: Addon in get_all_addons():
 		for effect: Effect in addon.effects.values():
-			all_ids.append(effect.id)
+			all_ids.append(effect.uuid)
 	return all_ids
 
 

@@ -34,6 +34,7 @@ enum EventCategory {
 }
 
 @export var uuid: UUID = UUID.new_uuid()
+@export var id: StringName
 @export var display_name: StringName
 @export var description: String
 @export var trigger_event: TriggerEvent 
@@ -44,30 +45,24 @@ enum EventCategory {
 @export var duration: float = NAN # NAN means doesn't expire
 @export var unique: bool = false
 
-@export var on_trigger: Callable
+var on_trigger: Callable
 
+var _original_stacks: int = -1
 
-func _init(entry: Dictionary) -> void:
-	display_name = StringName(entry.get("display_name", "NEW_EFFECT"))
-	trigger_event = Utils.parse_string_into_enum(
-		TriggerEvent, entry.get("trigger_event", "TE_IMMEDIATE"), "[Effect] - trigger_event") as TriggerEvent
-	event_category = Utils.parse_string_into_enum(
-		EventCategory, entry.get("event_category", "EC_NONE"), "[Effect] - event_category") as EventCategory
-	trigger_filter = StringName(entry.get("trigger_filter", ""))
-	effect_category = Utils.parse_string_into_enum(
-		EffectCategory, entry.get("effect_category", ""), "[Effect] - effect_category") as EffectCategory
-	stacks = int(entry.get("stacks", -1))
-	duration = float(entry.get("duration", NAN))
-	unique = bool(entry.get("unique", false))
-	description = entry.get(
-		"description", "-".join([
-			EffectCategory.keys()[effect_category], TriggerEvent.keys()[trigger_event], EventCategory.keys()[event_category], trigger_filter, str(stacks), str(duration)
-		]))
-	on_trigger = LuaHelper.make_callable(entry.get("on_trigger"))
-	
-	var parent = entry.get("parent_loot")
-	if parent is Enchantable:
-		parent.add_effect(self)
+func _init(definition: EffectDefinition) -> void:
+	id = definition.id
+	display_name = definition.display_name
+	description = definition.description
+	trigger_event = definition.trigger_event
+	event_category = definition.event_category
+	trigger_filter = definition.trigger_filter
+	effect_category = definition.effect_category
+	stacks = definition.stacks
+	_original_stacks = stacks
+	duration = definition.duration
+	unique = definition.unique
+
+	on_trigger = definition.on_trigger
 
 
 func matches(filter: StringName, _event_category: EventCategory = EventCategory.EC_NONE) -> bool:
@@ -81,8 +76,13 @@ func matches(filter: StringName, _event_category: EventCategory = EventCategory.
 func has_time_remaining() -> bool:
 	return is_nan(duration) or duration > 0.0
 
+
 func can_fire() -> bool:
 	return stacks != 0
+
+
+func reset_stacks() -> void:
+	stacks = _original_stacks
 
 
 func fire(params: Dictionary = {}) -> void:

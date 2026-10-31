@@ -6,6 +6,7 @@ const ADDON_DIR = "addons"
 const ADDONS_JSON_REGISTRY = "addons.json"
 
 var _definitions: Dictionary[StringName, AddonDefinition] = {}
+var _cached_addons: Dictionary[UUID, Addon] = {}
 var _content_bridge: ContentBridge
 var _mod_manager: ModManager
 
@@ -69,7 +70,9 @@ func create_addon(id: StringName) -> Addon:
 	var definition := get_definition(id)
 	if not definition:
 		return null
-	return Addon.new(definition)
+	var addon: Addon = Addon.new(definition)
+	_cached_addons[addon.uuid] = addon
+	return addon
 
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> AddonDefinition:

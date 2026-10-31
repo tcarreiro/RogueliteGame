@@ -6,9 +6,9 @@ const KIND_ENCHANTABLE := StringName(KIND_PREFIX+"enchantable")
 
 @export var effects: Dictionary[UUID, Effect] = {}
 
+
 func _compute_max_effects_allowed() -> int:
 	return 0
-
 
 func get_total_effects() -> int:
 	return get_all_effects().size()
@@ -19,9 +19,6 @@ func get_all_effects() -> Array[Effect]:
 
 
 func add_effect(effect: Effect) -> void:
-	print("Tryng to add effect %s to %s"%[effect.display_name, display_name])
-	print(_compute_max_effects_allowed() )
-	print(get_total_effects())
 	if _compute_max_effects_allowed() - get_total_effects() <= 0:
 		GameLogger.error(
 			"[Enchantable] couldn't add effect to enchantable %s, because there is no slot available."%[id])

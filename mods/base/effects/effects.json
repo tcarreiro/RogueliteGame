@@ -1,0 +1,13 @@
+[
+	{
+		"id": "effect_echo_veil",
+		"display_name": "Echo Veil",
+		"description": "The Veil has trouble in finding you.",
+		"trigger_event": "TE_IMMEDIATE",
+		"event_category": "EC_NONE",
+		"effect_category": "BUFF",
+		"description": "INCREASE_MAX_RESONANCE_20",
+		"stacks": 1,
+		"script_path": "effects/scripts/effect_echo_veil.lua"
+	}
+]

@@ -48,6 +48,8 @@ func _setup_effects_manager() -> void:
 		addon.connect_run_end()
 	_gauntlet.connect_run_end()
 	_datashard.connect_run_end()
+	for effect: Effect in GameManager.get_active_effects():
+		effects_manager.register_effect(effect)
 
 
 func _setup_event_manager() -> void:

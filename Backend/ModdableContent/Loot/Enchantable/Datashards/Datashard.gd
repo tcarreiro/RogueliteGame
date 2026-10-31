@@ -6,6 +6,7 @@ signal unequipped(datashard:Datashard)
 
 const KIND_DATASHARD := StringName(KIND_PREFIX+"datashard")
 
+@export var uuid: UUID = UUID.new_uuid()
 @export var tier: int = 1
 @export var nature_id: StringName
 

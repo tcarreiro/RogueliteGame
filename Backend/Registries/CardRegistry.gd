@@ -6,6 +6,7 @@ const CARD_DIR = "cards"
 const CARDS_JSON_REGISTRY = "cards.json"
 
 var _definitions: Dictionary[StringName, CardDefinition] = {}
+var _cached_cards: Dictionary[UUID, Card] = {}
 var _content_bridge: ContentBridge
 var _mod_manager: ModManager
 
@@ -69,7 +70,9 @@ func create_card(id: StringName) -> Card:
 	var definition := get_definition(id)
 	if not definition:
 		return null
-	return Card.new(definition)
+	var card: Card = Card.new(definition)
+	_cached_cards[card.uuid] = card
+	return card
 
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> CardDefinition:

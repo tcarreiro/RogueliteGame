@@ -16,6 +16,7 @@ func register_event(event: Event, throttle: float = 5.0) -> void:
 		GameLogger.error("Event not found.")
 		return
 	_events[event.id] = event
+	#event.created() # TODO
 	event_queue[event.id] = []
 	block_queue[event.id] = []
 	queue_throttle[event.id] = throttle
@@ -28,6 +29,15 @@ func register_event(event: Event, throttle: float = 5.0) -> void:
 func add_block(event_id: StringName, block: EventBlock) -> void:
 	if block_queue.has(event_id):
 		block_queue[event_id].append(block)
+
+
+func remove_block(event_id: StringName, p_block: EventBlock) -> void:
+	if block_queue.has(event_id):
+		for block:EventBlock in block_queue[event_id]:
+			if block.mode == p_block.mode:
+				block.amount -= p_block.amount
+				if block.amount <= 0:
+					block_queue[event_id].erase(block)
 
 
 func _on_event_triggered(event: Event, value: int) -> void:
