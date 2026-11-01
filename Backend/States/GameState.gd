@@ -133,6 +133,11 @@ func _setup_initial_deck() -> void:
 	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
 	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
 	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
+	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
+	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
+	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
+	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
+	persistent_inventory.add(CardRegistry.create_card("card_evasion"))
 	active_cards = CardPile.new("ActiveDeck", [])
 
 
