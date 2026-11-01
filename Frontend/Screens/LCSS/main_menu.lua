@@ -2,7 +2,6 @@
 -- Get/Set:  UI.store("settings")
 
 local function confirm(title, message, action)
-	Game.pause()
 	UI.mount(ConfirmDialog{ title = title, message = message, on_confirm = action })
 end
 

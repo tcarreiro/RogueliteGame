@@ -1,6 +1,4 @@
 class_name LuaStoreHandle extends RefCounted
-## Visão de um ReactiveDictionary para o Lua: só funções com valores simples.
-## origin != null: significa que o handle é um rascunho (draft) de `origin`.
 
 var id: int
 var store: ReactiveDictionary
@@ -20,7 +18,7 @@ func is_draft() -> bool:
 	return origin != null
 
 
-## O que um bind() deve observar: a store e, quando for rascunho, o original.
+## Add draft data when "origin" exists and serves it on bind()
 func dependencies() -> Array[Reactive]:
 	var out: Array[Reactive] = [store]
 	if origin != null:
@@ -48,8 +46,7 @@ func lua_get(key: Variant) -> Variant:
 	return store.get_at(str(key))
 
 
-## Converte para o tipo do valor atual.
-## Ex.: o Input number manda 55.0, a store guarda 55.
+## Parse type
 func lua_set(key: Variant, new_value: Variant) -> void:
 	if readonly:
 		return

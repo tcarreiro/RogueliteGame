@@ -1,6 +1,4 @@
 class_name MainMenu extends Control
-## Projeto consumidor de teste: carrega os .lua e o .lcss da pasta, mantém as settings
-## reativas e troca de tela destruindo os componentes antigos e criando os novos.
 
 # TODO: Move to Autoload with all LCSS and Lua files
 const LCSS_FILES := [

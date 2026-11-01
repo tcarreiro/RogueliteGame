@@ -3,9 +3,9 @@
 -- Actions:  Game.selectGauntlet(id), Game.selectDatashard(id), Game.toggleCard(uuid),
 --           Game.playCard(uuid), Game.toggleRun()              (Lua -> Game, ids only)
 
-local function confirm(title, message, action)
-	--Game.pause()
-	UI.mount(ConfirmDialog{ title = title, message = message, on_confirm = action })
+local function confirm(title, message, confirm_action, cancel_action)
+	Game.pause()
+	UI.mount(ConfirmDialog{ title = title, message = message, on_confirm = confirm_action, on_cancel = cancel_action })
 end
 
 local function section_title(text)
@@ -191,7 +191,11 @@ UI.defineComponent("GameScreen", {
 						disabled = toggle_run_btn,
 						on_pressed = function() 
 							confirm("Confirm", toggle_run_msg, function()
+								Game.resume()
 								Game.toggleRun()
+							end,
+							function()
+								Game.resume()
 							end)
 						end
 					},
