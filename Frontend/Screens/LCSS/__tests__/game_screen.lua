@@ -4,7 +4,7 @@
 --           Game.playCard(uuid), Game.toggleRun()              (Lua -> Game, ids only)
 
 local function confirm(title, message, action)
-	Game.pause()
+	--Game.pause()
 	UI.mount(ConfirmDialog{ title = title, message = message, on_confirm = action })
 end
 
@@ -60,7 +60,7 @@ local function stat_list(items)
 	}
 end
 
-UI.defineComponent("RunScreen", {
+UI.defineComponent("GameScreen", {
 	render = function(p)
 		local screen = UI.store("run_screen")
 		local clock = UI.store("run_clock")

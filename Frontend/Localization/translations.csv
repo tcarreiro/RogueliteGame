@@ -1,10 +1,11 @@
 key,en,pt_BR
 PLAY,Play,Jogar
-OPTIONS,Options,Opções
+SETTINGS,Settings,Opções
 EXIT,Exit,Sair
 GENERAL,General,Geral
 GRAPHICS,Graphics,Gráficos
 CONTROLS,Controls,Controles
+SAVE,Save,Salvar
 RESTORE,Restore,Restaurar
 CONFIRM,Confirm,Confirmar
 CANCEL,Cancel,Cancelar
@@ -14,6 +15,9 @@ CONTINUE,Continue,Continuar
 QUIT,Quit,Sair
 RESUME,Resume,Continuar
 ,,
+SAVE_CONFIG_MSG,Save changes?,Salvar as configurações?
+SAVE_CONFIG_BACK_MSG,Save changes and go back to main menu?,Salvar as configurações e voltar ao menu principal?
+DISCARD_CONFIG_MSG,,Descartar as alterações e voltar ao menu principal?
 ,,
 MAIN_MENU,Main menu,Menu principal
 END_RUN,End run,Finalizar expedição
@@ -38,7 +42,7 @@ INTERACT_FLOATING_LABEL,Press <%s> to interact,Aperte <%s> para interagir
 ,,
 ,,
 CONTEXT_MENU.CONTINUE_MSG,Continue,Continuar
-CONTEXT_MENU.OPTIONS_MSG,Options,Opções
+CONTEXT_MENU.SETTINGS_MSG,Settings,Opções
 CONTEXT_MENU.END_RUN_MSG,End run,Cancelar incursão
 CONTEXT_MENU.MAIN_MENU_MSG,Exit to main menu,Sair para menu principal
 CONTEXT_MENU.BACK_TO_HUB_MSG,End run and go back to hub?,Finalizar expedição e voltar à base?

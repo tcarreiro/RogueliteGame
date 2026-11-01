@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://ccqgfxvfi0ums"]
+
+[ext_resource type="Script" uid="uid://cnwii5ksvqgiw" path="res://Frontend/Screens/MainMenu/Lua/main_menu.gd" id="1_kxjwd"]
+
+[node name="MainMenu" type="Control" unique_id=348106220]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_kxjwd")
+play_scene = "uid://eeivvorwc74j"
