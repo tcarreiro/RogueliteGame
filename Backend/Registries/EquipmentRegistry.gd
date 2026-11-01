@@ -5,6 +5,7 @@ const EQUIPMENT_DIR = "equipments"
 const EQUIPMENTS_JSON_REGISTRY = "equipments.json"
 
 var _definitions: Dictionary[StringName, EquipmentDefinition] = {}
+var _cached_equipments: Dictionary[UUID, Equipment] = {}
 var _content_bridge: ContentBridge
 var _mod_manager: ModManager
 
@@ -70,7 +71,9 @@ func create_equipment(id: StringName) -> Equipment:
 		return null
 	match definition.kind:
 		Gauntlet.KIND_GAUNTLET:
-			return Gauntlet.new(definition)
+			var gauntlet: Gauntlet = Gauntlet.new(definition)
+			_cached_equipments[gauntlet.uuid] = gauntlet
+			return gauntlet
 	return null
 
 

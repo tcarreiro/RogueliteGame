@@ -5,12 +5,15 @@ class_name LuaStoreHandle extends RefCounted
 var id: int
 var store: ReactiveDictionary
 var origin: ReactiveDictionary
+var readonly := false
+var origin_readonly := false
 
-
-func _init(p_id: int, p_store: ReactiveDictionary, p_origin: ReactiveDictionary = null) -> void:
+func _init(p_id: int, p_store: ReactiveDictionary, p_origin: ReactiveDictionary = null, p_readonly := false, p_origin_readonly := false) -> void:
 	id = p_id
 	store = p_store
 	origin = p_origin
+	readonly = p_readonly
+	origin_readonly = p_origin_readonly
 
 
 func is_draft() -> bool:
@@ -26,16 +29,19 @@ func dependencies() -> Array[Reactive]:
 
 
 func to_lua() -> Dictionary:
-	return {
+	var out := {
 		"_id": id,
 		"get_at": Callable(self, "lua_get"),
-		"set_at": Callable(self, "lua_set"),
 		"draft": Callable(self, "lua_draft"),
 		"dirty": Callable(self, "lua_dirty"),
-		"commit": Callable(self, "lua_commit"),
 		"discard": Callable(self, "lua_discard"),
-		"model": Callable(self, "lua_model"),
 	}
+	if not readonly:
+		out["set_at"] = Callable(self, "lua_set")
+		out["model"] = Callable(self, "lua_model")
+	if not readonly and not origin_readonly:
+		out["commit"] = Callable(self, "lua_commit")
+	return out
 
 
 func lua_get(key: Variant) -> Variant:
@@ -45,6 +51,8 @@ func lua_get(key: Variant) -> Variant:
 ## Converte para o tipo do valor atual.
 ## Ex.: o Input number manda 55.0, a store guarda 55.
 func lua_set(key: Variant, new_value: Variant) -> void:
+	if readonly:
+		return
 	var k := str(key)
 	var old: Variant = store.get_at(k)
 	if old != null and typeof(new_value) != typeof(old):
@@ -61,7 +69,7 @@ func lua_dirty() -> bool:
 
 
 func lua_commit() -> void:
-	if origin != null:
+	if origin != null and not origin_readonly:
 		origin.assign(store.value)
 
 

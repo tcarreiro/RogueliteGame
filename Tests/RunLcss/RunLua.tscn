@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://btk4aj3sgoktd"]
+
+[ext_resource type="Script" uid="uid://cixt02klhr8ka" path="res://Tests/RunLcss/run_lua.gd" id="1_run"]
+
+[node name="RunLua" type="Control" unique_id=528581526]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_run")

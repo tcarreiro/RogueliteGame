@@ -20,7 +20,6 @@ var on_collect: Callable
 var on_spawn: Callable
 var on_run_end: Callable
 
-## Class tags per script, computed once: { Script: Array[StringName] }
 static var _kind_tags_by_script: Dictionary = {}
 
 var _tag_cache: Array[StringName] = []
@@ -47,13 +46,13 @@ func _on_run_ended(success: bool) -> void:
 func spawn() -> void:
 	spawned.emit(self)
 	if on_spawn.is_valid():
-		on_spawn.call(self)
+		on_spawn.call(id)
 
 
 func collect() -> void:
 	collected.emit(self)
 	if on_collect.is_valid():
-		on_collect.call(self)
+		on_collect.call(id)
 
 
 ## Can this item merge with another equal one into a stack? Subclasses with

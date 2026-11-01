@@ -4,16 +4,16 @@ class_name EventDefinition extends Resource
 @export var name: String
 @export var event_trigger: Event.EventTrigger
 @export var throttle: float = 0.2
-@export var on_resolved: Callable
-@export var on_blocked: Callable
-@export var on_trigger: Callable
+var on_resolved: Callable
+var on_blocked: Callable
+var on_trigger: Callable
 
 @export_category("Timed")
 @export var interval: float = 5.0
 
 @export_category("Reactive")
 @export var watched_event_id: StringName
-@export var conditional: Callable
+var conditional: Callable
 
 
 func _init(entry: Dictionary):

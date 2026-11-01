@@ -45,6 +45,7 @@ func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
 	AddonRegistry.load_from_mods(active_mod_ids)
 	EquipmentRegistry.load_from_mods(active_mod_ids)
 	CardRegistry.load_from_mods(active_mod_ids)
+	EffectRegistry.load_from_mods(active_mod_ids)
 
 #endregion
 

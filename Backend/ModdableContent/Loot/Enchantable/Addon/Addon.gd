@@ -30,6 +30,12 @@ func _init(definition: AddonDefinition) -> void:
 	on_run_end = definition.on_run_end
 	on_equip = definition.on_equip
 	on_unequip = definition.on_unequip
+	
+	for effect_id in definition.effect_ids:
+		var effect := EffectRegistry.create_effect(effect_id)
+		if effect == null:
+			continue
+		add_effect(effect)
 
 
 func _compute_max_effects_allowed() -> int:

@@ -91,7 +91,7 @@ func register_scene(scene: PackedScene, name_override := "", source := "") -> bo
 ## Registra um componente definido em Lua. `definition` é a tabela já normalizada:
 ## { props, events, hooks, methods, slots, render }. O `render` é obrigatório.
 func register_lua(component_name: String, definition: Dictionary) -> bool:
-	var render := LuaHelper.make_callable(definition.get("render"))
+	var render := LuaHelper.make_callable(definition.get("render"), "%s.render" % component_name)
 	if not render.is_valid():
 		push_error("[ComponentRegistry] '%s': definição Lua sem função `render`" % component_name)
 		return false
@@ -182,13 +182,13 @@ func make_element(component_name: String, raw: Dictionary) -> UIElement:
 				el.ref = str(value)
 			_:
 				if (key.begins_with("on_") and key.substr(3) in schema.events) or key in schema.hooks:
-					el.handlers[key] = LuaHelper.make_callable(value)
+					el.handlers[key] = LuaHelper.make_callable(value, "%s.%s" % [component_name, key])
 				elif base.has(key) or schema.props.has(key):
 					el.props[key] = value
 				else:
 					push_warning("[ComponentRegistry] '%s' não declara '%s'" % [component_name, key])
 					if key.begins_with("on_"):
-						el.handlers[key] = LuaHelper.make_callable(value)
+						el.handlers[key] = LuaHelper.make_callable(value, "%s.%s" % [component_name, key])
 					else:
 						el.props[key] = value
 	return el

@@ -1,0 +1,54 @@
+key,en,pt_BR
+PLAY,Play,Jogar
+OPTIONS,Options,Opções
+EXIT,Exit,Sair
+GENERAL,General,Geral
+GRAPHICS,Graphics,Gráficos
+CONTROLS,Controls,Controles
+RESTORE,Restore,Restaurar
+CONFIRM,Confirm,Confirmar
+CANCEL,Cancel,Cancelar
+APPLY,Apply,Aplicar
+BACK,Back,Voltar
+CONTINUE,Continue,Continuar
+QUIT,Quit,Sair
+RESUME,Resume,Continuar
+,,
+,,
+MAIN_MENU,Main menu,Menu principal
+END_RUN,End run,Finalizar expedição
+START_RUN,Start run,Iniciar expedição
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+SAVE_SLOT.NEW_SAVE_MSG,New Game,Novo Jogo
+SAVE_SLOT.CONFIRM_DELETE_MSG,Area you sure you want to delete this file?,Tem certeza de que deseja deletar este arquivo?
+SAVE_SLOT.RUNS_LABEL,Runs,Expedições
+SAVE_SLOT.DECK_LABEL,Deck size,Número de cartas
+SAVE_SLOT.GAUNTLET_LABEL,Gauntlet,Manopla
+SAVE_SLOT.LAST_PLAY_LABEL,Last played,Jogado por último em
+INTERACT_FLOATING_LABEL,Press <%s> to interact,Aperte <%s> para interagir
+,,
+,,
+,,
+,,
+CONTEXT_MENU.CONTINUE_MSG,Continue,Continuar
+CONTEXT_MENU.OPTIONS_MSG,Options,Opções
+CONTEXT_MENU.END_RUN_MSG,End run,Cancelar incursão
+CONTEXT_MENU.MAIN_MENU_MSG,Exit to main menu,Sair para menu principal
+CONTEXT_MENU.BACK_TO_HUB_MSG,End run and go back to hub?,Finalizar expedição e voltar à base?
+CONTEXT_MENU.CONFIRM_QUIT_MSG,Exit to main menu?,Voltar ao menu principal?
+CONTEXT_MENU.END_RUN_QUIT_MSG,Terminate run and exit to main menu?,Finalizar expedição e voltar ao menu principal?
+CONTEXT_MENU.CONFIRM_QUIT_ON_RUN_MSG,Save and exit to main menu?,Salvar e voltar ao menu principal?
+,,
+,,
+,,
+,,
+GREETING1_0D28CF_B36835,Hello! {{player_name}},Hello! {{player_name}}
+GREETING2_0D28CF_7C793D,Hi! {{player_name}},Hi! {{player_name}}
+GREETING3_0D28CF_602DF0,"Hi, there! {{player_name}}","Hi, there! {{player_name}}"

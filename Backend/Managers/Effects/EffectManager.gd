@@ -20,6 +20,8 @@ func process_effects(delta: float, _speed_multiplier: float = 1.0) -> void:
 
 
 func register_effect(effect: Effect) -> void:
+	#effect.created() #TODO
+	GameManager.run_manager.run_ended.connect(func(_s): effect.reset_stacks())
 	match effect.trigger_event:
 		Effect.TriggerEvent.TE_IMMEDIATE:
 			effect.fire.call_deferred({})
@@ -55,8 +57,16 @@ func register_effect(effect: Effect) -> void:
 					effect.fire.call_deferred({"factor_id": factor.id, "threshold": threshold})
 			)
 		Effect.TriggerEvent.TE_PLAYER_EVENT:
-			#_run_manager.run_state.run_deck_manager.card_played.connect(func(card):
-				#if effect.matches(card.id, Effect.EventCategory.EC_CE_PLAYED):
+			#player.spotted.connect(func(card):
+				#if effect.matches(card.id, Effect.EventCategory.EC_PE_SPOTTED):
+					#effect.fire.call_deferred({"card_id": card.id})
+			#)
+			#player.hitted.connect(func(card):
+				#if effect.matches(card.id, Effect.EventCategory.EC_PE_HIT):
+					#effect.fire.call_deferred({"card_id": card.id})
+			#)
+			#player.died.connect(func(card):
+				#if effect.matches(card.id, Effect.EventCategory.EC_PE_DEATH):
 					#effect.fire.call_deferred({"card_id": card.id})
 			#)
 			# TODO

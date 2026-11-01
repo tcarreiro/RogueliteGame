@@ -8,10 +8,10 @@ class SlotAddress:
 	var amount: int = 0
 	var list:Array[Equipment] = []
 
-var _equipments: Dictionary[Equipment.EquipmentType, SlotAddress] = {}
+var _equipments: Dictionary[StringName, SlotAddress] = {}
 
 func _init() -> void:
-	add_slot(Equipment.EquipmentType.GAUNTLET) # TBD: only equipment allowed for now
+	add_slot(Gauntlet.KIND_GAUNTLET) # TBD: only equipment allowed for now
 
 
 func connect_all_loot_run_signals() -> void:
@@ -21,19 +21,19 @@ func connect_all_loot_run_signals() -> void:
 		GameLogger.debug("%s had its run signals connected."%[loot.id])
 
 
-func add_slot(equipment_type: Equipment.EquipmentType) -> void:
-	if not _equipments.has(equipment_type):
-		_equipments[equipment_type] = SlotAddress.new()
-	_equipments[equipment_type].amount += 1
+func add_slot(equipment_kind: StringName) -> void:
+	if not _equipments.has(equipment_kind):
+		_equipments[equipment_kind] = SlotAddress.new()
+	_equipments[equipment_kind].amount += 1
 
 
-func remove_slot(equipment_type: Equipment.EquipmentType) -> void:
+func remove_slot(equipment_kind: StringName) -> void:
 	# TBD: if can be used while in run, need to check for "unequip", or remove open slots first
-	if not _equipments.has(equipment_type):
+	if not _equipments.has(equipment_kind):
 		return
-	_equipments[equipment_type].amount -= 1
-	if _equipments[equipment_type].amount <= 0:
-		_equipments.erase(equipment_type)
+	_equipments[equipment_kind].amount -= 1
+	if _equipments[equipment_kind].amount <= 0:
+		_equipments.erase(equipment_kind)
 
 
 func get_all_loot() -> Array[Loot]:
@@ -63,26 +63,26 @@ func get_all_effects() -> Array[Effect]:
 	return all_effects
 
 
-func _get_number_of_type_equipped(equipment_type: Equipment.EquipmentType) -> int:
-	if not _equipments.has(equipment_type):
+func _get_number_of_type_equipped(equipment_kind: StringName) -> int:
+	if not _equipments.has(equipment_kind):
 		return 0
-	return _equipments[equipment_type].list.size()
+	return _equipments[equipment_kind].list.size()
 
 
-func _get_number_of_slots_by_type(equipment_type: Equipment.EquipmentType) -> int:
-	if not _equipments.has(equipment_type):
+func _get_number_of_slots_by_type(equipment_kind: StringName) -> int:
+	if not _equipments.has(equipment_kind):
 		return 0
-	return _equipments[equipment_type].amount
+	return _equipments[equipment_kind].amount
 
 
 func equip(equipment: Equipment) -> void:
 	if not _equipments.has(equipment.type):
 		GameLogger.error(
-			"[%s] There's no slot available for this equipment type"%[Equipment.EquipmentType.keys()[equipment.type]])
+			"[%s] There's no slot available for this equipment type"%[equipment.type])
 		return
 	if _get_number_of_slots_by_type(equipment.type) <= _get_number_of_type_equipped(equipment.type):
 		GameLogger.error(
-			"[%s] couldn't equip equipment, because there is no slot available."%[Equipment.EquipmentType.keys()[equipment.type]])
+			"[%s] couldn't equip equipment, because there is no slot available."%[equipment.type])
 		return
 	on_equip.emit(equipment)
 	_equipments[equipment.type].list.append(equipment)
@@ -94,9 +94,9 @@ func unequip(equipment: Equipment) -> void:
 
 
 func get_equipped_gauntlet() -> Gauntlet:
-	if not _equipments.has(Equipment.EquipmentType.GAUNTLET):
+	if not _equipments.has(Gauntlet.KIND_GAUNTLET):
 		return null
-	var eq_list := _equipments[Equipment.EquipmentType.GAUNTLET].list
+	var eq_list := _equipments[Gauntlet.KIND_GAUNTLET].list
 	if eq_list.size() == 0:
 		return null
 	return eq_list.get(0)

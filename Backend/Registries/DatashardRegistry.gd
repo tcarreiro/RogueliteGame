@@ -6,6 +6,7 @@ const DATASHARD_DIR = "datashards"
 const DATASHARDS_JSON_REGISTRY = "datashards.json"
 
 var _definitions: Dictionary[StringName, DatashardDefinition] = {}
+var _cached_datashards: Dictionary[UUID, Datashard] = {}
 var _content_bridge: ContentBridge
 var _mod_manager: ModManager
 
@@ -69,7 +70,9 @@ func create_datashard(id: StringName) -> Datashard:
 	var definition := get_definition(id)
 	if not definition:
 		return null
-	return Datashard.new(definition)
+	var datashard: Datashard = Datashard.new(definition)
+	_cached_datashards[datashard.uuid] = datashard
+	return datashard
 
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> DatashardDefinition:
