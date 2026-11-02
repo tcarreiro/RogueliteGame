@@ -3,11 +3,12 @@ extends Control
 
 const LCSS_FILES := [
 	"res://addons/lua-modder/UI/Styles/layout.lcss",
-	"res://Tests/RunLcss/run_screen.lcss",
+	"res://Frontend/Screens/LCSS/Styles/global.lcss"
 ]
-const LUA_FILE := [
-	"res://Tests/RunLcss/Lua/confirm_dialog.lua",
-	"res://Tests/RunLcss/Lua/run_screen.lua",
+const LUA_FILES := [
+	"res://Frontend/Screens/LCSS/confirm_dialog.lua",
+	#"res://Frontend/Screens/LCSS/settings.lua", # TODO: keep if can call settings from ESC menu
+	"res://Frontend/Screens/LCSS/__tests__/game_screen.lua",
 ]
 
 static var _assets_loaded := false
@@ -22,12 +23,12 @@ func _ready() -> void:
 	if not _assets_loaded:
 		for file in LCSS_FILES:
 			LuaUi.load_lcss(file)
-		for file in LUA_FILE:
+		for file in LUA_FILES:
 			if not LuaUi.load_file(file):
 				GameLogger.error("[RunLuaTest] - Couldn't load lua file '%s'"%[file])
 				return
 		_assets_loaded = true
-	_screen = ComponentRegistry.instantiate(ComponentRegistry.make_element("RunScreen", {})) as LuaComponent
+	_screen = ComponentRegistry.instantiate(ComponentRegistry.make_element("GameScreen", {})) as LuaComponent
 	add_child(_screen)
 
 

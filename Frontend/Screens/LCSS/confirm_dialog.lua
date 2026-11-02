@@ -5,7 +5,6 @@ UI.defineComponent("ConfirmDialog", {
 
 	local function finish(handler)
 		return function()
-			Game.resume()
 			UI.callMethod("confirm_dialog", "close")
 			if handler then handler() end
 		end

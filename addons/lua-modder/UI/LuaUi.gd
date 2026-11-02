@@ -5,9 +5,9 @@ var state: LuaState
 var lcss := LCSSRegistry.new()
 var _root: Control
 
-var _stores: Dictionary = {}          # nome -> ReactiveDictionary registrado pelo host
-var _readonly_stores: Dictionary = {} # nome -> true quando o Lua só pode ler
-var _root_handles: Dictionary = {}    # nome -> Dictionary do handle (um por store)
+var _stores: Dictionary = {}          # name -> ReactiveDictionary registered by host
+var _readonly_stores: Dictionary = {} # name -> bool (true = readonly)
+var _root_handles: Dictionary = {}    # name -> handle's Dictionary
 var _handles: Dictionary = {}         # id -> LuaStoreHandle
 var _next_handle_id := 0
 
@@ -101,9 +101,9 @@ func _lua_store(store_name: Variant) -> Variant:
 	return _root_handles[key]
 
 
-## UI.bind(handle, 'chave')             -> valor de uma chave
-## UI.bind(handle, function() ... end)  -> valor calculado (reavalia quando a store muda)
-## UI.bind({a, b}, function() ... end)  -> várias dependências
+## UI.bind(handle, 'key')             -> get "key" property (kinda vue's ref())
+## UI.bind(handle, function() ... end)  -> compute value (kinda vue's compute())
+## UI.bind({a, b}, function() ... end)  -> multiple dependencies
 func _lua_bind(deps: Variant, source: Variant = null) -> Variant:
 	var normalized: Variant = LuaHelper.normalize_lua(deps)
 	var entries: Array = normalized if normalized is Array else [normalized]
