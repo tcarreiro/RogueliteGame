@@ -6,7 +6,7 @@ class_name PropertyDefinition extends RefCounted
 const BASE: Array[StringName] = [
 	ID, CLASS, VISIBLE, TOOLTIP, DISABLED,
 	FLEX_GROW, ALIGN_SELF, JUSTIFY_SELF, POINTER_EVENTS,
-	EFFECTS,
+	EFFECTS, DRAG_PAYLOAD, DRAG_TYPE, DROP_ACCEPT,
 ]
 
 const ANY := TYPE_NIL 
@@ -268,6 +268,9 @@ const MOVE := &"move"
 const NOT_ALLOWED := &"not_allowed"
 const HELP := &"help"
 const DRAG := &"drag"
+const DRAG_PAYLOAD := &"drag_payload"
+const DRAG_TYPE := &"drag_type"
+const DROP_ACCEPT := &"drop_accept"
 const CAN_DROP := &"can_drop"
 
 const NORMAL := &"normal"
@@ -309,6 +312,7 @@ const BOX_SPACING: Array[StringName] = [
 ]
 
 const DRAG_GRP: Array[StringName] = [DRAGGABLE, DRAG_MODE, DRAG_HANDLE, DRAG_BOUNDS, DRAG_CURSOR]
+const DND_GRP: Array[StringName] = [DRAG_PAYLOAD, DRAG_TYPE, DROP_ACCEPT]
 
 const PANEL: Array[StringName] = [
 	BACKGROUND_COLOR, BORDER_COLOR, BORDER_WIDTH, BORDER_RADIUS,
@@ -614,6 +618,10 @@ static func _catalog() -> Dictionary:
 	_add(c, DRAG_BOUNDS, TYPE_STRING, "viewport", "viewport mantém o cursor dentro da tela durante o arraste; none não limita.", DRAG_BOUNDS_OPTIONS)
 	_add(c, DRAG_CURSOR, TYPE_STRING, "move", "Cursor sobre a região de arraste enquanto draggable estiver ligado.", CURSORS.keys())
 
+	_add(c, DRAG_PAYLOAD, ANY, null, "Tabela não vazia = o componente pode ser arrastado levando estes dados (a origem fica no lugar e um fantasma segue o mouse). Hooks: on_drag_preview, on_drag_start, on_drag_end.")
+	_add(c, DRAG_TYPE, TYPE_STRING, "", "Etiqueta do payload. Só alvos cujo drop_accept inclua este tipo recebem a soltura.")
+	_add(c, DROP_ACCEPT, TYPE_STRING, "", "Tipos de drag que o componente aceita receber, separados por espaço. Vazio = não é alvo. Hooks: on_can_drop, on_drop.")
+	
 	_add(c, MARGIN, ANY, null, "Margem externa: número, {h, v} ou {esq, topo, dir, base}.")
 	_add(c, MARGIN_LEFT, ANY, null, "Margem esquerda.")
 	_add(c, MARGIN_TOP, ANY, null, "Margem superior.")

@@ -9,7 +9,7 @@ func get_schema() -> Dictionary:
 	return {
 		"name": "Button",
 		"props": PropertyDefinition.pick(names),
-		"events": ["pressed", "mouse_entered", "mouse_exited", "focus_entered", "focus_exited"],
+		"events": ["pressed", "click", "mouse_entered", "mouse_exited", "focus_entered", "focus_exited"],
 	}
 
 
@@ -44,7 +44,11 @@ func _apply_prop(key: String, value: Variant) -> void:
 
 
 func _on_click(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		if props.get("disabled", false):
-			return
+	if not (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT):
+		return
+	if props.get("disabled", false):
+		return
+	if event.pressed:
 		emit_event("pressed")
+	elif Rect2(Vector2.ZERO, _background.size).has_point(event.position):
+		emit_event("click")

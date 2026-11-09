@@ -28,15 +28,18 @@ func register_stylesheet(stylesheet: LCSSStyleSheet) -> LCSSStyleSheet:
 	if stylesheet == null:
 		return
 	_stylesheets.append(stylesheet)
+	LCSSResolver.invalidate()
 	return stylesheet
 
 
 func unregister(stylesheet: LCSSStyleSheet) -> void:
 	_stylesheets.erase(stylesheet)
+	LCSSResolver.invalidate()
 
 
 func clear() -> void:
 	_stylesheets.clear()
+	LCSSResolver.invalidate()
 
 
 func get_stylesheets() -> Array[LCSSStyleSheet]:

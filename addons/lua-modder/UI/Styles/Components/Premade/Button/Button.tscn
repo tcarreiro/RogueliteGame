@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://c0yers4rmx43t" path="res://addons/lua-modder/UI/Styles/Components/Premade/Button/Button.gd" id="1_l665n"]
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_iyu1i"]
+
 [node name="Button" type="BoxContainer" unique_id=270868245]
 offset_right = 8.0
 offset_bottom = 8.0
@@ -17,6 +19,7 @@ size_flags_horizontal = 3
 [node name="Background" type="PanelContainer" parent="Margin" unique_id=1773208487]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_iyu1i")
 
 [node name="Padding" type="MarginContainer" parent="Margin/Background" unique_id=1124177761]
 unique_name_in_owner = true

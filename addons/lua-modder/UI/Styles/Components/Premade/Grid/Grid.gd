@@ -1,4 +1,4 @@
-extends LuaStyledBox
+class_name Grid extends LuaStyledBox
 
 @onready var _items: LuaGridBox = %Items
 
