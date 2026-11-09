@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cy0yai7ysmm4s"]
+
+[ext_resource type="Script" uid="uid://hofs1y46cvpm" path="res://addons/lua-modder/UI/Styles/Components/Premade/Hotkey/Hotkey.gd" id="1_8sm7y"]
+
+[node name="Hotkey" type="Control" unique_id=599329750]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("1_8sm7y")

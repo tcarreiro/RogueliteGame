@@ -50,6 +50,9 @@ func _apply_prop(key: String, value: Variant) -> void:
 	match StringName(key):
 		PropertyDefinition.BLOCKING:
 			_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP if value else Control.MOUSE_FILTER_IGNORE
+			var passthrough := Control.MOUSE_FILTER_PASS if value else Control.MOUSE_FILTER_IGNORE
+			_content_slot.mouse_filter = passthrough
+			(_content_slot.get_parent() as Control).mouse_filter = passthrough
 		_:
 			super._apply_prop(key, value)
 

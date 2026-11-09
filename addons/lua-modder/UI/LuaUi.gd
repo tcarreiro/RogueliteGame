@@ -8,8 +8,11 @@ var _root: Control
 var _stores: Dictionary = {}          # name -> ReactiveDictionary registered by host
 var _readonly_stores: Dictionary = {} # name -> bool (true = readonly)
 var _root_handles: Dictionary = {}    # name -> handle's Dictionary
+var _component_handlers: Dictionary = {}
 var _handles: Dictionary = {}         # id -> LuaStoreHandle
 var _next_handle_id := 0
+
+var _drag_layer: CanvasLayer
 
 func _ready() -> void:
 	state = LuaState.new()
@@ -19,6 +22,7 @@ func _ready() -> void:
 	state.globals["dofile"] = null
 	state.globals["loadfile"] = null
 	state.globals["UI"] = {
+		"getTime": _lua_get_current_time,
 		"defineComponent": _lua_define_component,
 		"getComponent": _lua_get_component,
 		"mount": _lua_mount,
@@ -60,6 +64,20 @@ func expose_store(store_name: String, store: ReactiveDictionary, readonly := fal
 	_root_handles.erase(store_name)
 
 
+func get_store(store_name: String) -> ReactiveDictionary:
+	return _stores.get(store_name)
+
+
+## Camada do fantasma do drag de dados: acima dos modais (camada 1) e dos popups (LuaPopupLayer.LAYER_INDEX).
+func get_drag_layer() -> CanvasLayer:
+	if not is_instance_valid(_drag_layer):
+		_drag_layer = CanvasLayer.new()
+		_drag_layer.name = "DragLayer"
+		_drag_layer.layer = LuaPopupLayer.LAYER_INDEX + 1
+		add_child(_drag_layer)
+	return _drag_layer
+
+
 func make_draft(source: LuaStoreHandle) -> Dictionary:
 	return _register_handle(ReactiveDictionary.new(source.store.value.duplicate(true)), source.store, false, source.readonly)
 
@@ -84,10 +102,23 @@ func _lua_call_method(ref: Variant, method: Variant, args: Variant = null) -> Va
 	var a: Variant = LuaHelper.normalize_lua(args)
 	return ComponentRegistry.call_method(str(ref), str(method), a if a is Array else [])
 
+func _lua_get_current_time() -> int:
+	return Time.get_ticks_usec()
+
 
 func _lua_mount(el: Variant) -> void:
 	var element: UIElement = el
 	if _root and element:
+		if element.ref != null and element.ref != "":
+			var _handler_id := element.ref
+			if (not _component_handlers.has(_handler_id) or _component_handlers[_handler_id] == null):
+				_component_handlers.erase(_handler_id)
+				_component_handlers[_handler_id] = ComponentRegistry.instantiate(element)
+				_root.add_child(_component_handlers[_handler_id])
+				Perf.dump()
+			else:
+				_component_handlers[_handler_id].queue_free()
+			return
 		_root.add_child(ComponentRegistry.instantiate(element))
 
 

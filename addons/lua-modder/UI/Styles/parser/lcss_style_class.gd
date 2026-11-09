@@ -12,6 +12,8 @@ var token: LCSSToken
 var selectors: Array[LCSSStyleSelector] = []
 var properties: Dictionary[StringName, LCSSProperty] = {}
 
+var sort_key := 0   # (especificidade << 20) | ordem de declaração; preenchido pelo LCSSResolver
+
 class LCSSStyleSelector:
 	extends RefCounted
 	var classes: Array[StringName] = []

@@ -6,6 +6,10 @@ class_name LuaStyledBox extends LuaComponent
 @onready var _padding: MarginContainer = %Padding
 
 
+## O mouse é do %Background (PanelContainer, filtro STOP): é nele que o drag-and-drop de dados se instala.
+func _dnd_surface() -> Control:
+	return _background
+
 ## Props de caixa para o get_schema() de quem herda:
 ##   var names: Array = [PropertyDefinition.GAP]
 ##   names.append_array(LuaStyledBox.box_names())
@@ -16,6 +20,7 @@ static func box_names() -> Array:
 	names.append_array(PropertyDefinition.TRANSITION)
 	names.append_array(PropertyDefinition.TRANSFORM)
 	names.append_array(PropertyDefinition.ANIMATION)
+	names.append_array([PropertyDefinition.WIDTH, PropertyDefinition.HEIGHT])   # min sizes (-1 = not defined (fit content))
 	return names
 
 
@@ -28,6 +33,18 @@ func _ready() -> void:
 	_bind_style_state_source(_style_state_source())
 	_background.gui_input.connect(_on_background_gui_input)
 	super._ready()
+
+
+func _apply_prop(key: String, value: Variant) -> void:
+	match StringName(key):
+		PropertyDefinition.WIDTH:
+			if int(value) >= 0 or _is_ready:
+				custom_minimum_size.x = maxf(float(value), 0.0)
+		PropertyDefinition.HEIGHT:
+			if int(value) >= 0 or _is_ready:
+				custom_minimum_size.y = maxf(float(value), 0.0)
+		_:
+			super._apply_prop(key, value)
 
 
 ## Nó que dispara hover/focus. Default = o próprio %Background.

@@ -5,15 +5,20 @@ class_name LuaComponent extends Control
 signal prop_changed(key: String, value: Variant)
 signal disposing
 
+static var debug_skip_style := false
+
 # Common methods allowd in UI.callMethod()
 const BASE_METHODS: Array[String] = ["add_class", "remove_class", "toggle_class", "set_state", "get_state", "set_prop",
 		"set_effect_param", "tween_effect_param"]
-const DRAG_EVENTS := ["drag_started", "drag_ended"]
+const BASE_EVENTS: Array[String] = ["drag_preview", "can_drop", "drop", "drag_start", "drag_end"]
 
 var component_name: String = ""
 var component_id: String = ""
 var props: Dictionary = {}
 var handlers: Dictionary = {}
+
+var _given: Dictionary = {}
+var _has_given := false
 
 ## Classes LCSS atribuídas via prop "class".
 var style_classes: Array[StringName] = []
@@ -21,6 +26,7 @@ var style_classes: Array[StringName] = []
 var _style: LCSSStyle
 var _style_target := LCSSStyleTarget.new()
 var _style_overrides: Dictionary[StringName, Variant] = {}
+var _batching := false
 
 var _fx_material: ShaderMaterial
 var _fx_specs: Array = []
@@ -36,6 +42,11 @@ var _binding_links: Array = []   # [binding, callable]
 var _drag: LuaDragController
 var _drag_refresh_queued := false
 
+const DND_KEY := &"lua_drag_type"
+var _dnd_installed := false
+var _dnd_source := false
+var _dnd_feedback := &""
+
 #region Override points
 func get_schema() -> Dictionary:
 	return {}
@@ -44,7 +55,8 @@ func _apply_prop(key: String, value: Variant) -> void:
 	var prop := StringName(key)
 	if value != null and _style_target.has_property(prop):
 		_style_overrides[prop] = value
-		_style_target.apply_style(_style, _style_overrides)
+		if not _batching:
+			_style_target.apply_style(_style, _style_overrides)
 
 func _component_ready() -> void:
 	pass
@@ -52,18 +64,31 @@ func _component_ready() -> void:
 
 
 #region Lifecycle
-func setup(p_name: String, p_props: Dictionary, p_handlers: Dictionary, p_schema: Dictionary, p_bindings: Dictionary = {}) -> void:
+func setup(p_name: String, p_props: Dictionary, p_handlers: Dictionary, p_schema: Dictionary, p_bindings: Dictionary = {}, p_given: Variant = null) -> void:
 	component_name = p_name
 	props = p_props
 	handlers = p_handlers
 	_schema = p_schema
 	_bindings = p_bindings
+	# disponíveis antes de entrar na árvore: resolve único e correto no _ready
+	var cls = props.get(PropertyDefinition.CLASS)
+	if cls != null:
+		style_classes = LuaHelper.parse_style_classes(cls)
+	if p_given != null:
+		_given = p_given
+		_has_given = true
 
 
 func _ready() -> void:
 	_style_target.register_transitions()
+	_batching = true
+	var base := ComponentRegistry.base_props()
 	for key: String in props:
+		if _has_given and not _given.has(key) and base.has(key) and key != PropertyDefinition.VISIBLE:
+			continue
 		_apply_prop_internal(key, props[key])
+	_batching = false
+	_refresh_style(false, false)
 	_is_ready = true
 	_component_ready()
 	_style_target.enable_transitions()
@@ -71,8 +96,11 @@ func _ready() -> void:
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_PREDELETE:
-		handlers.clear()
+	match what:
+		NOTIFICATION_PREDELETE:
+			handlers.clear()
+		NOTIFICATION_DRAG_END:   # chega a TODOS os controles da árvore quando qualquer drag termina
+			_dnd_finish()
 
 
 func dispose() -> void:
@@ -95,6 +123,9 @@ func set_prop(key: String, value: Variant) -> void:
 
 
 func _apply_prop_internal(key: String, value: Variant) -> void:
+	if PropertyDefinition.DND_GRP.has(StringName(key)):
+		_refresh_dnd()
+		return
 	if PropertyDefinition.DRAG_GRP.has(StringName(key)):
 		_apply_drag_prop(StringName(key))
 		return
@@ -105,7 +136,8 @@ func _apply_prop_internal(key: String, value: Variant) -> void:
 				name = value
 		PropertyDefinition.CLASS:
 			style_classes = LuaHelper.parse_style_classes(value)
-			_refresh_style(true, _is_ready)
+			if not _batching:
+				_refresh_style(true, _is_ready)
 		PropertyDefinition.VISIBLE:
 			visible = value
 		PropertyDefinition.TOOLTIP:
@@ -124,8 +156,9 @@ func _apply_prop_internal(key: String, value: Variant) -> void:
 			_apply_prop(key, value)
 
 func _refresh_style(deep := false, animate := true) -> void:
+	if debug_skip_style:
+		return
 	# o resolve cria um LCSSStyle novo: preserva os estados ativos (hover etc.)
-	
 	var active: Array = _style.get_active_states() if _style != null else []
 	_style = LCSSResolver.resolve(self, LuaUi.lcss)
 	for state in active:
@@ -236,6 +269,126 @@ func reset_drag_position() -> void:
 	if _drag != null:
 		_drag.reset()
 #endregion
+
+
+#region Drag & drop de dados
+## Arrasta DADOS entre componentes (itens de inventário, cartas...) com o drag nativo do Godot:
+## a origem fica onde está e um "fantasma" segue o mouse. (Não confundir com `draggable`, que MOVE o componente.)
+##
+## Props:  drag_payload = { ... }  tabela não vazia liga o arraste; viaja com o drag
+##         drag_type    = "tipo"   etiqueta do payload
+##         drop_accept  = "tipo"   tipos aceitos como alvo, separados por espaço ("" = não é alvo)
+## Hooks (Lua):
+##   on_drag_preview()              -> componente usado como fantasma (sem ele, não há fantasma)
+##   on_can_drop(payload, mods)     -> bool. Roda a CADA movimento do mouse sobre o alvo: mantenha leve
+##   on_drop(payload, mods)         mods = { shift, ctrl, alt } no momento da soltura
+##   on_drag_start()  /  on_drag_end(dropped)
+## Classes automáticas: "dragging" na origem; "drop-ok" / "drop-deny" no alvo sob o mouse.
+
+## Override: o Control que recebe o mouse (e portanto o drag). Padrão: o próprio componente.
+func _dnd_surface() -> Control:
+	return self
+
+
+func _refresh_dnd() -> void:
+	if _dnd_installed:
+		return   # instalado uma vez; os callbacks leem as props na hora, então mudar em runtime funciona
+	var payload: Variant = props.get(PropertyDefinition.DRAG_PAYLOAD)
+	var is_source := payload is Dictionary and not (payload as Dictionary).is_empty()
+	var is_target := str(props.get(PropertyDefinition.DROP_ACCEPT, "")) != ""
+	if not is_source and not is_target:
+		return
+	var surface := _dnd_surface()
+	if surface == null:
+		push_warning("[LuaComponent:%s] drag_payload/drop_accept não suportado: sem superfície de mouse." % component_name)
+		return
+	_dnd_installed = true
+	# o drag do Godot começa no controle sob o mouse e só sobe aos pais se o filtro dele não for STOP;
+	# por isso o forwarding vai na superfície que de fato recebe o mouse, não no nó raiz
+	surface.set_drag_forwarding(_dnd_begin, _dnd_can_drop, _dnd_drop)
+	surface.mouse_exited.connect(_dnd_clear_feedback)
+
+
+func _dnd_begin(_at_position: Vector2) -> Variant:
+	var payload: Variant = props.get(PropertyDefinition.DRAG_PAYLOAD)
+	if not (payload is Dictionary) or (payload as Dictionary).is_empty():
+		return null
+	var preview: Variant = call_hook("on_drag_preview")
+	if preview is UIElement:
+		_dnd_set_preview(preview as UIElement)
+	_dnd_source = true
+	add_class("dragging")
+	emit_event("drag_start")
+	return {DND_KEY: str(props.get(PropertyDefinition.DRAG_TYPE, "")), "payload": (payload as Dictionary).duplicate(true)}
+
+
+## O fantasma vive numa camada própria, sempre acima de modais e popups (ver LuaDragGhost).
+func _dnd_set_preview(element: UIElement) -> void:
+	var node := ComponentRegistry.instantiate(element) as Control
+	if node != null:
+		LuaDragGhost.spawn(node)
+
+
+func _dnd_accepts(data: Variant) -> bool:
+	if not (data is Dictionary) or not (data as Dictionary).has(DND_KEY):
+		return false
+	var accepted := str(props.get(PropertyDefinition.DROP_ACCEPT, "")).split(" ", false)
+	return str(data[DND_KEY]) in accepted
+
+
+func _dnd_can_drop(_at_position: Vector2, data: Variant) -> bool:
+	if not _dnd_accepts(data):
+		_dnd_clear_feedback()
+		return false
+	var ok := true
+	var hook: Callable = handlers.get("on_can_drop", Callable())
+	if hook.is_valid():
+		ok = hook.call(data["payload"], _dnd_modifiers()) == true
+	_dnd_set_feedback(&"drop-ok" if ok else &"drop-deny")
+	return ok
+
+
+func _dnd_drop(_at_position: Vector2, data: Variant) -> void:
+	_dnd_clear_feedback()
+	# adiado: o on_drop costuma mudar a store, e isso recria a lista inteira; fazer isso
+	# no meio do despacho de entrada do Godot (com a origem e o alvo ainda em uso) é arriscado
+	_dnd_emit_drop.call_deferred(data["payload"], _dnd_modifiers())
+
+
+func _dnd_emit_drop(payload: Variant, mods: Dictionary) -> void:
+	emit_event("drop", [payload, mods])
+
+
+func _dnd_finish() -> void:
+	_dnd_clear_feedback()
+	if _dnd_source:
+		_dnd_source = false
+		remove_class("dragging")
+		emit_event("drag_end", [get_viewport().gui_is_drag_successful()])
+
+
+func _dnd_clear_feedback() -> void:
+	_dnd_set_feedback(&"")
+
+
+func _dnd_set_feedback(feedback: StringName) -> void:
+	if feedback == _dnd_feedback:
+		return
+	if _dnd_feedback != &"":
+		remove_class(_dnd_feedback)
+	_dnd_feedback = feedback
+	if feedback != &"":
+		add_class(feedback)
+
+
+static func _dnd_modifiers() -> Dictionary:
+	return {
+		"shift": Input.is_key_pressed(KEY_SHIFT),
+		"ctrl": Input.is_key_pressed(KEY_CTRL) or Input.is_key_pressed(KEY_META),
+		"alt": Input.is_key_pressed(KEY_ALT),
+	}
+#endregion
+
 
 #region LCSS
 func has_class(style_class: StringName) -> bool:

@@ -1,4 +1,4 @@
-extends LuaStyledBox
+class_name Div extends LuaStyledBox
 
 @onready var _items: LuaFlowBox = %Items
 

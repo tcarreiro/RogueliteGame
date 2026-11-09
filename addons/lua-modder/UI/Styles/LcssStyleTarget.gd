@@ -12,6 +12,7 @@ class_name LCSSStyleTarget extends RefCounted
 
 enum Kind { NONE, COLOR, NUMBER, VECTOR, FAMILY }
 
+static var _member_contexts := {}
 
 #region Internal classes
 class Binding extends RefCounted:
@@ -90,9 +91,14 @@ func register_family(family: StringName, target: Node, context: StringName = &""
 	fb.target = target
 	fb.shorthand = context if context != &"" else family
 	_contexts[fb.shorthand] = fb
-	for member: StringName in PropertyDefinition.members_of(family):
-		var suffix := String(member).trim_prefix(String(family))
-		var ctx := StringName(String(fb.shorthand) + suffix)
+	var by_shorthand: Dictionary = _member_contexts.get_or_add(family, {})
+	var contexts: Array = by_shorthand.get(fb.shorthand, [])
+	if contexts.is_empty():
+		for member: StringName in PropertyDefinition.members_of(family):
+			var suffix := String(member).trim_prefix(String(family))
+			contexts.append(StringName(String(fb.shorthand) + suffix))
+		by_shorthand[fb.shorthand] = contexts
+	for ctx: StringName in contexts:
 		fb.members.append(ctx)
 		_contexts[ctx] = fb
 	_families[fb.shorthand] = fb
@@ -120,6 +126,8 @@ func register_transitions() -> void:
 ## a partir dele
 func enable_transitions() -> void:
 	_transitions_enabled = true
+	if _last_style != null:
+		_update_animation(_last_style, _last_overrides)
 
 
 func unregister_property(context: StringName) -> void:
@@ -412,9 +420,10 @@ func _resolve(style: LCSSStyle, overrides: Dictionary, context: StringName) -> V
 
 
 func _style_value(style: LCSSStyle, context: StringName) -> Variant:
-	if style != null and style.has_effective_property(context):
-		return style.get_effective_property(context)
-	return null
+	return style.get_effective_property(context) if style != null else null #TBD
+	#if style != null and style.has_effective_property(context):
+		#return style.get_effective_property(context)
+	#return null
 
 #endregion
 
@@ -424,6 +433,8 @@ func _update_animation(style: LCSSStyle, overrides: Dictionary) -> void:
 	if not _transitions_enabled:
 		return
 	var raw_name: Variant = _resolve(style, overrides, PropertyDefinition.ANIMATION_NAME)
+	if (raw_name == null or str(raw_name) == "") and _anim_signature == "":
+		return
 	var spec := {
 		"name": StringName(str(raw_name)) if raw_name != null else &"",
 		"duration": _as_float(_resolve(style, overrides, PropertyDefinition.ANIMATION_DURATION), 0.0),

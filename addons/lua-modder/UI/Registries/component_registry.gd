@@ -138,7 +138,7 @@ static func get_prop_def(schema: Dictionary, key: String) -> Dictionary:
 
 
 #region Base props
-## Props que TODO componente aceita, sem precisar declarar no schema. Quem as aplica
+## Props que todo componente aceita, sem precisar declarar no schema. Quem as aplica
 ## é o LuaComponent. A lista fica em PropertyDefinition.BASE e as definições (tipo, default,
 ## doc) vêm do catálogo, para existir uma fonte de verdade só.
 static func base_props() -> Dictionary:
@@ -181,7 +181,7 @@ func make_element(component_name: String, raw: Dictionary) -> UIElement:
 			"ref":
 				el.ref = str(value)
 			_:
-				if (key.begins_with("on_") and key.substr(3) in schema.events) or key in schema.hooks:
+				if (key.begins_with("on_") and (key.substr(3) in schema.events or key.substr(3) in LuaComponent.BASE_EVENTS)) or key in schema.hooks:
 					el.handlers[key] = LuaHelper.make_callable(value, "%s.%s" % [component_name, key])
 				elif base.has(key) or schema.props.has(key):
 					el.props[key] = value
@@ -231,7 +231,8 @@ func instantiate(el: UIElement, depth := 0) -> Control:
 ## (antes de entrar na árvore) e pendura os filhos nos slots declarados no schema.
 func _instantiate_scene(def: ComponentDefinition, el: UIElement, depth: int) -> Control:
 	var node := (def.scene as PackedScene).instantiate() as LuaComponent
-	node.setup(el.component_name, resolve_props(def.schema, el.props), el.handlers, def.schema, el.bindings)
+	#node.setup(el.component_name, resolve_props(def.schema, el.props), el.handlers, def.schema, el.bindings)
+	node.setup(el.component_name, resolve_props(def.schema, el.props), el.handlers, def.schema, el.bindings, el.props)
 	for slot_name: String in el.slots:
 		var host := node.get_slot(slot_name)
 		if host == null:
@@ -257,7 +258,6 @@ func _instantiate_lua(def: ComponentDefinition, el: UIElement, depth: int) -> Co
 		if slot_name != "default":
 			named[slot_name] = el.slots[slot_name]
 	args["slots"] = named
-
 	var result: Variant = (def.render as Callable).call(args)
 	if not result is UIElement:
 		push_error("[ComponentRegistry] render de '%s' deve retornar um componente (retornou %s)" % [el.component_name, result])
@@ -339,21 +339,23 @@ static func normalize_schema(raw: Dictionary) -> Dictionary:
 ## Props que ninguém declarou passam adiante como vieram (o make_element já avisou).
 ## Um schema de Lua pode marcar uma prop com `required = true` para gerar aviso quando faltar.
 static func resolve_props(schema: Dictionary, given: Dictionary) -> Dictionary:
-	var out := {}
-	var all_defs: Dictionary = base_props().duplicate()
-	all_defs.merge(schema.get("props", {}), true)
-	for key: String in all_defs:
-		var def: Dictionary = all_defs[key]
-		if given.has(key):
-			out[key] = coerce(given[key], def)
-		else:
-			if def.get("required", false):
-				push_warning("[ComponentRegistry] prop obrigatória ausente: '%s'" % key)
-			var d: Variant = def.get("default")
-			out[key] = d.duplicate(true) if (d is Array or d is Dictionary) else d
+	if not schema.has("_merged"):
+		var all_defs: Dictionary = base_props().duplicate()
+		all_defs.merge(schema.get("props", {}), true)
+		var defaults := {}
+		var required: Array[String] = []
+		for key: String in all_defs:
+			defaults[key] = all_defs[key].get("default")
+			if all_defs[key].get("required", false):
+				required.append(key)
+		schema["_merged"] = {"defs": all_defs, "defaults": defaults, "required": required}
+	var cache: Dictionary = schema["_merged"]
+	var out: Dictionary = (cache.defaults as Dictionary).duplicate(true)
+	for key: String in cache.required:
+		if not given.has(key):
+			push_warning("[ComponentRegistry] prop obrigatória ausente: '%s'" % key)
 	for key: String in given:
-		if not out.has(key):
-			out[key] = given[key]
+		out[key] = coerce(given[key], cache.defs[key]) if cache.defs.has(key) else given[key]
 	return out
 
 
