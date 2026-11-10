@@ -1,0 +1,52 @@
+// ---------- Inventário ----------
+.inv-panel {
+	background_color: #151927;
+	border_color: #3a4260;
+	border_width: 2;
+	border_radius: 10;
+	padding: 16;
+}
+.inv-title { font_size: 24; font_color: #e8ecff; }
+.inv-count { font_size: 16; font_color: #8f96b8; }
+.inv-details { background_color: #0d0f16; border_radius: 6; padding: 10; }
+.inv-detail-name { font_size: 18; font_color: #e8ecff; }
+.inv-detail-text { font_size: 14; font_color: #8f96b8; }
+
+// ---------- Slot: a borda é o que diferencia ----------
+.slot-cell { background_color: #0d0f16; border_radius: 6; }
+
+.slot {
+	background_color: #00000000;      // transparente: o ícone aparece por baixo
+	border_color: #2a3150;            // vazio
+	border_width: 2;
+	border_radius: 6;
+	font_size: 14;
+	font_color: #e8ecff;
+	transition_duration: 120ms;
+	transition_easing: ease_out;
+}
+.slot:hover { border_color: #5a6490; background_color: #323952; }
+
+.slot.filled { border_color: #4a5270; }
+//.slot.kind-gauntlet  { border_color: #ffd27a; }
+//.slot.kind-datashard { border_color: #7aff9c; }
+//.slot.kind-card      { border_color: #7ab8ff; }
+//.slot.kind-addon     { border_color: #c77aff; }
+.slot.filled:hover   { border_color: #ffffff; }
+
+
+.slot.selected { border_color: #ffffff; border_width: 4; }
+
+// ---------- Drag & drop ----------
+// Origem: o slot fica no lugar, só esmaece a borda (o fantasma é que segue o mouse).
+.slot.dragging { border_color: #3a4260; border_width: 2; }
+
+// Fantasma: um ItemSlot "dummy" translúcido junto do cursor.
+.slot-cell.ghost { background_color: #151927e6; border_radius: 6; }
+.slot.ghost { border_color: #ffffff; border_width: 3; }
+
+// drop target HAS to be defined after .slot.filled:hover because they have the same specificity
+.slot.drop-ok { border_color: #7aff9c; border_width: 4; }
+.slot.drop-ok:hover { border_color: #7aff9c; }
+.slot.drop-deny { border_color: #ff6b6b; border_width: 4; }
+.slot.drop-deny:hover { border_color: #ff6b6b; }

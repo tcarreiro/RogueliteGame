@@ -56,14 +56,9 @@ local function stat_list(items)
 end
 
 UI.defineComponent("MainMenu", {
-	events = { "navigate" },
 	render = function(p)
 	
-		local function go(target)
-			if p.on_navigate then p.on_navigate(target) end
-		end
-		
-		local function button(btn_id, label, navigation_target, class_on_hover)
+		local function button(btn_id, label, pressed, class_on_hover)
 			if class_on_hover == nil then
 				class_on_hover = ""
 			end
@@ -74,7 +69,7 @@ UI.defineComponent("MainMenu", {
 				class = "btn primary " .. class_on_hover,
 				on_pressed = function()
 					--UI.playSoundEffect("click")
-					go(navigation_target)
+					pressed()
 				end,
 				on_mouse_entered = function()
 					--UI.playSoundEffect("hover")
@@ -95,9 +90,11 @@ UI.defineComponent("MainMenu", {
 					Div{ class = "", flex_grow = 40, display = "flex", padding_bottom = 120,  children = {
 						Div{flex_grow = 1},
 						Div{ flex_grow = 1, gap = 20, alignment = 'end', children = {
-							button("play_btn", "PLAY", "play", ""),
-							button("settings_btn", "SETTINGS", "settings", ""),
-							button("quit_btn", "QUIT", "quit", "text-color-red"),
+							button("play_btn", "PLAY", function() UI.goToScene("game_scene") end, ""),
+							button("settings_btn", "SETTINGS", function()
+								UI.mount(Settings{})
+							end, ""),
+							button("quit_btn", "QUIT", function() UI.quit() end, "text-color-red"),
 						} },
 						Div{flex_grow = 1},
 					} },

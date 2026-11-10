@@ -86,33 +86,48 @@ UI.defineComponent("GameScreen", {
 		local toggle_run_btn = UI.bind(screen, function() return not screen.get_at("can_toggle_run") end)
 		
 		local run_label = UI.bind(screen, function()
-			if screen.get_at("phase") == "run" then return "End Run" end
-			return "Start Run"
+			if screen.get_at("phase") == "run" then return "LABEL_END_RUN" end
+			return "LABEL_START_RUN"
 		end)
 		
 		local toggle_run_msg = UI.bind(screen, function()
-			if screen.get_at("phase") == "hub" then return "Iniciar run?" end
-			return "Encerrar run?"
+			if screen.get_at("phase") == "hub" then return "CONFIRM_MSG_START_RUN" end
+			return "CONFIRM_MSG_END_RUN"
 		end)
 
+		local opened_inventories = {}
+		local function toggle_modal() 
+			UI.mount(InventoryModal{ ref = "inventory_modal", store = "inventory", title = "LABEL_INVENTORY", columns = 7, windowed = true, margin = {0, 0, 650, 0} })
+			UI.mount(InventoryModal{ ref = "inventory_hotbar_modal", store = "inventory_hotbar", title = "LABEL_INVENTORY", columns = 7, windowed = true, margin = {650, 0, 0, 0} })
+		end
+		
+		local function toggle_pause_menu()
+			UI.mount(PauseMenu{ ref = "pause_menu", title = "LABEL_PAUSE_MENU" })
+		end
+
 		return Body{ children = {
+			-- keyboard actions
+			--Hotkey{ action = "toggle_context_menu", on_press = toggle_modal },
+			Hotkey{ action = "toggle_context_menu", on_press = toggle_pause_menu },
+			Hotkey{ action = "toggle_inventory", on_press = toggle_modal },
+			
 			Div{ class = "run-root", flex_grow = 1, gap = 12, children = {
 				-- Header
 				Div{ id = "hub-header", class = "panel", display = "flex", flex_grow = 0.4, gap = 32, visible = in_hub, children = {
 					Div{ id = "gauntlet-options", gap = 6, children = {
-						section_title("Gauntlets"),
+						section_title("LABEL_GAUNTLETS"),
 						Scroll{ class = "pr-2", flex_grow = 1, children = {
 							choice_list(gauntlet_options, Game.selectGauntlet),
 						} },
 					} },
 					Div{ id = "datashard-options", gap = 6, children = {
-						section_title("Datashards"),
+						section_title("LABEL_DATASHARDS"),
 						Scroll{ class = "pr-2", flex_grow = 1, children = {
 							choice_list(datashard_options, Game.selectDatashard),
 						} },
 					} },
 					Div{ id = "active_effects", gap = 6, visible = in_hub,  children = {
-						section_title("Run Effects"),
+						section_title("LABEL_RUN_EFFECTS"),
 						Scroll{ flex_grow = 1, children = {
 							Repeat{
 								gap = 4,
@@ -132,14 +147,14 @@ UI.defineComponent("GameScreen", {
 					-- Deck
 					Div{ display = "flex", flex_grow = 4, gap = 16, visible = in_hub, children = {
 						Div{ class = "panel", flex_grow = 1, gap = 6, children = {
-							section_title("Collection"),
-							Scroll{ flex_grow = 1, children = {
+							section_title("LABEL_CARD_COLLECTION"),
+							Scroll{ class = "pr-2", flex_grow = 1, children = {
 								card_list(card_options, Game.toggleCard, "btn card-btn"),
 							} },
 						} },
 						Div{ class = "panel", flex_grow = 1, gap = 6, children = {
-							section_title("Active"),
-							Scroll{ flex_grow = 1, children = {
+							section_title("LABEL_ACTIVE_DECK"),
+							Scroll{ class = "pr-2", flex_grow = 1, children = {
 								card_list(active_cards, Game.toggleCard, "btn card-btn active"),
 							} },
 						} },
@@ -148,22 +163,22 @@ UI.defineComponent("GameScreen", {
 					-- Factors, Events and Hand
 					Div{ display = "flex", flex_grow = 4, gap = 16, visible = in_run, children = {
 						Div{ class = "panel", flex_grow = 1, gap = 6, children = {
-							section_title("Factors"),
+							section_title("LABEL_FACTORS"),
 							stat_list(factors),
 						} },
 						Div{ class = "panel", flex_grow = 1, gap = 6, children = {
-							section_title("Events (resolved|blocked)"),
+							section_title("LABEL_EVENTS"),
 							stat_list(events),
 						} },
 						Div{ class = "panel", flex_grow = 1, gap = 6, children = {
-							section_title("Hand"),
+							section_title("LABEL_HAND"),
 							card_list(hand, Game.playCard, "btn hand-card"),
 						} },
 					} },
 
 					-- Effects
 					Div{ class = "panel", flex_grow = 1, gap = 6, visible = in_run,  children = {
-						section_title("Run Effects"),
+						section_title("LABEL_RUN_EFFECTS"),
 						Scroll{ flex_grow = 1, children = {
 							Grid{ id = "effects", columns = 2, flex_grow = 1, children = {
 								Repeat{
@@ -179,26 +194,32 @@ UI.defineComponent("GameScreen", {
 				-- Footer
 				Div{ class = "panel", display = "flex", gap = 24, children = {
 					Div{ gap = 4, children = {
-						section_title("Equipments:"),
+						section_title("LABEL_EQUIPMENTS"),
 						Label{ id = "selected_gauntlet", text = selected_gauntlet, class = "stat-name" },
 						Label{ id = "selected_datashard", text = selected_datashard, class = "stat-name" },
 					} },
 					Div{ flex_grow = 1 }, -- Separator
-					Button{
-						id = "run_btn",
-						label = run_label,
-						class = "btn primary",
-						disabled = toggle_run_btn,
-						on_pressed = function() 
-							confirm("Confirm", toggle_run_msg, function()
-								Game.resume()
-								Game.toggleRun()
-							end,
-							function()
-								Game.resume()
-							end)
-						end
-					},
+					Div{ id = "inventory-btns", gap = 6,  children = {
+						section_title("LABEL_ACTIONS"),
+						Button{ id = "inventory_btn", label = "LABEL_INVENTORY", class = "btn primary", visible = in_hub,
+							on_click = toggle_modal
+						},
+						Button{
+							id = "run_btn",
+							label = run_label,
+							class = "btn primary",
+							disabled = toggle_run_btn,
+							on_pressed = function() 
+								confirm("Confirm", toggle_run_msg, function()
+									Game.resume()
+									Game.toggleRun()
+								end,
+								function()
+									Game.resume()
+								end)
+							end
+						},
+					} },
 				} },
 			} },
 		} }
