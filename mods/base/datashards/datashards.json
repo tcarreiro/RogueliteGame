@@ -6,6 +6,7 @@
 		"tier": 0,
 		"nature_id": "NONE",
 		"effect_ids": [],
-		"script_path": "datashards/scripts/initial_datashard.lua"
+		"script_path": "datashards/scripts/initial_datashard.lua",
+		"icon_path": "assets/initial_datashard_icon.png"
 	}
 ]
