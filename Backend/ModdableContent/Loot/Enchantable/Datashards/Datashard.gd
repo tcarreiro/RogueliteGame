@@ -20,6 +20,7 @@ func _init(definition: DatashardDefinition) -> void:
 	id = definition.id
 	display_name = definition.display_name
 	description = definition.description
+	icon = definition.icon
 	tier = definition.tier
 	nature_id = definition.nature_id
 	max_stack = definition.max_stack

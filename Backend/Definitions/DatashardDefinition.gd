@@ -6,6 +6,7 @@ class_name DatashardDefinition extends Resource
 @export var tier: int = 1
 @export var nature_id: StringName
 @export var max_stack: int
+@export var icon: Texture2D
 
 var on_run_start: Callable
 var on_collect: Callable
@@ -23,6 +24,8 @@ func _init(entry: Dictionary):
 	tier = int(entry.get("tier", 1))
 	nature_id = str(entry.get("nature_id", id))
 	max_stack = 1#int(entry.get("max_stack", 1)) # TBD: all datashard are non-stackable
+	if entry.get("icon_path"): #TODO: fallback icon
+		icon = load(entry.get("icon_path")) as Texture2D
 
 
 func connect_callables(state: LuaState) -> void:

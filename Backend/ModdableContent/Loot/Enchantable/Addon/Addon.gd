@@ -20,6 +20,7 @@ func _init(definition: AddonDefinition) -> void:
 	id = definition.id
 	display_name = definition.display_name
 	description = definition.description
+	icon = definition.icon
 	tier = definition.tier
 	nature_id = definition.nature_id
 	suits = TagQuery.create(definition.suits)

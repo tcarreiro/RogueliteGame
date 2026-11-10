@@ -16,6 +16,7 @@ enum CardFlag {
 @export var cost: int = 0
 @export var max_copies_in_active_deck: int = 3
 @export var flags: Array[StringName] = []
+@export var icon: Texture2D
 
 var on_run_start: Callable
 var on_run_end: Callable
@@ -37,6 +38,8 @@ func _init(entry: Dictionary):
 	cost = int(entry.get("cost", 1))
 	max_copies_in_active_deck = int(entry.get("max_copies_in_active_deck", 3))
 	flags.append_array(entry.get("flags", []))
+	if entry.get("icon_path"): #TODO: fallback icon
+		icon = load(entry.get("icon_path")) as Texture2D
 
 
 func connect_callables(state: LuaState) -> void:

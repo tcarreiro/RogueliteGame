@@ -8,6 +8,7 @@ class_name AddonDefinition extends Resource
 @export var suits: Array[StringName] = []
 @export var effect_ids: Array[StringName] = []
 @export var max_stack: int
+@export var icon: Texture2D
 
 var on_run_start: Callable
 var on_collect: Callable
@@ -27,6 +28,8 @@ func _init(entry: Dictionary):
 	effect_ids.append_array(entry.get("effect_ids", []))
 	suits.append_array(entry.get("suits", []))
 	max_stack = int(entry.get("max_stack", 0))
+	if entry.get("icon_path"): #TODO: fallback icon
+		icon = load(entry.get("icon_path")) as Texture2D
 
 
 func connect_callables(state: LuaState) -> void:
