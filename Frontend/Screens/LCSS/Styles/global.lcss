@@ -17,6 +17,22 @@
 .stat-name { font_size: 16; font_color: #e8ecff; }
 .stat-value { font_size: 16; font_color: #8f96b8; }
 
+.pause-menu-panel {
+	background_color: #091219;
+	border_color: #3a4260;
+	border_width: 2;
+	border_radius: 10;
+	padding: 16;
+}
+
+.pause-menu-description-panel {
+	background_color: #2a3150;
+	border_color: #2a3150;
+	border_width: 1;
+	border_radius: 6;
+	padding: 12;
+}
+
 // ---------- buttons ---------
 .btn {
 	background_color: #2b3040;
@@ -37,10 +53,14 @@
 .btn.confirm { border_color: #01EF02; }
 .btn.cancel { border_color: #EF0102; }
 
+.btn.close { background_color: #BC0102; border_width: 0; }
+.btn.close:hover { background_color: #EF0102; }
+
 .btn.selected { border_color: #7a8cff; background_color: #2f3a66; }
 .btn.active { border_color: #7aff9c; }
 .btn.hand-card { border_color: #ffd27a; }
 .btn.primary { font_size: 22; padding: 14 28; }
+.btn.pause-menu { padding: 8 10; }
 
 .btn.text-color-red:hover {
 	font_color: #DE0000;

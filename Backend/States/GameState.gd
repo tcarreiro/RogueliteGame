@@ -152,6 +152,10 @@ func _setup_initial_deck() -> void:
 	active_cards = CardPile.new("ActiveDeck", [])
 
 
+func is_paused() -> bool:
+	return Engine.time_scale == 0
+
+
 func pause() -> void:
 	Engine.time_scale = 0
 

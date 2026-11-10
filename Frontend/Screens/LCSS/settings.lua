@@ -14,116 +14,124 @@ local function row(title, control, label_width)
 end
 
 UI.defineComponent("Settings", {
-  events = { "navigate" },
-  render = function(p)
-	local settings_store = UI.store("settings")
-	local draft_store = settings_store.draft()
-	local not_dirty = UI.bind(draft_store, function() return not draft_store.dirty() end)
+ 	render = function(p)
+	local ref = "settings_modal"
+	local graphics_store = UI.store("graphics")
+	local graphics_draft = graphics_store.draft()
 	
-	local function back_to_menu()
-	  if p.on_navigate then p.on_navigate("main_menu") end
-	end
+	local audio_store = UI.store("audio")
+	local audio_draft = audio_store.draft()
+	
+	local function not_dirty() return not graphics_draft.dirty() and not audio_draft.dirty() end
+	local not_dirty_bind = UI.bind({graphics_draft, audio_draft}, not_dirty)
+	
+	local function close()
+		UI.callMethod(ref, "close")
+	end 
 
 	local function confirm(title, message, action)
 	  UI.mount(ConfirmDialog{ title = title, message = message, on_confirm = action })
 	end
-
-	return Body{ children = {
-		Div{ class = "main-menu-root", flex_grow = 1, gap = 12, children = {
-			
-			section_title("SETTINGS"),
-			
-			Label{ id = "applied_config",  class = "settings-hint", text = UI.bind(settings_store, function()
-				return "Aplicado: " .. settings_store.get_at("resolution")
-				  .. " | vsync " .. tostring(settings_store.get_at("vsync"))
-				  .. " | volume " .. settings_store.get_at("volume")
-				  .. " | quality " .. settings_store.get_at("quality_options")[settings_store.get_at("quality")-1].label
-			  end),
-			},
-			
-			Label{ id = "draft_config",  class = "settings-hint", text = UI.bind(draft_store, function()
-				return "Rascunho: " .. draft_store.get_at("resolution")
-				  .. " | vsync " .. tostring(draft_store.get_at("vsync"))
-				  .. " | volume " .. draft_store.get_at("volume")
-				  .. " | quality " .. draft_store.get_at("quality_options")[draft_store.get_at("quality")-1].label
-			  end),
-			},
-			
-			Scroll{ flex_grow = 1, children = {
-				row('Resolução',
-					Dropdown{ class = 'settings-input', width = 300,
-					options = settings_store.get_at("resolution_options"),
-					model = draft_store.model('resolution'),
-				}, 240),
-				row('VSync',
-					Checkbox{ class = 'checkbox', label = 'Ligado',
-					model = draft_store.model('vsync')
-				}, 240),
-				row('Volume',
-					Slider{ class = 'slider', width = 300, min = 0, max = 100, step = 1, show_value = true,
-					track_height = 8, thumb_size = 22,
-					model = draft_store.model('volume'),
-				}, 240),
-				row('Qualidade',
-					RadioGroup{ options = settings_store.get_at("quality_options"),
-					model = draft_store.model('quality'),
-					on_changed = function(v) print(v) end
-				}, 240),
-			} },
-			
-
-			Div{ id = "actions", display = "flex", gap = 12, children = {
-				Div{ flex_grow = 1 },
-				Button{ label = "APPLY", class = "btn", disabled = not_dirty,
-					on_mouse_entered = function()
-						if draft_store.dirty() then
+	
+	return Modal{
+		ref = ref,
+		backdrop_color = "#000000AA",
+		slots  = { content = {
+			Div{ class = "main-menu-root", width = 1920, height = 1080, flex_grow = 1, gap = 12, children = {
+				section_title("SETTINGS"),
+				Scroll{ flex_grow = 1, children = {
+					row('RESOLUTION',
+						Dropdown{ class = 'settings-input', width = 300,
+						options = graphics_store.get_at("resolution_options"),
+						model = graphics_draft.model('resolution'),
+					}, 240),
+					row('VSync',
+						Checkbox{ class = 'checkbox', label = 'Ligado',
+						model = graphics_draft.model('vsync')
+					}, 240),
+					row('SHADOWS',
+						Dropdown{  class = 'settings-input', width = 300,
+						options = graphics_store.get_at("shadow_quality_options"),
+						model = graphics_draft.model('shadow_quality'),
+						--on_changed = function(v) print(v) end
+					}, 240),
+					row('SSAO',
+						Dropdown{  class = 'settings-input', width = 300,
+						options = graphics_store.get_at("ssao_quality_options"),
+						model = graphics_draft.model('ssao_quality'),
+						--on_changed = function(v) print(v) end
+					}, 240),
+					row('SIL',
+						Dropdown{  class = 'settings-input', width = 300,
+						options = graphics_store.get_at("ssil_quality_options"),
+						model = graphics_draft.model('ssil_quality'),
+						--on_changed = function(v) print(v) end
+					}, 240),
+					row('ANTI_ALIASING',
+						Dropdown{  class = 'settings-input', width = 300,
+						options = graphics_store.get_at("anti_aliasing_options"),
+						model = graphics_draft.model('anti_aliasing'),
+						--on_changed = function(v) print(v) end
+					}, 240),
+					row('Volume',
+						Slider{ class = 'slider', width = 300, min = 0, max = 100, step = 1, show_value = true,
+						track_height = 8, thumb_size = 22,
+						model = audio_draft.model('volume'),
+					}, 240),
+				} },
+				Div{ id = "actions", display = "flex", gap = 12, children = {
+					Div{ flex_grow = 1 },
+					Button{ label = "APPLY", class = "btn", disabled = not_dirty_bind,
+						on_mouse_entered = function()
+							if not_dirty() then
+								--UI.playSoundEffect("som")
+							end
+						end,
+						on_pressed = function() 
+							confirm("SAVE", "SAVE_CONFIG_MSG", function()
+								graphics_draft.commit()
+							end)
+						end,
+					},
+					Button{ label = "SAVE", class = "btn", disabled = not_dirty_bind,
+						on_mouse_entered = function()
+							if not_dirty() then
+								--UI.playSoundEffect("som")
+							end
+						end,
+						on_pressed = function()
+						  confirm("SAVE", "SAVE_CONFIG_BACK_MSG", function()
+							graphics_draft.commit()
+							close()
+						  end)
+						end,
+					},
+					Button{ label = "RESTORE", class = "btn",
+						on_mouse_entered = function()
 							--UI.playSoundEffect("som")
-						end
-					end,
-					on_pressed = function() 
-						confirm("SAVE", "SAVE_CONFIG_MSG", function()
-							draft_store.commit()
-						end)
-					end,
-				},
-				Button{ label = "SAVE", class = "btn", disabled = not_dirty,
-					on_mouse_entered = function()
-						if draft_store.dirty() then
+						end,
+						on_pressed = function()
+							graphics_draft.discard()
+						end,
+					},
+					Button{ label = "BACK", class = "btn cancel",
+						on_mouse_entered = function()
 							--UI.playSoundEffect("som")
-						end
-					end,
-					on_pressed = function()
-					  confirm("SAVE", "SAVE_CONFIG_BACK_MSG", function()
-						draft_store.commit()
-						back_to_menu()
-					  end)
-					end,
-				},
-				Button{ label = "RESTORE", class = "btn",
-					on_mouse_entered = function()
-						--UI.playSoundEffect("som")
-					end,
-					on_pressed = function()
-						draft_store.discard()
-					end,
-				},
-				Button{ label = "BACK", class = "btn cancel",
-					on_mouse_entered = function()
-						--UI.playSoundEffect("som")
-					end,
-					on_pressed = function()
-						if not draft_store.dirty() then
-							back_to_menu()
-							return
-						end
-						confirm("RESTORE", "DISCARD_CONFIG_MSG", function()
-							draft_store.discard()
-							back_to_menu()
-						end)
-					end,
-				},
+						end,
+						on_pressed = function()
+							if not not_dirty() then
+								close()
+								return
+							end
+							confirm("RESTORE", "DISCARD_CONFIG_MSG", function()
+								graphics_draft.discard()
+								close()
+							end)
+						end,
+					},
+				} },
 			} },
-		} },
-	} }
+		} }
+	}
   end,
 })

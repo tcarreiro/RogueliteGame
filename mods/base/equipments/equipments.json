@@ -12,7 +12,8 @@
 		"addon_ids": [
 		],
 		"max_active_deck_size":8,
-		"script_path": "equipments/scripts/gauntlet_bronze.lua"
+		"script_path": "equipments/scripts/gauntlet_bronze.lua",
+		"icon_path": "assets/bronze_gauntlet_icon.png"
 	},
 	{
 		"id": "gauntlet_iron",
@@ -28,6 +29,7 @@
 			"echo_chip"
 		],
 		"max_active_deck_size":10,
-		"script_path": "equipments/scripts/gauntlet_iron.lua"
+		"script_path": "equipments/scripts/gauntlet_iron.lua",
+		"icon_path": "assets/iron_gauntlet_icon.png"
 	}
 ]

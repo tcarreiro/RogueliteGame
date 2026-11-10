@@ -9,6 +9,7 @@ const KIND_LOOT := StringName(KIND_PREFIX+"loot")
 @export var id: StringName
 @export var display_name: StringName
 @export var description: String
+@export var icon: Texture2D
 @export var max_stack: int:
 	set(v):
 		max_stack = maxi(v, 0)

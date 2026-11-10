@@ -14,6 +14,7 @@ BACK,Back,Voltar
 CONTINUE,Continue,Continuar
 QUIT,Quit,Sair
 RESUME,Resume,Continuar
+DESKTOP,Desktop,Área de trabalho
 ,,
 SAVE_CONFIG_MSG,Save changes?,Salvar as configurações?
 SAVE_CONFIG_BACK_MSG,Save changes and go back to main menu?,Salvar as configurações e voltar ao menu principal?
@@ -24,9 +25,33 @@ END_RUN,End run,Finalizar expedição
 START_RUN,Start run,Iniciar expedição
 ,,
 ,,
-,,
-,,
-,,
+LABEL_GAUNTLETS,Gauntlets:,Manoplas:
+LABEL_DATASHARDS,Datashards:,Datashards:
+LABEL_RUN_EFFECTS,Run effects:,Efeitos da expedição:
+LABEL_CARD_COLLECTION,Card collection:,Coleção de cartas:
+LABEL_ACTIVE_DECK,Active cards:,Cartas ativas:
+LABEL_FACTORS,Factors:,Fatores:
+LABEL_EVENTS,Events (resolved|blocked):,Eventos (resolvidos|bloqueados):
+LABEL_HAND,Cards on hand:,Cartas na mão:
+LABEL_EQUIPMENTS,Equipments:,Equipamentos:
+LABEL_ACTIONS,Actions:,Ações:
+LABEL_INVENTORY,Inventory,Inventário
+LABEL_START_RUN,Start run,Iniciar expedição
+CONFIRM_MSG_START_RUN,Start run?,Iniciar expedição?
+LABEL_END_RUN,End run,Encerrar expedição
+CONFIRM_MSG_END_RUN,End run?,Encerrar expedição?
+LABEL_PAUSE_MENU,Pause,Pause
+CONFIRM_SAVE_GAME_MSG,Save game?,Salvar seu jogo?.
+SAVE_GAME_MAIN_MENU_MSG,Save game and go back to main menu?,Salvar seu jogo e voltar ao menu principal?
+LABEL_QUIT_TO_DESKTOP,Quit to desktop,Sair para área de trabalho
+SAVE_GAME_QUIT_MSG,Save game and quit to desktop?,Salvar seu jogo e sair para a área de trabalho?
+CAUSE_RUN_TO_FAIL_MSG,This will cause this run to fail.,Isso irá fazer com que essa expedição falhe.
+PM_RESUME_DESC,Resume game,Continuar jogo
+PM_SETTINGS_DESC,Open settings,Abrir opções
+PM_SAVE_DESC,Save game,Salvar jogo
+PM_END_RUN_DESC,Forfeit run and go back to hub,Desistir da expedição e voltar à base
+PM_MAIN_MENU_DESC,Forfeit run and go back to main menu,Desistir da expedição e voltar ao menu principal
+PM_QUIT_DESC,Forfeit run and exit to desktop,Desistir da expedição sair para a área de trabalho
 ,,
 ,,
 ,,

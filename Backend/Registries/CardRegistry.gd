@@ -76,8 +76,8 @@ func create_card(id: StringName) -> Card:
 
 
 func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_id: StringName, state: LuaState) -> CardDefinition:
-	if not entry.has("id") or not entry.has("script_path"):
-		GameLogger.error("[CardRegistry] Card with no 'id' or 'script_path' at '%s'"%[mod_id])
+	if not entry.has("id"): # or not entry.has("script_path") TBD: script required? maybe not all contents
+		GameLogger.error("[CardRegistry] Card with no 'id' at '%s'"%[mod_id])
 		return null
 	
 	var card_id := StringName(entry["id"])
@@ -85,16 +85,24 @@ func _load_definition_from_entry(entry: Dictionary, mod_base_path: String, mod_i
 		GameLogger.warn("[CardRegistry] Card '%s' already defined."%[card_id])
 		return null
 	
-	var script_path := mod_base_path.path_join(str(entry["script_path"]))
-	if not FileAccess.file_exists(script_path):
-		GameLogger.warn("[CardRegistry] Script not fount for card '%s' at '%s'"%[card_id, script_path])
-		return null
-	
-	var result = state.do_file(script_path)
-	if result is LuaError:
-		GameLogger.error("[CardRegistry] Erro ao carregar '%s': %s" % [script_path, result])
-		return null
+	if entry.has("script_path"):
+		var script_path := mod_base_path.path_join(str(entry["script_path"]))
+		if not FileAccess.file_exists(script_path):
+			GameLogger.warn("[CardRegistry] Script not fount for card '%s' at '%s'"%[card_id, script_path])
+			return null
 		
+		var result = state.do_file(script_path)
+		if result is LuaError:
+			GameLogger.error("[CardRegistry] Erro ao carregar '%s': %s" % [script_path, result])
+			return null
+	
+	if entry.has("icon_path"):
+		var icon_path := mod_base_path.path_join(str(entry["icon_path"]))
+		if not FileAccess.file_exists(icon_path):
+			GameLogger.warn("[CardRegistry] Icon not fount for card '%s' at '%s'"%[card_id, icon_path])
+			return null
+		entry["icon_path"] = icon_path
+	
 	var definition := CardDefinition.new(entry)
 	_content_bridge.register_card_exclusive_states(definition, LuaBridgeRegistry.get_state_name_by_mod_id(mod_id, CONTEXT_NAME))
 	definition.connect_callables(state)

@@ -23,6 +23,8 @@ func _ready() -> void:
 	state.globals["loadfile"] = null
 	state.globals["UI"] = {
 		"getTime": _lua_get_current_time,
+		"goToScene": _lua_goto_scene,
+		"quit": _lua_quit_game,
 		"defineComponent": _lua_define_component,
 		"getComponent": _lua_get_component,
 		"mount": _lua_mount,
@@ -104,6 +106,15 @@ func _lua_call_method(ref: Variant, method: Variant, args: Variant = null) -> Va
 
 func _lua_get_current_time() -> int:
 	return Time.get_ticks_usec()
+
+
+func _lua_goto_scene(scene_name: String) -> void:
+	# TODO: Handle here save game
+	Configuration.goto_scene(scene_name)
+
+
+func _lua_quit_game() -> void:
+	get_tree().quit()
 
 
 func _lua_mount(el: Variant) -> void:

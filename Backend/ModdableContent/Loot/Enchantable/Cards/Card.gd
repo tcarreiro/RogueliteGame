@@ -31,6 +31,7 @@ func _init(definition: CardDefinition) -> void:
 	id = definition.id
 	display_name = definition.display_name
 	description = definition.description
+	icon = definition.icon
 	tier = definition.tier
 	nature_id = definition.nature_id
 	cost = definition.cost

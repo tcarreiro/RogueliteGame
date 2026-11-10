@@ -10,6 +10,7 @@ class_name EquipmentDefinition extends Resource
 @export var kind: StringName
 @export var addon_ids: Array[StringName] = []
 @export var max_stack: int
+@export var icon: Texture2D
 
 var on_equip: Callable
 var on_unequip: Callable
@@ -35,6 +36,8 @@ func _init(entry: Dictionary):
 	max_hand_deck_size = int(entry.get("max_hand_deck_size", 5))
 	max_active_deck_size = int(entry.get("max_active_deck_size", 10))
 	max_stack = 1#int(entry.get("max_stack", 1)) # TBD: all equipments are non-stackable
+	if entry.get("icon_path"): #TODO: fallback icon
+		icon = load(entry.get("icon_path")) as Texture2D
 
 
 func connect_callables(state: LuaState) -> void:

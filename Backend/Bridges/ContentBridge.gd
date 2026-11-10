@@ -33,8 +33,8 @@ func _setup_lua_state() -> void:
 func _register_common_state() -> void:
 	LuaBridgeRegistry.register_state(_state_name, _lua_state)
 	
-	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "pause", lua_pause)
-	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "resume", lua_resume)
+	#LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "pause", lua_pause)
+	#LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "resume", lua_resume)
 	
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "isEnchantable", lua_is_enchantable)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorLevel", lua_get_factor_level)

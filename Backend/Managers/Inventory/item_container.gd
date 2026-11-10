@@ -346,8 +346,10 @@ static func can_swap_stacks(a: ItemContainer, index_a: int, b: ItemContainer, in
 		return ItemContainerOpResult.fail(0, Fail.NOT_FOUND)
 	if not a._is_valid_index(index_a) or not b._is_valid_index(index_b):
 		return ItemContainerOpResult.fail(0, Fail.SLOT_INVALID)
-	if a == b and index_a == index_b:
-		return ItemContainerOpResult.fail(0, Fail.SLOT_INVALID)
+	# TBD: should check whether drop is in exact same slot It spares unecessary component remount, but if 'failed' plan has 
+	# its own style class, it shows. Maybe this is not desirable
+	#if a == b and index_a == index_b:
+		#return ItemContainerOpResult.fail(0, Fail.SLOT_INVALID)
 	var stack_a := a._content[index_a]
 	var stack_b := b._content[index_b]
 	var affected := stack_a.quantity + stack_b.quantity
