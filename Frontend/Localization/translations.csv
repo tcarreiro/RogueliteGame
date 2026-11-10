@@ -1,4 +1,5 @@
 key,en,pt_BR
+MAIN_MENU,Main menu,Menu principal
 PLAY,Play,Jogar
 SETTINGS,Settings,Opções
 EXIT,Exit,Sair
@@ -16,13 +17,35 @@ QUIT,Quit,Sair
 RESUME,Resume,Continuar
 DESKTOP,Desktop,Área de trabalho
 ,,
-SAVE_CONFIG_MSG,Save changes?,Salvar as configurações?
-SAVE_CONFIG_BACK_MSG,Save changes and go back to main menu?,Salvar as configurações e voltar ao menu principal?
-DISCARD_CONFIG_MSG,,Descartar as alterações e voltar ao menu principal?
 ,,
-MAIN_MENU,Main menu,Menu principal
+SAVE_CONFIG_MSG,Save changes?,Salvar as configurações?
+SAVE_CONFIG_BACK_MSG,Save changes and back?,Salvar as configurações e voltar?
+DISCARD_CONFIG_MSG,Discard changes and back?,Descartar as alterações e voltar?
+,,
+,,
 END_RUN,End run,Finalizar expedição
 START_RUN,Start run,Iniciar expedição
+,,
+,,
+$OFF,Off,Desligado
+,,
+$LOWEST,Lowest,Mais baixo
+$LOW,Low,Baixo
+$MEDIUM,Medium,Médio
+$HIGH,High,Alto
+$ULTRA,Ultra,Ultra
+,,
+,,
+$RESOLUTION,Resolution,Resolução
+$SHADOWS,Shadows,Sombras
+$VSYNC,Vsync,Vsync
+$LANGUAGE,Language,Idioma
+$SSAO,SSAO,SSAO
+$SSIL,SSIL,SSIL
+$ANTI_ALIASING,Anti Aliasing,Anti Aliasing
+$VOLUME,Volume,Volume
+,,
+,,
 ,,
 ,,
 LABEL_GAUNTLETS,Gauntlets:,Manoplas:
@@ -80,4 +103,4 @@ CONTEXT_MENU.CONFIRM_QUIT_ON_RUN_MSG,Save and exit to main menu?,Salvar e voltar
 ,,
 GREETING1_0D28CF_B36835,Hello! {{player_name}},Hello! {{player_name}}
 GREETING2_0D28CF_7C793D,Hi! {{player_name}},Hi! {{player_name}}
-GREETING3_0D28CF_602DF0,"Hi, there! {{player_name}}","Hi, there! {{player_name}}"
+GREETING3_0D28CF_602DF0,Hi, there! {{player_name}},Hi, there! {{player_name}}
