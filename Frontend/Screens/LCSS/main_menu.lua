@@ -77,8 +77,6 @@ UI.defineComponent("MainMenu", {
 			}
 		end
 	
-		--local settings = UI.store("settings")
-
 		return Body{ children = {
 			Div{ class = "main-menu-root", flex_grow = 1, gap = 12, children = {
 				

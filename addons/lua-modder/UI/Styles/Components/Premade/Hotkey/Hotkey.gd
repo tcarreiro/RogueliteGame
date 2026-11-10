@@ -10,8 +10,8 @@ extends LuaComponent
 ##   action    nome de uma ação. A tecla vem de UI.store(bindings)[action]: um texto ("R") ou uma lista ({"R", "Enter"}).
 ##             É lida a CADA tecla apertada, então regravar a store (tela de controles) vale na hora.
 ##   bindings  nome da store com as teclas. Padrão "controls".
-##   repeating true = dispara também no auto-repeat de segurar a tecla. Padrão false. (Não se chama `repeat`: é palavra reservada do Lua.)
-##   consume   true = o evento não chega a mais ninguém (outro Hotkey, o jogo). Padrão true.
+##   repeating true = dispara também no auto-repeat de segurar a tecla. Padrão false.
+##   consume   true = o evento e consumido. Padrão true.
 ##   visible   false = desligado.
 ## Eventos: on_press(), on_release()  (o release só vem se o press anterior foi seu)
 ##
@@ -36,7 +36,7 @@ func get_schema() -> Dictionary:
 		"props": {
 			"key": {"type": "string", "default": ""},
 			"action": {"type": "string", "default": ""},
-			"bindings": {"type": "string", "default": "controls"},
+			"bindings": {"type": "string", "default": "controls_settings"},
 			"repeating": {"type": "bool", "default": false},
 			"consume": {"type": "bool", "default": true},
 		},
@@ -123,7 +123,7 @@ func _bound_actions() -> void:
 	if action.is_empty():
 		return
 	
-	var store_name := str(props.get("bindings", "controls"))
+	var store_name := str(props.get("bindings", "controls_settings"))
 	var store := LuaUi.get_store(store_name)
 	
 	var bound := store.get_at(action)

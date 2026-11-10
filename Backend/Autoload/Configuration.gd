@@ -29,19 +29,19 @@ var graphics_settings := ReactiveDictionary.new({
 	"resolution": "1920x1080",
 	"vsync": true,
 	"shadow_quality_options": [
-		{value = 0, label = "LOWEST"}, {value = 1, label = "LOW"}, { value = 2, label = "MEDIUM"}, { value = 3, label = "HIGH"}, { value = 4, label = "ULTRA"}
+		{value = 0, label = "$LOWEST"}, {value = 1, label = "$LOW"}, { value = 2, label = "$MEDIUM"}, { value = 3, label = "$HIGH"}, { value = 4, label = "$ULTRA"}
 	],
 	"shadow_quality": 2,
 	"ssao_quality_options": [
-		{value = 0, label = "LOWEST"}, {value = 1, label = "LOW"}, { value = 2, label = "MEDIUM"}, { value = 3, label = "HIGH"}, { value = 4, label = "ULTRA"}
+		{value = 0, label = "$LOWEST"}, {value = 1, label = "$LOW"}, { value = 2, label = "$MEDIUM"}, { value = 3, label = "$HIGH"}, { value = 4, label = "$ULTRA"}
 	],
 	"ssao_quality": 3,
 	"ssil_quality_options": [
-		{value = 0, label = "LOWEST"}, {value = 1, label = "LOW"}, { value = 2, label = "MEDIUM"}, { value = 3, label = "HIGH"}, { value = 4, label = "ULTRA"}
+		{value = 0, label = "$LOWEST"}, {value = 1, label = "$LOW"}, { value = 2, label = "$MEDIUM"}, { value = 3, label = "$HIGH"}, { value = 4, label = "$ULTRA"}
 	],
 	"ssil_quality": 3,
 	"anti_aliasing_options": [
-		{value = 0, label = "OFF"}, {value = 1, label = "2x"}, { value = 2, label = "4x"}, { value = 3, label = "8x"}
+		{value = 0, label = "$OFF"}, {value = 1, label = "2x"}, { value = 2, label = "4x"}, { value = 3, label = "8x"}
 	],
 	"anti_aliasing": 3,
 })
@@ -56,23 +56,33 @@ var controls_settings := ReactiveDictionary.new({
 	"toggle_context_menu": "ui_cancel",
 })
 
+var game_settings := ReactiveDictionary.new({
+	"language": -1,
+	"language_options":[],
+})
+
 func _ready() -> void:
 	# Expose stores
-	LuaUi.expose_store("graphics", graphics_settings)
-	LuaUi.expose_store("audio", audio_settings)
-	LuaUi.expose_store("controls", controls_settings)
+	LuaUi.expose_store("graphics_settings", graphics_settings)
+	LuaUi.expose_store("audio_settings", audio_settings)
+	LuaUi.expose_store("controls_settings", controls_settings)
+	LuaUi.expose_store("game_settings", game_settings)
 	LuaUi.expose_store("local_store", ReactiveDictionary.new({}))
 	
 	# load base mod
 	_load_base_assets()
 	
+	_load_translations()
+	
 	# Connect stores reactivity
 	_on_graphics_settings_changed(graphics_settings)
 	_on_audio_settings_changed(audio_settings)
 	_on_controls_settings_changed(controls_settings)
+	_on_game_settings_changed(game_settings)
 	graphics_settings.reactive_changed.connect(_on_graphics_settings_changed)
 	audio_settings.reactive_changed.connect(_on_audio_settings_changed)
 	controls_settings.reactive_changed.connect(_on_controls_settings_changed)
+	game_settings.reactive_changed.connect(_on_game_settings_changed)
 
 
 func _load_base_assets() -> void:
@@ -163,6 +173,26 @@ func _on_audio_settings_changed(_reactive: Reactive) -> void:
 func _on_controls_settings_changed(_reactive: Reactive) -> void:
 	# Controls
 	pass
+
+
+func _on_game_settings_changed(_reactive: Reactive) -> void:
+	var selected_locale = game_settings.get_at("language")
+	var locale_option = game_settings.get_at("language_options")[selected_locale]
+	if not locale_option:
+		return
+	TranslationServer.set_locale(locale_option["locale"])
+	game_settings.set_at("language", locale_option["value"])
+
+
+func _load_translations() -> void:
+	var language_options := []
+	for locale in TranslationServer.get_loaded_locales():
+		language_options.append({value = language_options.size(), locale = locale, label = TranslationServer.get_locale_name(locale)})
+		if game_settings.get_at("language") == -1 or game_settings.get_at("language") == null:
+			if locale == OS.get_locale() or OS.get_preferred_locales().has(locale) or locale == OS.get_locale_language():
+				TranslationServer.set_locale(locale)
+				game_settings.set_at("language", language_options.size()-1)
+	game_settings.set_at("language_options", language_options)
 
 
 func goto_scene(scene_name:StringName) -> void:
