@@ -1,6 +1,5 @@
-class_name AddonDefinition extends Resource
+class_name AddonDefinition extends ContentDefinition
 
-@export var id: StringName
 @export var display_name: StringName
 @export var description: String
 @export var tier: int = 1
@@ -32,12 +31,12 @@ func _init(entry: Dictionary):
 		icon = load(entry.get("icon_path")) as Texture2D
 
 
-func connect_callables(state: LuaState) -> void:
-	on_run_start = LuaHelper.make_callable(state.globals["onRunStart"])
-	on_run_end = LuaHelper.make_callable(state.globals["onRunEnd"])
-	on_equip = LuaHelper.make_callable(state.globals["onEquip"])
-	on_unequip = LuaHelper.make_callable(state.globals["onUnequip"])
-	on_collect = LuaHelper.make_callable(state.globals["onCollect"])
-	on_spawn = LuaHelper.make_callable(state.globals["onSpawn"])
-	on_effect_added = LuaHelper.make_callable(state.globals["onAddEffect"])
-	on_effect_removed = LuaHelper.make_callable(state.globals["onRemoveEffect"])
+func connect_callables(hooks: LuaTable) -> void:
+	on_run_start = LuaHelper.make_callable(hooks.rawget("onRunStart"))
+	on_run_end = LuaHelper.make_callable(hooks.rawget("onRunEnd"))
+	on_equip = LuaHelper.make_callable(hooks.rawget("onEquip"))
+	on_unequip = LuaHelper.make_callable(hooks.rawget("onUnequip"))
+	on_collect = LuaHelper.make_callable(hooks.rawget("onCollect"))
+	on_spawn = LuaHelper.make_callable(hooks.rawget("onSpawn"))
+	on_effect_added = LuaHelper.make_callable(hooks.rawget("onAddEffect"))
+	on_effect_removed = LuaHelper.make_callable(hooks.rawget("onRemoveEffect"))

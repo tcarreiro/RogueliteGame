@@ -10,10 +10,10 @@ O núcleo do projeto é gerenciado por um conjunto de autoloads e managers:
 
 - GameManager: inicializa os registries e o ciclo principal do jogo
 - RunManager: gerencia a vida útil de uma run, eventos, fatores e equipamentos
-- FactorRegistry: registra e instancia fatores do jogo
-- EventRegistry: registra e instancia eventos do jogo
-- EquipmentRegistry: cria e carrega equipamentos
-- RunEffectRegistry: carrega efeitos de run
+- ContentLoader: lê o `content.json` de cada mod ativo e entrega cada entrada ao registry do seu `type`
+- ContentRegistry: base de todos os registries (validação, scripts Lua, definitions); um por tipo de conteúdo
+  (`FactorRegistry`, `EventRegistry`, `DatashardRegistry`, `AddonRegistry`, `EquipmentRegistry`, `CardRegistry`,
+  `EffectRegistry`), cada um só com o que é específico da sua categoria (ex.: `create_card()`)
 - SaveManager: responsável por persistência / salvar e carregar estado
 - SceneMap: usado para mapear cenas do projeto
 

@@ -63,7 +63,7 @@ func _build_snapshot() -> Dictionary:
 
 
 #region Internal
-## Store extra, também readonly para o Lua (ex.: o relógio da run, que muda todo segundo).
+## Store extra, também readonly para o Lua
 func _expose_store(name: String, extra_store: ReactiveDictionary) -> void:
 	LuaUi.expose_store(name, extra_store, true)
 

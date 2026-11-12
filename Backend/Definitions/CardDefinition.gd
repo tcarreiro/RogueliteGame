@@ -1,4 +1,4 @@
-class_name CardDefinition extends Resource
+class_name CardDefinition extends ContentDefinition
 
 enum CardFlag {
 	ETHEREAL, 
@@ -7,7 +7,6 @@ enum CardFlag {
 	UNBLOCKABLE,
 }
 
-@export var id: StringName
 @export var display_name: StringName
 @export var description: String
 @export var max_stack: int
@@ -42,13 +41,14 @@ func _init(entry: Dictionary):
 		icon = load(entry.get("icon_path")) as Texture2D
 
 
-func connect_callables(state: LuaState) -> void:
-	on_run_start = LuaHelper.make_callable(state.globals["onRunStart"])
-	on_run_end = LuaHelper.make_callable(state.globals["onRunEnd"])
-	on_collect = LuaHelper.make_callable(state.globals["onCollect"])
-	on_spawn = LuaHelper.make_callable(state.globals["onSpawn"])
-	on_drawn = LuaHelper.make_callable(state.globals["onDrawn"])
-	on_played = LuaHelper.make_callable(state.globals["onPlayed"])
-	on_discarded = LuaHelper.make_callable(state.globals["onDiscarded"])
-	on_destroyed = LuaHelper.make_callable(state.globals["onDestroyed"])
-	on_blocked = LuaHelper.make_callable(state.globals["onBlocked"])
+func connect_callables(hooks: LuaTable) -> void:
+	on_run_start = LuaHelper.make_callable(hooks.rawget("onRunStart"))
+	on_run_end = LuaHelper.make_callable(hooks.rawget("onRunEnd"))
+	on_collect = LuaHelper.make_callable(hooks.rawget("onCollect"))
+	on_spawn = LuaHelper.make_callable(hooks.rawget("onSpawn"))
+	on_drawn = LuaHelper.make_callable(hooks.rawget("onDrawn"))
+	on_played = LuaHelper.make_callable(hooks.rawget("onPlayed"))
+	on_discarded = LuaHelper.make_callable(hooks.rawget("onDiscarded"))
+	on_destroyed = LuaHelper.make_callable(hooks.rawget("onDestroyed"))
+	on_blocked = LuaHelper.make_callable(hooks.rawget("onBlocked"))
+	

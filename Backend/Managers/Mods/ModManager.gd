@@ -63,6 +63,7 @@ func _parse_metadata(path: String) -> ModMetadata:
 	metadata.version = data.get("version", "1.0.0")
 	metadata.author = data.get("author", "")
 	metadata.description = data.get("description", "")
+	metadata.game_version = data.get("game_version", "")
 	metadata.is_base_mod = path.contains(BUILTIN_MODS_PATH)
 	metadata.load_order = data.get("load_order", 0)
 	

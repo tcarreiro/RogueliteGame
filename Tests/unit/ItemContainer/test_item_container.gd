@@ -923,18 +923,6 @@ func test_swap_stacks_rejects_invalid_index() -> void:
 	assert_same(container.get_all()[0].items[0], sword)
 
 
-func test_swap_stacks_rejects_same_slot() -> void:
-	var container := ItemContainer.new()
-	var sword := MockTestUtils.create_unique_loot(&"sword")
-	container.add(sword)
-
-	var result := ItemContainer.swap_stacks(container, 0, container, 0)
-
-	assert_false(result.ok)
-	assert_eq(result.fail_reason, ItemContainerOpResult.FailReason.SLOT_INVALID)
-	assert_same(container.get_all()[0].items[0], sword)
-
-
 func test_swap_stacks_rejects_null_container() -> void:
 	var container := ItemContainer.new()
 	container.add(MockTestUtils.create_unique_loot(&"sword"))

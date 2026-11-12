@@ -1,9 +1,10 @@
 {
 	"id": "core",
-	"display_name": "Base Mod",
 	"version": "0.0.1",
-	"author": "Thiago",
+	"display_name": "Base Mod",
 	"description": "Game's base content",
+	"game_version":"0.0.1",
+	"author": "Thiago",
 	"load_order": 0,
 	"dependencies": []
 }

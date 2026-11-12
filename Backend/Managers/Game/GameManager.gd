@@ -39,13 +39,11 @@ func _setup_mods():
 
 
 func _on_active_mods_changed(active_mod_ids: Array[StringName]) -> void:
-	FactorRegistry.load_from_mods(active_mod_ids)
-	EventRegistry.load_from_mods(active_mod_ids)
-	DatashardRegistry.load_from_mods(active_mod_ids)
-	AddonRegistry.load_from_mods(active_mod_ids)
-	EquipmentRegistry.load_from_mods(active_mod_ids)
-	CardRegistry.load_from_mods(active_mod_ids)
-	EffectRegistry.load_from_mods(active_mod_ids)
+	var registries: Array[ContentRegistry] = [
+		FactorRegistry, EventRegistry, DatashardRegistry, AddonRegistry,
+		EquipmentRegistry, CardRegistry, EffectRegistry,
+	]
+	ContentLoader.new(mod_manager, content_bridge, registries).load_mods(active_mod_ids)
 
 #endregion
 

@@ -1,6 +1,5 @@
-class_name EffectDefinition extends Resource
+class_name EffectDefinition extends ContentDefinition
 
-@export var id: StringName
 @export var display_name: StringName
 @export var description: String
 @export var trigger_event: Effect.TriggerEvent 
@@ -32,5 +31,5 @@ func _init(entry: Dictionary) -> void:
 		]))
 
 
-func connect_callables(state: LuaState) -> void:
-	on_trigger = LuaHelper.make_callable(state.globals["onTrigger"])
+func connect_callables(hooks: LuaTable) -> void:
+	on_trigger = LuaHelper.make_callable(hooks.rawget("onTrigger"))

@@ -12,7 +12,9 @@ func get_or_create_mod_state(mod_id: StringName, context: StringName) -> LuaStat
 	var existing := LuaBridgeRegistry.get_lua_state(_state_name)
 	if existing != null:
 		return existing
-	return _setup()
+	var state := _setup()
+	ContentUiBridge.register(_state_name, mod_id)
+	return state
 
 
 func _setup() -> LuaState:
@@ -32,9 +34,6 @@ func _setup_lua_state() -> void:
 
 func _register_common_state() -> void:
 	LuaBridgeRegistry.register_state(_state_name, _lua_state)
-	
-	#LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "pause", lua_pause)
-	#LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "resume", lua_resume)
 	
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "isEnchantable", lua_is_enchantable)
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "getFactorLevel", lua_get_factor_level)
@@ -57,48 +56,6 @@ func _register_common_state() -> void:
 	LuaBridgeRegistry.lua_register(_state_name, CONTENT_NAMESPACE, "doCreateEffect", lua_create_effect)
 
 
-#region Factor
-func register_factor_exclusive_states(_definition: FactorDefinition, __state_name: StringName) -> void:
-	pass
-#endregion
-
-
-#region Event
-func register_event_exclusive_states(_definition: EventDefinition, __state_name: StringName) -> void:
-	pass
-#endregion
-
-
-#region Equipment
-func register_equipment_exclusive_states(_definition: EquipmentDefinition, __state_name: StringName) -> void:
-	pass
-#endregion
-
-
-#region Datashard
-func register_datashard_exclusive_states(_definition: DatashardDefinition, __state_name: StringName) -> void:
-	pass
-#endregion
-
-
-#region Addon
-func register_addon_exclusive_states(_definition: AddonDefinition, __state_name: StringName) -> void:
-	pass
-#endregion
-
-
-#region Addon
-func register_effect_exclusive_states(_definition: EffectDefinition, __state_name: StringName) -> void:
-	pass
-#endregion
-
-
-#region Card
-func register_card_exclusive_states(_definition: CardDefinition, __state_name: StringName) -> void:
-	pass
-#endregion
-
-
 #region Getters and Setters
 func get_lua_state() -> LuaState:
 	return _lua_state
@@ -114,14 +71,6 @@ func get_state_name() -> StringName:
 
 
 #region Lua Scripts
-func lua_pause() -> void:
-	GameManager.game_state.pause()
-
-
-func lua_resume() -> void:
-	GameManager.game_state.resume()
-
-
 func lua_is_enchantable(parent) -> bool:
 	return parent is Enchantable
 

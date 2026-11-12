@@ -1,6 +1,5 @@
-class_name EventDefinition extends Resource
+class_name EventDefinition extends ContentDefinition
 
-@export var id: StringName
 @export var name: String
 @export var event_trigger: Event.EventTrigger
 @export var throttle: float = 0.2
@@ -28,8 +27,8 @@ func _init(entry: Dictionary):
 	watched_event_id = StringName(entry.get("watched_event_id", ""))
 
 
-func connect_callables(state: LuaState) -> void:
-	on_resolved = LuaHelper.make_callable(state.globals["onResolvedEvent"])
-	on_blocked = LuaHelper.make_callable(state.globals["onBlockedEvent"])
-	on_trigger = LuaHelper.make_callable(state.globals["onTrigger"])
-	conditional = LuaHelper.make_callable(state.globals["onWatchedEventTrigger"])
+func connect_callables(hooks: LuaTable) -> void:
+	on_resolved = LuaHelper.make_callable(hooks.rawget("onResolvedEvent"))
+	on_blocked = LuaHelper.make_callable(hooks.rawget("onBlockedEvent"))
+	on_trigger = LuaHelper.make_callable(hooks.rawget("onTrigger"))
+	conditional = LuaHelper.make_callable(hooks.rawget("onWatchedEventTrigger"))
